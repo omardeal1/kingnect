@@ -38,7 +38,7 @@ export default async function DashboardLayout({
   const planName = client?.subscription?.plan?.name ?? "Trial"
   const planSlug = client?.subscription?.plan?.slug ?? "trial"
   const planId = client?.subscription?.plan?.id ?? ""
-  const planPrice = client?.subscription?.plan?.price ?? 0
+  const planPrice = Number(client?.subscription?.plan?.price ?? 0)
   const siteSlug = client?.miniSites?.[0]?.slug ?? ""
   const siteId = client?.miniSites?.[0]?.id ?? ""
   const clientId = client?.id ?? ""

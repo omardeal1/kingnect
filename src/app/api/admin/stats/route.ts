@@ -42,7 +42,7 @@ export async function GET() {
       where: { status: "active" },
       include: { plan: true },
     })
-    const mrr = activeSubscriptions.reduce((sum, sub) => sum + (sub.plan?.price ?? 0), 0)
+    const mrr = activeSubscriptions.reduce((sum, sub) => sum + Number(sub.plan?.price ?? 0), 0)
 
     // Orders stats
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate())
@@ -58,7 +58,7 @@ export async function GET() {
       where: { createdAt: { gte: startOfMonth }, status: { not: "cancelled" } },
       select: { total: true },
     })
-    const revenueThisMonth = ordersThisMonthData.reduce((sum, o) => sum + o.total, 0)
+    const revenueThisMonth = ordersThisMonthData.reduce((sum, o) => sum + Number(o.total), 0)
 
     // Last 5 activity logs
     const recentActivity = await db.activityLog.findMany({

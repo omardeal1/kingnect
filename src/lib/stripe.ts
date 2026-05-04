@@ -182,7 +182,7 @@ export async function getOrCreateCustomer(clientId: string, email: string): Prom
 
 // ─── Obtener o crear precio en Stripe ──────────────────────────────────────────
 
-async function getOrCreatePrice(plan: { id: string; slug: string; price: number; currency: string; billingInterval: string }): Promise<string> {
+async function getOrCreatePrice(plan: { id: string; slug: string; price: number | { toNumber(): number }; currency: string; billingInterval: string }): Promise<string> {
   const stripe = getStripe()
   if (!stripe) {
     throw new Error("Stripe no está configurado")
@@ -208,7 +208,7 @@ async function getOrCreatePrice(plan: { id: string; slug: string; price: number;
   // Crear precio
   const price = await stripe.prices.create({
     product: product.id,
-    unit_amount: Math.round(plan.price * 100), // Convertir a centavos
+    unit_amount: Math.round(Number(plan.price) * 100), // Convertir a centavos
     currency: plan.currency.toLowerCase(),
     recurring: {
       interval: plan.billingInterval === "year" ? "year" : "month",

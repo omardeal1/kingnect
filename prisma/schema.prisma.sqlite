@@ -1,13 +1,11 @@
-// KINGNECT by King Designs — Database Schema (PostgreSQL / Producción)
-// Usar este schema en producción con: cp prisma/schema.prisma.prod prisma/schema.prisma
-// O referenciarlo con: npx prisma generate --schema=prisma/schema.prisma.prod
+// KINGNECT by King Designs — Database Schema
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -74,7 +72,7 @@ model Client {
   email          String?
   pipelineStatus String   @default("lead") // lead | contacted | demo | active | churned
   accountStatus  String   @default("active") // active | blocked | cancelled
-  notes          String?  @db.Text
+  notes          String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -107,14 +105,14 @@ model Plan {
   id              String   @id @default(cuid())
   name            String
   slug            String   @unique
-  price           Decimal  @default(0) @db.Decimal(10, 2)
+  price           Float    @default(0)
   currency        String   @default("USD")
   billingInterval String   @default("month") // month | year
   trialDays       Int      @default(0)
   isActive        Boolean  @default(true)
   sortOrder       Int      @default(0)
-  features        String   @default("{}") @db.Text // JSON string of features
-  limits          String   @default("{}") @db.Text // JSON string of limits
+  features        String   @default("{}") // JSON string of features
+  limits          String   @default("{}") // JSON string of limits
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -127,7 +125,7 @@ model MiniSite {
   slug               String   @unique
   businessName       String
   tagline            String?
-  description        String?  @db.Text
+  description        String?
   logoUrl            String?
   faviconUrl         String?
   backgroundType     String   @default("color") // color | gradient | image
@@ -205,17 +203,17 @@ model Location {
 }
 
 model Slide {
-  id          String   @id @default(cuid())
-  miniSiteId  String
-  imageUrl    String?
-  title       String?
-  subtitle    String?
+  id         String   @id @default(cuid())
+  miniSiteId String
+  imageUrl   String?
+  title      String?
+  subtitle   String?
   buttonLabel String?
-  buttonUrl   String?
-  enabled     Boolean  @default(true)
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  buttonUrl  String?
+  enabled    Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   miniSite MiniSite @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
 }
@@ -238,8 +236,8 @@ model MenuItem {
   miniSiteId  String
   categoryId  String
   name        String
-  description String?  @db.Text
-  price       Decimal? @db.Decimal(10, 2)
+  description String?
+  price       Float?
   imageUrl    String?
   isOrderable Boolean  @default(false)
   enabled     Boolean  @default(true)
@@ -268,7 +266,7 @@ model Service {
   id          String   @id @default(cuid())
   miniSiteId  String
   name        String
-  description String?  @db.Text
+  description String?
   price       String?
   imageUrl    String?
   buttonLabel String?
@@ -287,7 +285,7 @@ model Testimonial {
   name       String
   photoUrl   String?
   rating     Int      @default(5)
-  content    String   @db.Text
+  content    String
   enabled    Boolean  @default(true)
   sortOrder  Int      @default(0)
   createdAt  DateTime @default(now())
@@ -316,8 +314,8 @@ model Order {
   customerPhone  String?
   deliveryType   String   @default("pickup") // pickup | delivery
   status         String   @default("new") // new | confirmed | preparing | ready | delivered | cancelled
-  total          Decimal  @default(0) @db.Decimal(10, 2)
-  notes          String?  @db.Text
+  total          Float    @default(0)
+  notes          String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -330,8 +328,8 @@ model OrderItem {
   orderId   String
   name      String
   quantity  Int     @default(1)
-  unitPrice Decimal @default(0) @db.Decimal(10, 2)
-  total     Decimal @default(0) @db.Decimal(10, 2)
+  unitPrice Float   @default(0)
+  total     Float   @default(0)
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
@@ -339,7 +337,7 @@ model OrderItem {
 model PlatformSetting {
   id        String   @id @default(cuid())
   key       String   @unique
-  value     String   @db.Text
+  value     String
   type      String   @default("text") // text | json | number | boolean
   updatedBy String?
   updatedAt DateTime @updatedAt
@@ -350,7 +348,7 @@ model PlatformSection {
   sectionKey String   @unique
   title      String?
   subtitle   String?
-  content    String?  @db.Text
+  content    String?
   imageUrl   String?
   enabled    Boolean  @default(true)
   sortOrder  Int      @default(0)
@@ -361,7 +359,7 @@ model AnalyticsEvent {
   id         String   @id @default(cuid())
   miniSiteId String
   eventType  String // view | click_whatsapp | click_link | order_created | qr_scan
-  metadata   String? @db.Text // JSON
+  metadata   String? // JSON
   createdAt  DateTime @default(now())
 
   miniSite MiniSite @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
