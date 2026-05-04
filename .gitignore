@@ -50,5 +50,17 @@ test
 prompt
 
 server.log
+
+# Production & local environment files (explicit for clarity)
+.env.production
+.env.local
+
+# Database files
+/db/*.db
+
+# Log files (explicit paths)
+/dev.log
+/server.log
+
 # Skills directory
 /skills/
