@@ -3,115 +3,101 @@
 ---
 Task ID: 1
 Agent: Main Agent
-Task: PASO 1 — Configuración base del proyecto
+Task: PASO 1 — Configuración base del proyecto (Prompt 2)
 
 Work Log:
 - Initialized fullstack project with Next.js 16
-- Created complete Prisma schema with 19 tables (users, clients, subscriptions, plans, mini_sites, social_links, contact_buttons, locations, slides, menu_categories, menu_items, gallery_images, services, testimonials, custom_links, orders, order_items, platform_settings, platform_sections, analytics_events, activity_logs)
-- Pushed schema to SQLite database
-- Seeded database with 4 plans (Trial, Básico, Pro, Premium), super admin user, platform settings, and landing sections
-- Created lib files: auth.ts, validations.ts, permissions.ts, store.ts, constants.ts, query-client.ts
-- Created .env with all environment variables
-- Created PWA files: manifest.webmanifest, sw.js
-- Created database/ schema.sql and seed.sql
-- Updated globals.css with KINGNECT light/dark theme variables
+- Created complete Prisma schema with 19+ tables
+- Pushed schema to SQLite database and seeded with 4 plans + admin
+- Created lib files: auth.ts, validations.ts, permissions.ts, constants.ts, editor-store.ts, query-client.ts
+- Created .env, PWA files, database/ SQL files
+- Updated globals.css with KINGNECT light/dark theme
 - Updated root layout.tsx with ThemeProvider and QueryProvider
-- Installed dependencies: qrcode.react, stripe, next-auth, bcryptjs
 
 Stage Summary:
-- Complete database schema with all relationships
-- 4 plans seeded with Trial/Básico/Pro/Premium
+- Complete database schema functional
 - Super admin: admin@kingnect.app / Admin123!
-- All core lib files functional
 - Lint passes with 0 errors
 
 ---
-Task ID: 2
-Agent: Subagent (full-stack-developer)
-Task: PASO 2 — Autenticación completa
+Task ID: 2-5
+Agent: Subagents
+Task: PASO 2-5 del Prompt 2 (Auth, Landing, Dashboard, Editor)
 
 Work Log:
-- Created auth layout with Kingnect logo, theme toggle, decorative background
-- Created /login page with email/password form, role-based redirect
-- Created /register page with name, email, password, business name, zod validation
-- Created /forgot-password page with email recovery form
-- Created /api/auth/register route with full flow (create user, client, subscription, mini site)
-- Created /api/auth/forgot-password route
-- Created middleware.ts protecting /dashboard and /admin routes
-- Installed @next-auth/prisma-adapter
+- Auth pages: login, register, forgot-password + middleware
+- Landing: 12 components, 9 sections, Framer Motion animations
+- Dashboard: sidebar layout, main view, billing, orders
+- Editor: 12 tab components, phone preview, 9 CRUD API routes
 
 Stage Summary:
-- Full auth flow working with NextAuth.js v4
-- Registration creates user + client + trial subscription + mini site
-- Middleware protects routes based on roles
-- All pages in Spanish with premium design
+- Complete client-facing platform functional
+- Editor with live phone preview
+- All API routes for sub-resources
 
 ---
-Task ID: 3
-Agent: Subagent (full-stack-developer)
-Task: PASO 3 — Landing page completa
+Task ID: 6-8
+Agent: Subagent
+Task: PASO 1-3 del Prompt 3 (Mini Web Pública, Pedidos, QR)
 
 Work Log:
-- Created complete landing page at /src/app/page.tsx
-- Created 12 component files in /src/components/landing/
-- Sections: Navbar, Hero, Benefits (8 cards), How It Works (7 steps), Business Examples (8 categories), Orders section, Pricing (4 plans), Testimonials, FAQ (8 questions), CTA, Footer
-- All with Framer Motion animations, responsive, dark mode
-- Pro plan highlighted as "Más popular"
+- Created /[slug] page with SSR, 404, blocked screen, dynamic SEO
+- Created 16 minisite components (header, buttons, social, slides, menu, gallery, services, testimonials, locations, links, QR, footer, floating WhatsApp, blocked screen)
+- Created order module: cart provider, cart drawer, order form (WhatsApp + internal), order success
+- Created QR system: reusable QR display, QR API as SVG, dynamic PWA manifest
 
 Stage Summary:
-- Complete landing page with all 9 sections
-- Premium white/gold design
-- Mobile-first responsive
-- Dark mode toggle
+- Public mini web fully functional
+- Cart + ordering system (WhatsApp and internal)
+- Dynamic PWA manifest per business
 
 ---
-Task ID: 4
-Agent: Subagent (full-stack-developer)
-Task: PASO 4 — Dashboard cliente
+Task ID: 9
+Agent: Subagent
+Task: PASO 4 del Prompt 3 (Admin Panel)
 
 Work Log:
-- Created dashboard layout with sidebar and mobile bottom nav
-- Created dashboard-shell component with sidebar, header, blocked account banner
-- Created /dashboard main view with welcome card, plan status, mini web card, QR code, orders, stats
-- Created /dashboard/billing with plan comparison and payment history
-- Created /dashboard/orders with filters, status transitions, WhatsApp button
-- Created API routes: /api/orders, /api/sites/[id], /api/plans
+- Created admin layout with auth verification
+- Created admin shell with collapsible sidebar, mobile Sheet
+- Created 7 admin pages: dashboard, clients, pipeline, sites, orders, plans, platform-editor
+- Created 10 admin API routes: stats, clients (CRUD), pipeline, sites, orders, plans, platform
+- Created client detail modal, pipeline Kanban, CSV export
 
 Stage Summary:
-- Full client dashboard functional
-- QR code generation with PNG/SVG download
-- Order management with status transitions
-- Billing page with plan comparison
+- Complete admin panel with all sub-pages
+- CRM pipeline with 9 columns
+- Platform editor CMS (8 tabs)
+- All APIs verify super_admin role
 
 ---
-Task ID: 5
-Agent: Main Agent + Subagents
-Task: PASO 5 — Editor de mini web (12 tabs + API routes)
+Task ID: 10-12
+Agent: Subagent
+Task: PASO 5-7 del Prompt 3 (Stripe, PWA, Security)
 
 Work Log:
-- Created editor-store.ts with complete Zustand store for all editor state
-- Created editor-layout.tsx with two-column layout and phone preview
-- Created editor-header.tsx with save/publish/preview buttons
-- Created phone-preview.tsx with live preview in phone mockup
-- Created all 12 tab components:
-  1. tab-datos.tsx — Business info, logo, slug, toggles
-  2. tab-diseno.tsx — 8 color presets, custom pickers, background type
-  3. tab-redes.tsx — 12 social types with toggle+URL
-  4. tab-contacto.tsx — 8 contact button types with toggle+value
-  5. tab-ubicaciones.tsx — Multiple locations with edit forms
-  6. tab-slides.tsx — Max 5 slides with image upload
-  7. tab-menu.tsx — Categories with nested items, accordion
-  8. tab-galeria.tsx — Image grid with upload and caption
-  9. tab-servicios.tsx — Service cards with image and price
-  10. tab-testimonios.tsx — Testimonials with star rating
-  11. tab-links.tsx — Custom links with label+URL
-  12. tab-seo.tsx — Meta title, description, char counter
-- Created api-helpers.ts with auth and ownership verification
-- Created /api/upload route with file validation
-- Created 9 sub-resource API routes (social-links, contact-buttons, locations, slides, menu, gallery, services, testimonials, custom-links) with GET/POST/PUT/DELETE
+- Created Stripe integration: checkout, portal, webhook handler with 5 event types
+- Created blocking logic: payment_failed, trial_expired, cancelled, blocked, active
+- Created block/reactivate admin APIs with activity logging
+- Enhanced PWA: dynamic manifest per slug, updated service worker v2
+- Created security: rate-limit.ts, security.ts (validateSlug, sanitizeUrl, validateImageUpload, checkPlanFeature, logActivity)
+- Created activity logs admin API
 
 Stage Summary:
-- Complete editor with 12 tabs
-- Live phone preview
-- All CRUD API routes for sub-resources
-- Lint passes with 0 errors (3 warnings only)
+- Stripe payment flow functional (graceful fallback without keys)
+- Complete blocking/reactivation logic with activity logging
+- Rate limiting on orders endpoint
+- Security helpers for all API routes
+
+---
+Task ID: 13
+Agent: Main Agent
+Task: PASO 8 — README y Documentación
+
+Work Log:
+- Created comprehensive README.md
+- Installation steps, environment variables, deploy guide
+- Domain connection guide, project structure
+- Roles, plans, security notes, PWA docs, testing guide
+
+Stage Summary:
+- Complete documentation for production deployment
