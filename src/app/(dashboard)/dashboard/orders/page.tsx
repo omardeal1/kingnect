@@ -2,15 +2,15 @@
 
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import {
   ShoppingCart,
   MessageCircle,
-  Filter,
   Package,
   ChevronDown,
-  CalendarDays,
   Search,
   SlidersHorizontal,
+  Loader2,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -30,83 +30,30 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
 import { ORDER_STATUSES } from "@/lib/constants"
+import { useDashboardStore } from "@/lib/dashboard-store"
 
-// Placeholder orders data
-const placeholderOrders = [
-  {
-    id: "1",
-    customerName: "María García",
-    customerPhone: "5215512345678",
-    deliveryType: "delivery",
-    status: "new",
-    total: 45.99,
-    notes: "Sin cebolla por favor",
-    createdAt: new Date(Date.now() - 1000 * 60 * 30),
-    orderItems: [
-      { id: "1", name: "Hamburguesa Clásica", quantity: 2, unitPrice: 12.99, total: 25.98 },
-      { id: "2", name: "Papas Fritas", quantity: 1, unitPrice: 5.99, total: 5.99 },
-      { id: "3", name: "Refresco", quantity: 2, unitPrice: 2.5, total: 5.0 },
-    ],
-  },
-  {
-    id: "2",
-    customerName: "Carlos López",
-    customerPhone: "5215587654321",
-    deliveryType: "pickup",
-    status: "preparing",
-    total: 82.5,
-    notes: "",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
-    orderItems: [
-      { id: "4", name: "Pizza Hawaiana", quantity: 1, unitPrice: 45.0, total: 45.0 },
-      { id: "5", name: "Pizza Pepperoni", quantity: 1, unitPrice: 37.5, total: 37.5 },
-    ],
-  },
-  {
-    id: "3",
-    customerName: "Ana Martínez",
-    customerPhone: "5215599887766",
-    deliveryType: "delivery",
-    status: "delivered",
-    total: 23.0,
-    notes: "Entregar en recepción",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24),
-    orderItems: [
-      { id: "6", name: "Ensalada César", quantity: 1, unitPrice: 15.0, total: 15.0 },
-      { id: "7", name: "Agua Mineral", quantity: 2, unitPrice: 4.0, total: 8.0 },
-    ],
-  },
-  {
-    id: "4",
-    customerName: "Roberto Sánchez",
-    customerPhone: "5215511223344",
-    deliveryType: "pickup",
-    status: "confirmed",
-    total: 156.0,
-    notes: "Para llevar",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48),
-    orderItems: [
-      { id: "8", name: "Combo Familiar", quantity: 2, unitPrice: 78.0, total: 156.0 },
-    ],
-  },
-  {
-    id: "5",
-    customerName: "Laura Torres",
-    customerPhone: "5215566778899",
-    deliveryType: "delivery",
-    status: "ready",
-    total: 67.5,
-    notes: "",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 72),
-    orderItems: [
-      { id: "9", name: "Tacos al Pastor (5)", quantity: 2, unitPrice: 22.5, total: 45.0 },
-      { id: "10", name: "Horchata", quantity: 2, unitPrice: 5.0, total: 10.0 },
-      { id: "11", name: "Guacamole", quantity: 1, unitPrice: 12.5, total: 12.5 },
-    ],
-  },
-]
+interface OrderItem {
+  id: string
+  name: string
+  quantity: number
+  unitPrice: number
+  total: number
+}
+
+interface Order {
+  id: string
+  customerName: string
+  customerPhone: string | null
+  deliveryType: string
+  status: string
+  total: number
+  notes: string | null
+  createdAt: string
+  orderItems: OrderItem[]
+}
 
 const statusTransitions: Record<string, string[]> = {
   new: ["confirmed", "cancelled"],
@@ -133,20 +80,58 @@ const item = {
 export default function OrdersPage() {
   const [statusFilter, setStatusFilter] = React.useState<string>("all")
   const [searchQuery, setSearchQuery] = React.useState("")
-  const [orders, setOrders] = React.useState(placeholderOrders)
+  const siteId = useDashboardStore((s) => s.data.siteId)
+  const queryClient = useQueryClient()
+
+  // Fetch orders from API
+  const { data: ordersData, isLoading } = useQuery<{ orders: Order[] }>({
+    queryKey: ["orders", siteId],
+    queryFn: async () => {
+      const res = await fetch(`/api/orders?siteId=${siteId}`)
+      if (!res.ok) throw new Error("Error al cargar pedidos")
+      return res.json()
+    },
+    enabled: !!siteId,
+  })
+
+  const orders = ordersData?.orders ?? []
+
+  // Mutation for updating order status
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ orderId, status }: { orderId: string; status: string }) => {
+      const res = await fetch("/api/orders", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, status }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || "Error al actualizar pedido")
+      }
+      return res.json()
+    },
+    onSuccess: (_data, variables) => {
+      const statusInfo = getStatusInfo(variables.status)
+      toast.success(`Pedido actualizado a: ${statusInfo.label}`)
+      queryClient.invalidateQueries({ queryKey: ["orders", siteId] })
+    },
+    onError: (error) => {
+      toast.error(error.message || "Error al actualizar pedido")
+    },
+  })
 
   const getStatusInfo = (status: string) => {
     return ORDER_STATUSES.find((s) => s.value === status) ?? ORDER_STATUSES[0]
   }
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date: string | Date) => {
     return new Intl.DateTimeFormat("es-MX", {
       day: "numeric",
       month: "short",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    }).format(date)
+    }).format(new Date(date))
   }
 
   const filteredOrders = orders.filter((order) => {
@@ -159,16 +144,7 @@ export default function OrdersPage() {
   })
 
   const handleStatusChange = (orderId: string, newStatus: string) => {
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.id === orderId ? { ...order, status: newStatus } : order
-      )
-    )
-    const statusInfo = getStatusInfo(newStatus)
-    toast.success(`Pedido actualizado a: ${statusInfo.label}`)
-
-    // In production, this would call the API
-    // fetch('/api/orders', { method: 'PUT', body: JSON.stringify({ orderId, status: newStatus }) })
+    updateStatusMutation.mutate({ orderId, status: newStatus })
   }
 
   const openWhatsApp = (phone: string, name: string) => {
@@ -233,8 +209,45 @@ export default function OrdersPage() {
         </Card>
       </motion.div>
 
-      {/* Orders List */}
-      {filteredOrders.length > 0 ? (
+      {/* Loading State */}
+      {isLoading ? (
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="shadow-sm">
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="size-3 rounded-full" />
+                      <div className="space-y-1.5">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-44" />
+                      </div>
+                    </div>
+                    <Skeleton className="h-5 w-16 rounded-full" />
+                  </div>
+                  <div className="rounded-lg bg-muted/30 p-3 space-y-1.5">
+                    <div className="flex justify-between">
+                      <Skeleton className="h-4 w-36" />
+                      <Skeleton className="h-4 w-14" />
+                    </div>
+                    <div className="flex justify-between">
+                      <Skeleton className="h-4 w-28" />
+                      <Skeleton className="h-4 w-14" />
+                    </div>
+                    <Separator className="my-2" />
+                    <div className="flex justify-between">
+                      <Skeleton className="h-4 w-10" />
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : filteredOrders.length > 0 ? (
+        /* Orders List */
         <div className="space-y-3">
           <AnimatePresence mode="popLayout">
             {filteredOrders.map((order) => {
@@ -322,7 +335,11 @@ export default function OrdersPage() {
                                   variant="outline"
                                   size="sm"
                                   className="gap-1.5"
+                                  disabled={updateStatusMutation.isPending}
                                 >
+                                  {updateStatusMutation.isPending ? (
+                                    <Loader2 className="size-3 animate-spin" />
+                                  ) : null}
                                   Cambiar estado
                                   <ChevronDown className="size-3" />
                                 </Button>
@@ -337,6 +354,7 @@ export default function OrdersPage() {
                                         handleStatusChange(order.id, nextStatus)
                                       }
                                       className="gap-2"
+                                      disabled={updateStatusMutation.isPending}
                                     >
                                       <div
                                         className="size-2 rounded-full"

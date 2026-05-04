@@ -4,6 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { QRCodeSVG } from "qrcode.react"
 import { motion } from "framer-motion"
+import { useQuery } from "@tanstack/react-query"
 import {
   Copy,
   ExternalLink,
@@ -15,45 +16,35 @@ import {
   MousePointerClick,
   Sparkles,
   QrCode,
+  Loader2,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardAction } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
 import { APP_URL, ORDER_STATUSES } from "@/lib/constants"
 import { useDashboardStore } from "@/lib/dashboard-store"
 
-// Placeholder data for the dashboard
-const placeholderStats = {
-  visits: 128,
-  whatsappClicks: 34,
-  ordersReceived: 7,
+interface AnalyticsData {
+  totalViews: number
+  totalWhatsappClicks: number
+  totalOrders: number
+  dailyBreakdown: { date: string; views: number; clicks: number; orders: number }[]
 }
 
-const placeholderOrders = [
-  {
-    id: "1",
-    customerName: "María García",
-    total: 45.99,
-    status: "new",
-    createdAt: new Date(Date.now() - 1000 * 60 * 30),
-  },
-  {
-    id: "2",
-    customerName: "Carlos López",
-    total: 82.5,
-    status: "preparing",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
-  },
-  {
-    id: "3",
-    customerName: "Ana Martínez",
-    total: 23.0,
-    status: "delivered",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24),
-  },
-]
+interface OrderData {
+  id: string
+  customerName: string
+  customerPhone: string | null
+  deliveryType: string
+  status: string
+  total: number
+  notes: string | null
+  createdAt: string
+  orderItems: { id: string; name: string; quantity: number; unitPrice: number; total: number }[]
+}
 
 const container = {
   hidden: { opacity: 0 },
@@ -83,6 +74,30 @@ export default function DashboardPage() {
 
   const miniWebUrl = `${APP_URL}/${siteSlug || "mi-negocio"}`
   const qrRef = React.useRef<HTMLDivElement>(null)
+
+  // Fetch analytics data
+  const { data: analytics, isLoading: analyticsLoading } = useQuery<AnalyticsData>({
+    queryKey: ["analytics", siteId],
+    queryFn: async () => {
+      const res = await fetch(`/api/analytics?siteId=${siteId}`)
+      if (!res.ok) throw new Error("Error al cargar analíticas")
+      return res.json()
+    },
+    enabled: !!siteId,
+  })
+
+  // Fetch recent orders
+  const { data: ordersData, isLoading: ordersLoading } = useQuery<{ orders: OrderData[] }>({
+    queryKey: ["orders", siteId],
+    queryFn: async () => {
+      const res = await fetch(`/api/orders?siteId=${siteId}`)
+      if (!res.ok) throw new Error("Error al cargar pedidos")
+      return res.json()
+    },
+    enabled: !!siteId,
+  })
+
+  const recentOrders = ordersData?.orders?.slice(0, 5) ?? []
 
   // Calculate period progress
   const pStart = periodStart ? new Date(periodStart) : new Date(Date.now() - 1000 * 60 * 60 * 24 * 12)
@@ -160,13 +175,13 @@ export default function DashboardPage() {
     return ORDER_STATUSES.find((s) => s.value === status) ?? ORDER_STATUSES[0]
   }
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date: Date | string) => {
     return new Intl.DateTimeFormat("es-MX", {
       day: "numeric",
       month: "short",
       hour: "2-digit",
       minute: "2-digit",
-    }).format(date)
+    }).format(new Date(date))
   }
 
   return (
@@ -345,41 +360,53 @@ export default function DashboardPage() {
               <CardDescription>Últimos 30 días</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-1.5 text-center">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 mx-auto">
-                    <Eye className="size-4 text-primary" />
+              {analyticsLoading ? (
+                <div className="grid grid-cols-3 gap-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="space-y-1.5 text-center">
+                      <Skeleton className="size-10 rounded-lg mx-auto" />
+                      <Skeleton className="h-7 w-12 mx-auto" />
+                      <Skeleton className="h-3 w-14 mx-auto" />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-1.5 text-center">
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 mx-auto">
+                      <Eye className="size-4 text-primary" />
+                    </div>
+                    <div className="text-2xl font-bold">
+                      {analytics?.totalViews ?? 0}
+                    </div>
+                    <div className="text-[11px] text-muted-foreground">
+                      Visitas
+                    </div>
                   </div>
-                  <div className="text-2xl font-bold">
-                    {placeholderStats.visits}
+                  <div className="space-y-1.5 text-center">
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-green-500/10 mx-auto">
+                      <MousePointerClick className="size-4 text-green-600" />
+                    </div>
+                    <div className="text-2xl font-bold">
+                      {analytics?.totalWhatsappClicks ?? 0}
+                    </div>
+                    <div className="text-[11px] text-muted-foreground">
+                      Clicks WhatsApp
+                    </div>
                   </div>
-                  <div className="text-[11px] text-muted-foreground">
-                    Visitas
+                  <div className="space-y-1.5 text-center">
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-amber-500/10 mx-auto">
+                      <ShoppingCart className="size-4 text-amber-600" />
+                    </div>
+                    <div className="text-2xl font-bold">
+                      {analytics?.totalOrders ?? 0}
+                    </div>
+                    <div className="text-[11px] text-muted-foreground">
+                      Pedidos
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-1.5 text-center">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-green-500/10 mx-auto">
-                    <MousePointerClick className="size-4 text-green-600" />
-                  </div>
-                  <div className="text-2xl font-bold">
-                    {placeholderStats.whatsappClicks}
-                  </div>
-                  <div className="text-[11px] text-muted-foreground">
-                    Clicks WhatsApp
-                  </div>
-                </div>
-                <div className="space-y-1.5 text-center">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-amber-500/10 mx-auto">
-                    <ShoppingCart className="size-4 text-amber-600" />
-                  </div>
-                  <div className="text-2xl font-bold">
-                    {placeholderStats.ordersReceived}
-                  </div>
-                  <div className="text-[11px] text-muted-foreground">
-                    Pedidos
-                  </div>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </motion.div>
@@ -401,9 +428,27 @@ export default function DashboardPage() {
             </CardAction>
           </CardHeader>
           <CardContent>
-            {placeholderOrders.length > 0 ? (
+            {ordersLoading ? (
               <div className="space-y-3">
-                {placeholderOrders.map((order) => {
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center justify-between rounded-lg border p-3">
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="size-2 rounded-full" />
+                      <div className="space-y-1.5">
+                        <Skeleton className="h-4 w-28" />
+                        <Skeleton className="h-3 w-20" />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="h-4 w-14" />
+                      <Skeleton className="h-5 w-16 rounded-full" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : recentOrders.length > 0 ? (
+              <div className="space-y-3">
+                {recentOrders.map((order) => {
                   const statusInfo = getStatusInfo(order.status)
                   return (
                     <div

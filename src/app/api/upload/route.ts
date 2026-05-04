@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { writeFile, mkdir } from "fs/promises"
 import path from "path"
-import { randomUUID } from "crypto"
 import { validateImageUpload } from "@/lib/security"
+import { uploadToStorage } from "@/lib/storage"
 
 const ALLOWED_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".gif", ".webp"])
 const ALLOWED_MIME_TYPES = new Set([
@@ -24,6 +23,7 @@ export async function POST(request: Request) {
 
     const formData = await request.formData()
     const file = formData.get("file") as File | null
+    const folder = (formData.get("folder") as string | null) ?? undefined
 
     if (!file) {
       return NextResponse.json({ error: "No se envió archivo" }, { status: 400 })
@@ -68,16 +68,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: validation.error }, { status: 400 })
     }
 
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-
-    const filename = `${randomUUID()}${ext}`
-    const uploadDir = path.join(process.cwd(), "public", "uploads")
-
-    await mkdir(uploadDir, { recursive: true })
-    await writeFile(path.join(uploadDir, filename), buffer)
-
-    const url = `/uploads/${filename}`
+    // Upload via storage abstraction (Supabase or local fallback)
+    const { url } = await uploadToStorage(file, folder)
 
     return NextResponse.json({ url })
   } catch (error) {

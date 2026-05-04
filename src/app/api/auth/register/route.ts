@@ -3,6 +3,7 @@ import { z } from "zod"
 import { db } from "@/lib/db"
 import { hashPassword } from "@/lib/auth"
 import { rateLimitRegister } from "@/lib/rate-limit"
+import { sendWelcomeEmail } from "@/lib/email"
 
 const registerSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
@@ -162,6 +163,19 @@ export async function POST(request: NextRequest) {
 
       return newUser
     })
+
+    // Send welcome email (non-blocking — don't fail registration if email fails)
+    try {
+      const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL}/login`
+      await sendWelcomeEmail({
+        to: user.email,
+        businessName,
+        loginUrl,
+      })
+    } catch (emailError) {
+      console.error("Failed to send welcome email:", emailError)
+      // Don't block registration if email fails
+    }
 
     return NextResponse.json(
       {

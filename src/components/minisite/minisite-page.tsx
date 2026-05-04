@@ -112,6 +112,7 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
           cardColor={cardColor}
           slug={slug}
           whatsappNumber={whatsappNumber}
+          siteId={id}
         />
 
         {/* Social links */}
@@ -119,6 +120,7 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
           links={site.socialLinks || []}
           accentColor={accentColor}
           textColor={textColor}
+          siteId={id}
         />
 
         {/* Menu */}
@@ -165,6 +167,7 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
           links={site.customLinks || []}
           accentColor={accentColor}
           textColor={textColor}
+          siteId={id}
         />
 
         {/* QR section */}
@@ -173,6 +176,7 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
           accentColor={accentColor}
           textColor={textColor}
           whatsappNumber={whatsappNumber}
+          siteId={id}
         />
 
         {/* Footer */}
@@ -180,7 +184,7 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
       </div>
 
       {/* Floating WhatsApp */}
-      {whatsappNumber && <FloatingWhatsApp phoneNumber={whatsappNumber} />}
+      {whatsappNumber && <FloatingWhatsApp phoneNumber={whatsappNumber} siteId={id as string} />}
 
       {/* Cart badge */}
       <CartBadge accentColor={accentColor} />

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/sheet"
 import { useCart } from "./cart-provider"
 import { OrderForm } from "./order-form"
+import { trackEvent } from "@/lib/analytics"
 
 interface CartDrawerProps {
   accentColor: string
@@ -156,7 +157,10 @@ export function CartDrawer({
                   </span>
                 </div>
                 <button
-                  onClick={() => setShowOrderForm(true)}
+                  onClick={() => {
+                    trackEvent(miniSiteId, "click_link", { type: "order" }).catch(() => {})
+                    setShowOrderForm(true)
+                  }}
                   className="w-full py-3 rounded-xl font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md"
                   style={{ backgroundColor: accentColor }}
                 >

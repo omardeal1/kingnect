@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
+import { SWProvider } from "@/components/providers/sw-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +32,8 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "King Designs" }],
   icons: {
-    icon: "/logo.svg",
+    icon: "/icons/favicon-32x32.png",
+    apple: "/icons/apple-touch-icon.png",
   },
   manifest: "/manifest.webmanifest",
   openGraph: {
@@ -69,6 +71,7 @@ export default function RootLayout({
         >
           <QueryProvider>
             <AuthProvider>
+              <SWProvider />
               {children}
             </AuthProvider>
             <Toaster position="top-right" richColors />

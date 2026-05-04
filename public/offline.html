@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#D4A849" />
+    <title>Sin conexión — Kingnect</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background-color: #fafafa;
+        color: #1a1a1a;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .container {
+        text-align: center;
+        max-width: 400px;
+        width: 100%;
+      }
+
+      .icon-wrapper {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 24px;
+        background-color: #fef7e6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .icon-wrapper svg {
+        width: 40px;
+        height: 40px;
+        color: #D4A849;
+      }
+
+      h1 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #1a1a1a;
+      }
+
+      p {
+        font-size: 16px;
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 32px;
+      }
+
+      .retry-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 14px 32px;
+        background-color: #D4A849;
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 600;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .retry-btn:hover {
+        background-color: #c49a3e;
+      }
+
+      .retry-btn:active {
+        transform: scale(0.97);
+      }
+
+      .retry-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .brand {
+        margin-top: 48px;
+        font-size: 14px;
+        color: #999;
+      }
+
+      .brand span {
+        color: #D4A849;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="icon-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+        </svg>
+      </div>
+      <h1>Sin conexión</h1>
+      <p>No se pudo conectar a internet. Verifica tu conexión y vuelve a intentarlo.</p>
+      <button class="retry-btn" onclick="window.location.reload()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
+        </svg>
+        Reintentar
+      </button>
+      <div class="brand">
+        Powered by <span>Kingnect</span>
+      </div>
+    </div>
+  </body>
+</html>

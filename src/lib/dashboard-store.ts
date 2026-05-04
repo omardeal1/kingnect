@@ -5,8 +5,10 @@ export interface DashboardData {
   planName: string
   planPrice: number
   planSlug: string
+  planId: string
   siteSlug: string
   siteId: string
+  clientId: string
   isBlocked: boolean
   periodStart: string | null
   periodEnd: string | null
@@ -23,8 +25,10 @@ export const useDashboardStore = create<DashboardStore>((set) => ({
     planName: "Trial",
     planPrice: 0,
     planSlug: "trial",
+    planId: "",
     siteSlug: "",
     siteId: "",
+    clientId: "",
     isBlocked: false,
     periodStart: null,
     periodEnd: null,

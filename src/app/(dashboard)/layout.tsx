@@ -37,9 +37,11 @@ export default async function DashboardLayout({
   const businessName = client?.businessName ?? session.user.name ?? "Negocio"
   const planName = client?.subscription?.plan?.name ?? "Trial"
   const planSlug = client?.subscription?.plan?.slug ?? "trial"
+  const planId = client?.subscription?.plan?.id ?? ""
   const planPrice = client?.subscription?.plan?.price ?? 0
   const siteSlug = client?.miniSites?.[0]?.slug ?? ""
   const siteId = client?.miniSites?.[0]?.id ?? ""
+  const clientId = client?.id ?? ""
   const periodStart = client?.subscription?.currentPeriodStart?.toISOString() ?? null
   const periodEnd = client?.subscription?.currentPeriodEnd?.toISOString() ?? null
 
@@ -55,8 +57,10 @@ export default async function DashboardLayout({
         planName,
         planPrice,
         planSlug,
+        planId,
         siteSlug,
         siteId,
+        clientId,
         isBlocked,
         periodStart,
         periodEnd,

@@ -4,18 +4,21 @@ import { motion } from "framer-motion"
 import { QRCodeSVG } from "qrcode.react"
 import { Copy, Share2, MessageCircle, Mail } from "lucide-react"
 import { toast } from "sonner"
+import { trackEvent, trackQRScan, trackWhatsAppClick, trackLinkClick } from "@/lib/analytics"
 
 interface QrSectionProps {
   slug: string
   accentColor: string
   textColor: string
   whatsappNumber?: string | null
+  siteId: string
 }
 
-export function QrSection({ slug, accentColor, textColor, whatsappNumber }: QrSectionProps) {
+export function QrSection({ slug, accentColor, textColor, whatsappNumber, siteId }: QrSectionProps) {
   const siteUrl = `${typeof window !== "undefined" ? window.location.origin : "https://links.kingnect.app"}/${slug}`
 
   const handleCopy = async () => {
+    trackEvent(siteId, "click_link", { type: "copy_link" }).catch(() => {})
     try {
       await navigator.clipboard.writeText(siteUrl)
       toast.success("Link copiado al portapapeles")
@@ -25,6 +28,7 @@ export function QrSection({ slug, accentColor, textColor, whatsappNumber }: QrSe
   }
 
   const handleShareWhatsApp = () => {
+    trackWhatsAppClick(siteId, whatsappNumber || "").catch(() => {})
     const msg = encodeURIComponent(`Visita nuestra página: ${siteUrl}`)
     window.open(
       whatsappNumber
@@ -35,14 +39,20 @@ export function QrSection({ slug, accentColor, textColor, whatsappNumber }: QrSe
   }
 
   const handleShareSMS = () => {
+    trackLinkClick(siteId, "sms", siteUrl).catch(() => {})
     window.open(`sms:?body=${encodeURIComponent(`Visita nuestra página: ${siteUrl}`)}`, "_self")
   }
 
   const handleShareEmail = () => {
+    trackLinkClick(siteId, "email", siteUrl).catch(() => {})
     window.open(
       `mailto:?subject=${encodeURIComponent("Mira esta página")}&body=${encodeURIComponent(`Visita nuestra página: ${siteUrl}`)}`,
       "_self"
     )
+  }
+
+  const handleQRScan = () => {
+    trackQRScan(siteId).catch(() => {})
   }
 
   return (
@@ -61,7 +71,11 @@ export function QrSection({ slug, accentColor, textColor, whatsappNumber }: QrSe
       </h2>
 
       <div className="flex flex-col items-center gap-5">
-        <div className="p-4 rounded-2xl bg-white shadow-md">
+        <div
+          className="p-4 rounded-2xl bg-white shadow-md cursor-pointer"
+          onClick={handleQRScan}
+          title="Toca para registrar escaneo QR"
+        >
           <QRCodeSVG
             value={siteUrl}
             size={180}

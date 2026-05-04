@@ -13,6 +13,7 @@ import {
 import { CONTACT_BUTTON_TYPES } from "@/lib/constants"
 import { useCart } from "./cart-provider"
 import { toast } from "sonner"
+import { trackWhatsAppClick, trackLinkClick, trackEvent } from "@/lib/analytics"
 
 interface ContactButtonData {
   id: string
@@ -29,6 +30,7 @@ interface ContactButtonsProps {
   cardColor: string
   slug: string
   whatsappNumber?: string | null
+  siteId: string
 }
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -46,23 +48,40 @@ function getButtonAction(
   type: string,
   value: string,
   slug: string,
+  siteId: string,
   onOrder?: () => void,
   onCopy?: () => void
 ) {
   const siteUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/${slug}`
   switch (type) {
     case "whatsapp":
-      return () => window.open(`https://wa.me/${value}`, "_blank")
+      return () => {
+        trackWhatsAppClick(siteId, value).catch(() => {})
+        window.open(`https://wa.me/${value}`, "_blank")
+      }
     case "call":
-      return () => window.open(`tel:${value}`, "_self")
+      return () => {
+        trackLinkClick(siteId, "call", `tel:${value}`).catch(() => {})
+        window.open(`tel:${value}`, "_self")
+      }
     case "sms":
-      return () => window.open(`sms:${value}`, "_self")
+      return () => {
+        trackLinkClick(siteId, "sms", `sms:${value}`).catch(() => {})
+        window.open(`sms:${value}`, "_self")
+      }
     case "email":
-      return () => window.open(`mailto:${value}`, "_self")
+      return () => {
+        trackLinkClick(siteId, "email", `mailto:${value}`).catch(() => {})
+        window.open(`mailto:${value}`, "_self")
+      }
     case "maps":
-      return () => window.open(value, "_blank")
+      return () => {
+        trackLinkClick(siteId, "maps", value).catch(() => {})
+        window.open(value, "_blank")
+      }
     case "share":
       return async () => {
+        trackEvent(siteId, "click_link", { type: "share" }).catch(() => {})
         if (navigator.share) {
           navigator.share({ title: slug, url: siteUrl }).catch(() => {})
         } else {
@@ -76,6 +95,7 @@ function getButtonAction(
       }
     case "copy_link":
       return onCopy || (async () => {
+        trackEvent(siteId, "click_link", { type: "copy_link" }).catch(() => {})
         try {
           await navigator.clipboard.writeText(siteUrl)
           toast.success("Link copiado al portapapeles")
@@ -86,7 +106,10 @@ function getButtonAction(
     case "order":
       return onOrder || (() => {})
     default:
-      return () => window.open(value, "_blank")
+      return () => {
+        trackLinkClick(siteId, type, value).catch(() => {})
+        window.open(value, "_blank")
+      }
   }
 }
 
@@ -97,6 +120,7 @@ export function ContactButtons({
   cardColor,
   slug,
   whatsappNumber,
+  siteId,
 }: ContactButtonsProps) {
   const { setOpen } = useCart()
   const enabledButtons = buttons.filter((b) => b.enabled)
@@ -105,6 +129,7 @@ export function ContactButtons({
 
   const handleCopyLink = async () => {
     const siteUrl = `${window.location.origin}/${slug}`
+    trackEvent(siteId, "click_link", { type: "copy_link" }).catch(() => {})
     try {
       await navigator.clipboard.writeText(siteUrl)
       toast.success("Link copiado al portapapeles")
@@ -130,7 +155,11 @@ export function ContactButtons({
             btn.type,
             btn.value,
             slug,
-            () => setOpen(true),
+            siteId,
+            () => {
+              trackEvent(siteId, "click_link", { type: "order" }).catch(() => {})
+              setOpen(true)
+            },
             handleCopyLink
           )
 

@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { motion } from "framer-motion"
+import { useQuery } from "@tanstack/react-query"
 import {
   CreditCard,
   Check,
@@ -13,6 +14,7 @@ import {
   Zap,
   Shield,
   Receipt,
+  Loader2,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardAction, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -21,6 +23,18 @@ import { Separator } from "@/components/ui/separator"
 import { PLAN_FEATURES } from "@/lib/constants"
 import { useDashboardStore } from "@/lib/dashboard-store"
 import { toast } from "sonner"
+
+interface PlanData {
+  id: string
+  name: string
+  slug: string
+  price: number
+  currency: string
+  billingInterval: string
+  isActive: boolean
+  features: string
+  limits: string
+}
 
 const container = {
   hidden: { opacity: 0 },
@@ -37,9 +51,33 @@ const item = {
 
 export default function BillingPage() {
   const dashboardData = useDashboardStore((s) => s.data)
-  const { planName, planPrice, planSlug, isBlocked, periodEnd } = dashboardData
+  const { planName, planPrice, planSlug, isBlocked, periodEnd, clientId } = dashboardData
 
   const pEnd = periodEnd ? new Date(periodEnd) : new Date(Date.now() + 1000 * 60 * 60 * 24 * 18)
+
+  // Fetch plans with database IDs for Stripe checkout
+  const { data: plansData } = useQuery<{ plans: PlanData[] }>({
+    queryKey: ["plans"],
+    queryFn: async () => {
+      const res = await fetch("/api/plans")
+      if (!res.ok) throw new Error("Error al cargar planes")
+      return res.json()
+    },
+  })
+
+  const plansById = React.useMemo(() => {
+    const map: Record<string, string> = {}
+    if (plansData?.plans) {
+      for (const plan of plansData.plans) {
+        map[plan.slug] = plan.id
+      }
+    }
+    return map
+  }, [plansData])
+
+  // Loading states for Stripe actions
+  const [portalLoading, setPortalLoading] = React.useState(false)
+  const [checkoutLoading, setCheckoutLoading] = React.useState<string | null>(null)
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("es-MX", {
@@ -61,6 +99,77 @@ export default function BillingPage() {
         return <Shield className="size-5" />
       default:
         return <Star className="size-5" />
+    }
+  }
+
+  const handleOpenPortal = async () => {
+    if (!clientId) {
+      toast.error("No se pudo identificar tu cuenta")
+      return
+    }
+    setPortalLoading(true)
+    try {
+      const res = await fetch("/api/stripe/create-portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientId }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        if (data.code === "STRIPE_NOT_CONFIGURED") {
+          toast.error("Los pagos en línea no están disponibles en este momento. Contacta al soporte.")
+        } else {
+          toast.error(data.error || "Error al abrir el portal de pagos")
+        }
+        return
+      }
+      if (data.url) {
+        window.location.href = data.url
+      }
+    } catch {
+      toast.error("Error de conexión. Intenta de nuevo.")
+    } finally {
+      setPortalLoading(false)
+    }
+  }
+
+  const handleChangePlan = async (planSlug: string) => {
+    if (planSlug === "trial") {
+      toast.info("El plan Trial es gratuito y se asigna automáticamente.")
+      return
+    }
+    if (!clientId) {
+      toast.error("No se pudo identificar tu cuenta")
+      return
+    }
+    const planId = plansById[planSlug]
+    if (!planId) {
+      toast.error("Plan no encontrado. Intenta recargar la página.")
+      return
+    }
+    setCheckoutLoading(planSlug)
+    try {
+      const res = await fetch("/api/stripe/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planId, clientId }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        if (data.code === "STRIPE_NOT_CONFIGURED") {
+          toast.error("Los pagos en línea no están disponibles en este momento. Contacta al soporte.")
+        } else {
+          toast.error(data.error || "Error al iniciar el proceso de pago")
+        }
+        return
+      }
+      if (data.url) {
+        window.location.href = data.url
+      }
+    } catch {
+      toast.error("Error de conexión. Intenta de nuevo.")
+    } finally {
+      setCheckoutLoading(null)
     }
   }
 
@@ -86,10 +195,15 @@ export default function BillingPage() {
                     Actualiza tu método de pago para reactivar tu suscripción
                   </p>
                 </div>
-                <Button size="sm" className="ml-auto shrink-0" onClick={() => {
-                  toast.info("Redirigiendo al portal de pagos...")
-                  // In production: redirect to Stripe portal
-                }}>
+                <Button
+                  size="sm"
+                  className="ml-auto shrink-0"
+                  onClick={handleOpenPortal}
+                  disabled={portalLoading}
+                >
+                  {portalLoading ? (
+                    <Loader2 className="size-3.5 animate-spin mr-1.5" />
+                  ) : null}
                   Reactivar ahora
                 </Button>
               </div>
@@ -133,11 +247,17 @@ export default function BillingPage() {
             </div>
             <Separator />
             <div className="flex gap-2">
-              <Button variant="outline" className="flex-1 gap-1.5" onClick={() => {
-                toast.info("Redirigiendo al portal de pagos...")
-                // In production: redirect to Stripe portal
-              }}>
-                <ExternalLink className="size-3.5" />
+              <Button
+                variant="outline"
+                className="flex-1 gap-1.5"
+                onClick={handleOpenPortal}
+                disabled={portalLoading}
+              >
+                {portalLoading ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <ExternalLink className="size-3.5" />
+                )}
                 Gestionar suscripción
               </Button>
             </div>
@@ -222,14 +342,19 @@ export default function BillingPage() {
                       <Button
                         variant={plan.popular ? "default" : "outline"}
                         className="w-full gap-1.5"
-                        onClick={() => {
-                          if (plan.price === 0) return
-                          toast.info("Redirigiendo al portal de pagos...")
-                          // In production: redirect to Stripe checkout
-                        }}
+                        onClick={() => handleChangePlan(plan.slug)}
+                        disabled={checkoutLoading === plan.slug}
                       >
-                        {plan.price === 0 ? "Comenzar gratis" : "Cambiar plan"}
-                        <ArrowRight className="size-3.5" />
+                        {checkoutLoading === plan.slug ? (
+                          <Loader2 className="size-3.5 animate-spin" />
+                        ) : plan.price === 0 ? (
+                          "Comenzar gratis"
+                        ) : (
+                          <>
+                            Cambiar plan
+                            <ArrowRight className="size-3.5" />
+                          </>
+                        )}
                       </Button>
                     )}
                   </CardFooter>

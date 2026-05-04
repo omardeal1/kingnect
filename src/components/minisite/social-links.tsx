@@ -11,6 +11,7 @@ import {
   ExternalLink,
   MessageCircle,
 } from "lucide-react"
+import { trackLinkClick } from "@/lib/analytics"
 
 interface SocialLinkData {
   id: string
@@ -24,6 +25,7 @@ interface SocialLinksProps {
   links: SocialLinkData[]
   accentColor: string
   textColor: string
+  siteId: string
 }
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -42,7 +44,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   custom: ExternalLink,
 }
 
-export function SocialLinks({ links, accentColor, textColor }: SocialLinksProps) {
+export function SocialLinks({ links, accentColor, textColor, siteId }: SocialLinksProps) {
   const enabledLinks = links.filter((l) => l.enabled)
 
   if (enabledLinks.length === 0) return null
@@ -76,6 +78,9 @@ export function SocialLinks({ links, accentColor, textColor }: SocialLinksProps)
                 color: accentColor,
               }}
               aria-label={link.label || link.type}
+              onClick={() => {
+                trackLinkClick(siteId, link.type, link.url).catch(() => {})
+              }}
             >
               <Icon className="w-5 h-5" />
             </motion.a>

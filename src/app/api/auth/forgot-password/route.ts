@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
+import { sendPasswordResetEmail } from "@/lib/email"
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Ingresa un correo electrónico válido"),
@@ -20,26 +21,46 @@ export async function POST(request: NextRequest) {
     }
 
     const { email } = result.data
+    const normalizedEmail = email.toLowerCase()
 
     // Check if user exists, but always return success to avoid revealing
     // whether an email is registered
     const user = await db.user.findUnique({
-      where: { email: email.toLowerCase() },
+      where: { email: normalizedEmail },
     })
 
     if (user) {
-      // In production, send password reset email here
-      // For now, we just acknowledge the request
-      console.log(`Password reset requested for: ${email}`)
+      // Generate a verification token for password reset
+      const token = crypto.randomUUID()
+      const expires = new Date(Date.now() + 3600000) // 1 hour
 
-      // Could create a verification token for password reset:
-      // await db.verificationToken.create({
-      //   data: {
-      //     identifier: email,
-      //     token: crypto.randomUUID(),
-      //     expires: new Date(Date.now() + 3600000), // 1 hour
-      //   },
-      // })
+      // Delete any existing reset tokens for this email
+      await db.verificationToken.deleteMany({
+        where: { identifier: normalizedEmail },
+      })
+
+      // Create new verification token
+      await db.verificationToken.create({
+        data: {
+          identifier: normalizedEmail,
+          token,
+          expires,
+        },
+      })
+
+      // Send password reset email
+      const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${token}`
+
+      try {
+        await sendPasswordResetEmail({
+          to: normalizedEmail,
+          resetUrl,
+          businessName: user.name || undefined,
+        })
+      } catch (emailError) {
+        console.error("Failed to send password reset email:", emailError)
+        // Don't reveal error to user — still return success message
+      }
     }
 
     // Always return the same success message regardless of whether

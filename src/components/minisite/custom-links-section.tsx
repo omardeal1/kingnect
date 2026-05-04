@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { ExternalLink } from "lucide-react"
+import { trackLinkClick } from "@/lib/analytics"
 
 interface CustomLinkData {
   id: string
@@ -14,9 +15,10 @@ interface CustomLinksSectionProps {
   links: CustomLinkData[]
   accentColor: string
   textColor: string
+  siteId: string
 }
 
-export function CustomLinksSection({ links, accentColor, textColor }: CustomLinksSectionProps) {
+export function CustomLinksSection({ links, accentColor, textColor, siteId }: CustomLinksSectionProps) {
   const enabledLinks = links.filter((l) => l.enabled)
 
   if (enabledLinks.length === 0) return null
@@ -47,6 +49,9 @@ export function CustomLinksSection({ links, accentColor, textColor }: CustomLink
               borderColor: `${accentColor}30`,
               color: accentColor,
               backgroundColor: `${accentColor}08`,
+            }}
+            onClick={() => {
+              trackLinkClick(siteId, "custom", link.url).catch(() => {})
             }}
           >
             <span>{link.label}</span>
