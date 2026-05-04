@@ -79,7 +79,7 @@ export function SocialLinks({ links, accentColor, textColor, siteId }: SocialLin
               }}
               aria-label={link.label || link.type}
               onClick={() => {
-                trackLinkClick(siteId, link.type, link.url).catch(() => {})
+                trackLinkClick(siteId, link.type, link.url)
               }}
             >
               <Icon className="w-5 h-5" />

@@ -19,7 +19,7 @@ function getStripe(): Stripe | null {
   }
 
   stripeInstance = new Stripe(secretKey, {
-    apiVersion: "2025-04-30.basil",
+    apiVersion: "2026-04-22.dahlia",
     typescript: true,
   })
 
@@ -191,7 +191,7 @@ async function getOrCreatePrice(plan: { id: string; slug: string; price: number;
   // Buscar precio existente por metadata
   const existingPrices = await stripe.prices.list({
     active: true,
-    metadata: { planId: plan.id },
+    product: plan.id,
     limit: 1,
   })
 
@@ -424,11 +424,11 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
       status: newStatus,
       stripePriceId,
       stripeSubscriptionId: subscription.id,
-      currentPeriodStart: subscription.current_period_start
-        ? new Date(subscription.current_period_start * 1000)
+      currentPeriodStart: (subscription as any).current_period_start
+        ? new Date((subscription as any).current_period_start * 1000)
         : undefined,
-      currentPeriodEnd: subscription.current_period_end
-        ? new Date(subscription.current_period_end * 1000)
+      currentPeriodEnd: (subscription as any).current_period_end
+        ? new Date((subscription as any).current_period_end * 1000)
         : undefined,
       ...(plan ? { planId: plan.id } : {}),
     },

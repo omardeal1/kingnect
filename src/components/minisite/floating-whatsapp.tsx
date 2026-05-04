@@ -13,7 +13,7 @@ export function FloatingWhatsApp({ phoneNumber, siteId }: FloatingWhatsAppProps)
   if (!phoneNumber) return null
 
   const handleClick = () => {
-    trackWhatsAppClick(siteId, phoneNumber).catch(() => {})
+    trackWhatsAppClick(siteId, phoneNumber)
   }
 
   return (

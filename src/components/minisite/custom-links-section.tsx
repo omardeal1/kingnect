@@ -51,7 +51,7 @@ export function CustomLinksSection({ links, accentColor, textColor, siteId }: Cu
               backgroundColor: `${accentColor}08`,
             }}
             onClick={() => {
-              trackLinkClick(siteId, "custom", link.url).catch(() => {})
+              trackLinkClick(siteId, "custom", link.url)
             }}
           >
             <span>{link.label}</span>

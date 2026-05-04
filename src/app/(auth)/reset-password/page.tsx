@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, React } from "react"
+import { useState, use, type FormEvent } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Loader2, Lock, CheckCircle2, XCircle } from "lucide-react"
@@ -24,7 +24,7 @@ export default function ResetPasswordPage({
 }: {
   searchParams: Promise<{ token?: string }>
 }) {
-  const params = React.use(searchParams)
+  const params = use(searchParams)
   const token = params.token
 
   const router = useRouter()
@@ -33,7 +33,7 @@ export default function ResetPasswordPage({
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
     if (!token) {

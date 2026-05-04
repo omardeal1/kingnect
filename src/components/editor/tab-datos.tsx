@@ -35,7 +35,7 @@ export function TabDatos({ siteId }: TabDatosProps) {
   const [uploadingFavicon, setUploadingFavicon] = React.useState(false)
   const [slugChecking, setSlugChecking] = React.useState(false)
   const [slugAvailable, setSlugAvailable] = React.useState<boolean | null>(null)
-  const slugTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
+  const slugTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>(undefined)
 
   if (!site) return null
 

@@ -56,32 +56,32 @@ function getButtonAction(
   switch (type) {
     case "whatsapp":
       return () => {
-        trackWhatsAppClick(siteId, value).catch(() => {})
+        trackWhatsAppClick(siteId, value)
         window.open(`https://wa.me/${value}`, "_blank")
       }
     case "call":
       return () => {
-        trackLinkClick(siteId, "call", `tel:${value}`).catch(() => {})
+        trackLinkClick(siteId, "call", `tel:${value}`)
         window.open(`tel:${value}`, "_self")
       }
     case "sms":
       return () => {
-        trackLinkClick(siteId, "sms", `sms:${value}`).catch(() => {})
+        trackLinkClick(siteId, "sms", `sms:${value}`)
         window.open(`sms:${value}`, "_self")
       }
     case "email":
       return () => {
-        trackLinkClick(siteId, "email", `mailto:${value}`).catch(() => {})
+        trackLinkClick(siteId, "email", `mailto:${value}`)
         window.open(`mailto:${value}`, "_self")
       }
     case "maps":
       return () => {
-        trackLinkClick(siteId, "maps", value).catch(() => {})
+        trackLinkClick(siteId, "maps", value)
         window.open(value, "_blank")
       }
     case "share":
       return async () => {
-        trackEvent(siteId, "click_link", { type: "share" }).catch(() => {})
+        trackEvent(siteId, "click_link", { type: "share" })
         if (navigator.share) {
           navigator.share({ title: slug, url: siteUrl }).catch(() => {})
         } else {
@@ -95,7 +95,7 @@ function getButtonAction(
       }
     case "copy_link":
       return onCopy || (async () => {
-        trackEvent(siteId, "click_link", { type: "copy_link" }).catch(() => {})
+        trackEvent(siteId, "click_link", { type: "copy_link" })
         try {
           await navigator.clipboard.writeText(siteUrl)
           toast.success("Link copiado al portapapeles")
@@ -107,7 +107,7 @@ function getButtonAction(
       return onOrder || (() => {})
     default:
       return () => {
-        trackLinkClick(siteId, type, value).catch(() => {})
+        trackLinkClick(siteId, type, value)
         window.open(value, "_blank")
       }
   }
@@ -129,7 +129,7 @@ export function ContactButtons({
 
   const handleCopyLink = async () => {
     const siteUrl = `${window.location.origin}/${slug}`
-    trackEvent(siteId, "click_link", { type: "copy_link" }).catch(() => {})
+    trackEvent(siteId, "click_link", { type: "copy_link" })
     try {
       await navigator.clipboard.writeText(siteUrl)
       toast.success("Link copiado al portapapeles")
@@ -157,7 +157,7 @@ export function ContactButtons({
             slug,
             siteId,
             () => {
-              trackEvent(siteId, "click_link", { type: "order" }).catch(() => {})
+              trackEvent(siteId, "click_link", { type: "order" })
               setOpen(true)
             },
             handleCopyLink

@@ -18,8 +18,9 @@ import { CartDrawer } from "./cart-drawer"
 import { ShoppingBag } from "lucide-react"
 import { motion } from "framer-motion"
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface MiniSitePageProps {
-  site: Record<string, unknown>
+  site: any
 }
 
 function CartBadge({ accentColor }: { accentColor: string }) {

@@ -2,9 +2,6 @@ import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
 
 export default withAuth({
-  pages: {
-    signIn: "/login",
-  },
   callbacks: {
     authorized({ token, req }) {
       const pathname = req.nextUrl.pathname
@@ -22,16 +19,17 @@ export default withAuth({
       // Auth pages - redirect to dashboard if already logged in
       if (pathname === "/login" || pathname === "/register" || pathname === "/forgot-password") {
         if (token) {
-          const redirectTo = token.role === "super_admin" ? "/admin" : "/dashboard"
-          const url = req.nextUrl.clone()
-          url.pathname = redirectTo
-          return NextResponse.redirect(url)
+          // Return true to allow, the redirect will be handled client-side
+          return true
         }
         return true
       }
 
       return true
     },
+  },
+  pages: {
+    signIn: "/login",
   },
 })
 

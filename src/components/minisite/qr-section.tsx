@@ -18,7 +18,7 @@ export function QrSection({ slug, accentColor, textColor, whatsappNumber, siteId
   const siteUrl = `${typeof window !== "undefined" ? window.location.origin : "https://links.kingnect.app"}/${slug}`
 
   const handleCopy = async () => {
-    trackEvent(siteId, "click_link", { type: "copy_link" }).catch(() => {})
+    trackEvent(siteId, "click_link", { type: "copy_link" })
     try {
       await navigator.clipboard.writeText(siteUrl)
       toast.success("Link copiado al portapapeles")
@@ -28,7 +28,7 @@ export function QrSection({ slug, accentColor, textColor, whatsappNumber, siteId
   }
 
   const handleShareWhatsApp = () => {
-    trackWhatsAppClick(siteId, whatsappNumber || "").catch(() => {})
+    trackWhatsAppClick(siteId, whatsappNumber || "")
     const msg = encodeURIComponent(`Visita nuestra página: ${siteUrl}`)
     window.open(
       whatsappNumber
@@ -39,12 +39,12 @@ export function QrSection({ slug, accentColor, textColor, whatsappNumber, siteId
   }
 
   const handleShareSMS = () => {
-    trackLinkClick(siteId, "sms", siteUrl).catch(() => {})
+    trackLinkClick(siteId, "sms", siteUrl)
     window.open(`sms:?body=${encodeURIComponent(`Visita nuestra página: ${siteUrl}`)}`, "_self")
   }
 
   const handleShareEmail = () => {
-    trackLinkClick(siteId, "email", siteUrl).catch(() => {})
+    trackLinkClick(siteId, "email", siteUrl)
     window.open(
       `mailto:?subject=${encodeURIComponent("Mira esta página")}&body=${encodeURIComponent(`Visita nuestra página: ${siteUrl}`)}`,
       "_self"
@@ -52,7 +52,7 @@ export function QrSection({ slug, accentColor, textColor, whatsappNumber, siteId
   }
 
   const handleQRScan = () => {
-    trackQRScan(siteId).catch(() => {})
+    trackQRScan(siteId)
   }
 
   return (
