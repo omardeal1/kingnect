@@ -82,21 +82,21 @@ export default function AdminDashboard() {
 
   const metricCards = [
     {
-      label: "Mini Webs Activas",
+      label: "Kinecs Activas",
       value: stats.sites.active,
       icon: CheckCircle2,
       color: "text-emerald-500",
       bgColor: "bg-emerald-500/10",
     },
     {
-      label: "Mini Webs Inactivas",
+      label: "Kinecs Inactivas",
       value: stats.sites.inactive,
       icon: XCircle,
       color: "text-red-500",
       bgColor: "bg-red-500/10",
     },
     {
-      label: "Mini Webs Borrador",
+      label: "Kinecs Borrador",
       value: stats.sites.draft,
       icon: FileEdit,
       color: "text-amber-500",
@@ -166,7 +166,7 @@ export default function AdminDashboard() {
         <Button asChild className="gold-gradient text-black font-semibold">
           <Link href="/admin/sites">
             <Plus className="w-4 h-4 mr-2" />
-            Nueva Mini Web
+            Nuevo Kinec
           </Link>
         </Button>
       </div>
@@ -242,7 +242,7 @@ export default function AdminDashboard() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Globe className="w-4 h-4 text-primary" />
-              Resumen de Mini Webs
+              Resumen de Kinecs
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -283,8 +283,8 @@ export default function AdminDashboard() {
             </div>
             <p className="text-xs text-muted-foreground text-center">
               {stats.sites.total > 0
-                ? `${Math.round((stats.sites.active / stats.sites.total) * 100)}% de mini webs activas`
-                : "Sin mini webs"}
+                ? `${Math.round((stats.sites.active / stats.sites.total) * 100)}% de Kinecs activas`
+                : "Sin Kinecs"}
             </p>
           </CardContent>
         </Card>

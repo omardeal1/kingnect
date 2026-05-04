@@ -18,7 +18,7 @@ const SLUG_BLACKLIST = new Set([
 ])
 
 /**
- * Valida que un slug sea seguro para usar como URL de mini web
+ * Valida que un slug sea seguro para usar como URL de Kinec
  * - Solo alfanuméricos y guiones
  * - No puede empezar o terminar con guión
  * - Máximo 50 caracteres
@@ -120,7 +120,6 @@ const ALLOWED_IMAGE_TYPES = new Set([
   "image/png",
   "image/gif",
   "image/webp",
-  "image/svg+xml",
 ])
 
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024 // 2MB
@@ -138,7 +137,7 @@ export function validateImageUpload(file: File): { valid: boolean; error?: strin
   if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
     return {
       valid: false,
-      error: `Tipo de archivo no permitido: ${file.type}. Tipos permitidos: JPEG, PNG, GIF, WebP, SVG`,
+      error: `Tipo de archivo no permitido: ${file.type}. Tipos permitidos: JPEG, PNG, GIF, WebP`,
     }
   }
 
@@ -307,7 +306,7 @@ export const SECURITY = {
   MAX_DESCRIPTION_LENGTH: 500,
   MAX_URL_LENGTH: 2048,
   MAX_IMAGE_SIZE_MB: 2,
-  ALLOWED_IMAGE_TYPES: ["image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml"],
+  ALLOWED_IMAGE_TYPES: ["image/jpeg", "image/png", "image/gif", "image/webp"],
   RATE_LIMIT: {
     ORDERS_PER_MINUTE: 5,
     LOGIN_PER_MINUTE: 5,

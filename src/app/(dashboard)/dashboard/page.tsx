@@ -189,7 +189,7 @@ export default function DashboardPage() {
                   ¡Bienvenido, {businessName || "Negocio"}!
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Administra tu mini web y pedidos desde aquí
+                  Administra tu Kinec y pedidos desde aquí
                 </p>
               </div>
             </div>
@@ -244,11 +244,11 @@ export default function DashboardPage() {
           </Card>
         </motion.div>
 
-        {/* Mini Web Card */}
+        {/* Kinec Card */}
         <motion.div variants={item}>
           <Card className="shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
-              <CardTitle className="text-base">Mi mini web</CardTitle>
+              <CardTitle className="text-base">Mi Kinec</CardTitle>
               <CardDescription>Tu enlace para compartir</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -273,7 +273,7 @@ export default function DashboardPage() {
                     className="w-full gap-1.5"
                   >
                     <Eye className="size-3.5" />
-                    Ver mini web
+                    Ver Kinec
                   </Button>
                 </Link>
                 <Link
@@ -296,7 +296,7 @@ export default function DashboardPage() {
             <CardHeader>
               <CardTitle className="text-base">Código QR</CardTitle>
               <CardDescription>
-                Escanea para ver tu mini web
+                Escanea para ver tu Kinec
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

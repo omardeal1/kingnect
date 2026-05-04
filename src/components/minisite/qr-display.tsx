@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useCallback } from "react"
-import { QRCodeSVG, QRCodeCanvas } from "qrcode.react"
+import { QRCodeSVG } from "qrcode.react"
 import { Download, Copy, Share2, FileImage, FileCode } from "lucide-react"
 import { toast } from "sonner"
 
@@ -21,11 +21,14 @@ export function QrDisplay({
   accentColor = "#D4A849",
 }: QrDisplayProps) {
   const svgRef = useRef<SVGSVGElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  const handleCopyLink = useCallback(() => {
-    navigator.clipboard.writeText(url)
-    toast.success("Link copiado al portapapeles")
+  const handleCopyLink = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.success("Link copiado al portapapeles")
+    } catch {
+      toast.error("No se pudo copiar el link")
+    }
   }, [url])
 
   const handleShare = useCallback(async () => {
@@ -41,20 +44,11 @@ export function QrDisplay({
   }, [url, handleCopyLink])
 
   const handleDownloadPNG = useCallback(() => {
-    // Use QRCodeCanvas to render to canvas, then download
     const canvas = document.createElement("canvas")
     const canvasSize = size * 2 // Higher resolution
     canvas.width = canvasSize
     canvas.height = canvasSize
 
-    // We need to render QR to canvas using a temporary element
-    const tempDiv = document.createElement("div")
-    document.body.appendChild(tempDiv)
-
-    // Use createRoot to render QRCodeCanvas
-    const root = document.createElement("canvas")
-    // Simple approach: use the existing QRCodeCanvas via canvas ref
-    // Alternative: create an image from SVG
     const svgEl = svgRef.current
     if (!svgEl) return
 
@@ -117,18 +111,6 @@ export function QrDisplay({
             />
           </div>
         )}
-      </div>
-
-      {/* Hidden canvas for PNG export */}
-      <div className="hidden">
-        <QRCodeCanvas
-          ref={canvasRef}
-          value={url}
-          size={size * 2}
-          bgColor="#FFFFFF"
-          fgColor="#0A0A0A"
-          level="M"
-        />
       </div>
 
       {showDownload && (

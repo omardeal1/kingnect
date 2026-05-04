@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
+import { rateLimitOrders } from "@/lib/rate-limit"
 
 export async function GET(request: Request) {
   try {
@@ -145,6 +146,13 @@ export async function PUT(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    // Rate limit by IP
+    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown"
+    const rateLimitResult = rateLimitOrders(ip)
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json({ error: "Demasiados pedidos. Intenta de nuevo más tarde." }, { status: 429 })
+    }
+
     const body = await request.json()
     const {
       miniSiteId,
@@ -194,6 +202,12 @@ export async function POST(request: Request) {
       )
     }
 
+    // Calculate total server-side from items (don't trust client-provided total)
+    const typedItems: { name: string; quantity: number; unitPrice: number }[] = items
+    const calculatedTotal = typedItems.reduce((sum: number, item) => {
+      return sum + (item.unitPrice * item.quantity)
+    }, 0)
+
     // Create the order with items
     const order = await db.order.create({
       data: {
@@ -206,15 +220,15 @@ export async function POST(request: Request) {
           : address
             ? `Dirección: ${address}`
             : null,
-        total: total || 0,
+        total: calculatedTotal,
         status: "new",
         orderItems: {
           create: items.map(
-            (item: { name: string; quantity: number; unitPrice: number; total: number }) => ({
+            (item: { name: string; quantity: number; unitPrice: number }) => ({
               name: item.name,
               quantity: item.quantity || 1,
               unitPrice: item.unitPrice || 0,
-              total: item.total || 0,
+              total: (item.unitPrice || 0) * (item.quantity || 1),
             })
           ),
         },

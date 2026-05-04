@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
     return { title: "Página no encontrada" }
   }
 
-  const title = site.metaTitle || `${site.businessName} — Mini Web`
+  const title = site.metaTitle || `${site.businessName} — Kinec`
   const description = site.metaDescription || site.tagline || `Visita ${site.businessName}`
 
   return {
@@ -110,7 +110,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
   }
 
   // Check if blocked/inactive
-  if (!site.isActive || site.client?.accountStatus === "blocked") {
+  if (!site.isActive || site.client?.accountStatus === "blocked" || site.client?.accountStatus === "payment_failed" || site.client?.accountStatus === "cancelled" || site.client?.accountStatus === "trial_expired") {
     return <BlockedScreen businessName={site.businessName} />
   }
 

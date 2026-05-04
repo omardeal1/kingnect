@@ -52,7 +52,7 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
-    label: "Mi Mini Web",
+    label: "Mi Kinec",
     href: "/dashboard/sites/_/edit",
     icon: Globe,
   },
@@ -99,9 +99,9 @@ export function DashboardShell({
 
   const { businessName, planName, siteId, isBlocked } = dashboardData
 
-  // Update "Mi Mini Web" href with actual site ID
+  // Update "Mi Kinec" href with actual site ID
   const updatedNavItems = navItems.map((item) => {
-    if (item.label === "Mi Mini Web" && siteId) {
+    if (item.label === "Mi Kinec" && siteId) {
       return { ...item, href: `/dashboard/sites/${siteId}/edit` }
     }
     return item

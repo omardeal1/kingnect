@@ -33,7 +33,7 @@ export function canAccessDashboard(role: string): boolean {
 }
 
 /**
- * Check if a user can edit a specific mini site
+ * Check if a user can edit a specific Kinec
  * Only the owner of the site (matching client) can edit
  * super_admin can edit any site
  */
@@ -48,7 +48,7 @@ export function canEditSite(user: PermissionUser, site: PermissionSite): boolean
 }
 
 /**
- * Check if a user can view orders for a specific mini site
+ * Check if a user can view orders for a specific Kinec
  * Only the owner of the site (matching client) can view orders
  * super_admin can view any site's orders
  */

@@ -159,7 +159,7 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
       })
       if (!res.ok) throw new Error("Error al publicar")
       setHasUnsavedChanges(false)
-      toast.success("¡Mini web publicada exitosamente!")
+      toast.success("¡Kinec publicado exitosamente!")
     } catch {
       toast.error("Error al publicar el sitio")
     } finally {
@@ -202,7 +202,7 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
       {/* Top bar */}
       <div className="flex items-center gap-4">
         <div className="min-w-0">
-          <h1 className="text-lg font-bold truncate">Editar Mini Web</h1>
+          <h1 className="text-lg font-bold truncate">Editar Kinec</h1>
           <p className="text-xs text-muted-foreground truncate">
             {site.businessName} · /{site.slug}
           </p>

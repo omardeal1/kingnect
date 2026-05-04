@@ -1,4 +1,4 @@
-import NextAuth, { type NextAuthOptions } from "next-auth"
+import { type NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import bcrypt from "bcryptjs"
@@ -67,40 +67,22 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 }
 
-// Export handlers for NextAuth API route (app/api/auth/[...nextauth]/route.ts)
-const handler = NextAuth(authOptions)
-export const auth = handler.auth ?? handler
-export const GET = handler
-export const POST = handler
-
-// Re-export NextAuth functions for convenience
-export { signIn, signOut } from "next-auth/react"
-
 /**
  * Get the current user from the server session
  * Use this in Server Components and API routes
  */
 export async function getCurrentUser() {
-  const session = await (NextAuth(authOptions) as unknown as { auth: () => Promise<unknown> }).auth?.() ?? null
-  // Fallback: use getServerSession
   const { getServerSession } = await import("next-auth")
-  const serverSession = await getServerSession(authOptions)
-
-  if (!serverSession?.user) return null
-
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.email) return null
+  
   const user = await db.user.findUnique({
-    where: { email: serverSession.user.email! },
+    where: { email: session.user.email },
     select: {
-      id: true,
-      name: true,
-      email: true,
-      image: true,
-      role: true,
-      createdAt: true,
-      updatedAt: true,
+      id: true, name: true, email: true, image: true, role: true,
+      emailVerified: true, createdAt: true, updatedAt: true,
     },
   })
-
   return user
 }
 

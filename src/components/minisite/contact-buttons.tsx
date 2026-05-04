@@ -62,18 +62,26 @@ function getButtonAction(
     case "maps":
       return () => window.open(value, "_blank")
     case "share":
-      return () => {
+      return async () => {
         if (navigator.share) {
           navigator.share({ title: slug, url: siteUrl }).catch(() => {})
         } else {
-          navigator.clipboard.writeText(siteUrl)
-          toast.success("Link copiado al portapapeles")
+          try {
+            await navigator.clipboard.writeText(siteUrl)
+            toast.success("Link copiado al portapapeles")
+          } catch {
+            toast.error("No se pudo copiar el link")
+          }
         }
       }
     case "copy_link":
-      return onCopy || (() => {
-        navigator.clipboard.writeText(siteUrl)
-        toast.success("Link copiado al portapapeles")
+      return onCopy || (async () => {
+        try {
+          await navigator.clipboard.writeText(siteUrl)
+          toast.success("Link copiado al portapapeles")
+        } catch {
+          toast.error("No se pudo copiar el link")
+        }
       })
     case "order":
       return onOrder || (() => {})
@@ -95,10 +103,14 @@ export function ContactButtons({
 
   if (enabledButtons.length === 0) return null
 
-  const handleCopyLink = () => {
+  const handleCopyLink = async () => {
     const siteUrl = `${window.location.origin}/${slug}`
-    navigator.clipboard.writeText(siteUrl)
-    toast.success("Link copiado al portapapeles")
+    try {
+      await navigator.clipboard.writeText(siteUrl)
+      toast.success("Link copiado al portapapeles")
+    } catch {
+      toast.error("No se pudo copiar el link")
+    }
   }
 
   return (

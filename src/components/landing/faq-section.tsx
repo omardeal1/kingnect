@@ -15,24 +15,24 @@ interface FAQ {
 
 const FAQS: FAQ[] = [
   {
-    question: "¿Qué es una mini web?",
+    question: "¿Qué es un Kinec?",
     answer:
-      "Una mini web es una página web optimizada para celular que reúne toda la información de tu negocio en un solo lugar: redes sociales, WhatsApp, ubicación, servicios, productos y más. Se accede mediante un código QR o un enlace directo.",
+      "Un Kinec es una página web optimizada para celular que reúne toda la información de tu negocio en un solo lugar: redes sociales, WhatsApp, ubicación, servicios, productos y más. Se accede mediante un código QR o un enlace directo.",
   },
   {
-    question: "¿Necesito saber programar para crear mi mini web?",
+    question: "¿Necesito saber programar para crear mi Kinec?",
     answer:
-      "No, para nada. Kingnect está diseñado para que cualquier persona pueda crear su mini web sin conocimientos técnicos. Todo se edita desde un panel visual e intuitivo. Solo necesitas subir tu logo, agregar tus datos y publicar.",
+      "No, para nada. Kingnect está diseñado para que cualquier persona pueda crear su Kinec sin conocimientos técnicos. Todo se edita desde un panel visual e intuitivo. Solo necesitas subir tu logo, agregar tus datos y publicar.",
   },
   {
     question: "¿Cómo funciona el código QR?",
     answer:
-      "Al publicar tu mini web, Kingnect genera automáticamente un código QR único. Puedes descargarlo en PNG o SVG (según tu plan) e imprimirlo en tarjetas, carpas, banderas, flyers o cualquier material publicitario.",
+      "Al publicar tu Kinec, Kingnect genera automáticamente un código QR único. Puedes descargarlo en PNG o SVG (según tu plan) e imprimirlo en tarjetas, carpas, banderas, flyers o cualquier material publicitario.",
   },
   {
-    question: "¿Puedo editar mi mini web después de publicarla?",
+    question: "¿Puedo editar mi Kinec después de publicarla?",
     answer:
-      "Sí, puedes editar tu mini web en cualquier momento desde tu panel de administración. Cambia textos, fotos, colores, botones y servicios. Los cambios se reflejan al instante para tus clientes.",
+      "Sí, puedes editar tu Kinec en cualquier momento desde tu panel de administración. Cambia textos, fotos, colores, botones y servicios. Los cambios se reflejan al instante para tus clientes.",
   },
   {
     question: "¿Cómo reciben pedidos mis clientes?",
@@ -52,7 +52,7 @@ const FAQS: FAQ[] = [
   {
     question: "¿Puedo cancelar mi suscripción en cualquier momento?",
     answer:
-      "Sí, puedes cancelar tu suscripción cuando quieras sin penalización. Tu mini web seguirá activa hasta el final del período pagado. No hay contratos de permanencia ni cargos ocultos.",
+      "Sí, puedes cancelar tu suscripción cuando quieras sin penalización. Tu Kinec seguirá activa hasta el final del período pagado. No hay contratos de permanencia ni cargos ocultos.",
   },
 ]
 

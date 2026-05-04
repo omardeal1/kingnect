@@ -194,7 +194,7 @@ export default function OrdersPage() {
           <div>
             <h1 className="text-xl font-bold">Pedidos</h1>
             <p className="text-sm text-muted-foreground">
-              Gestiona los pedidos de tu mini web
+              Gestiona los pedidos de tu Kinec
             </p>
           </div>
         </div>
@@ -387,7 +387,7 @@ export default function OrdersPage() {
                 </div>
                 <h3 className="font-semibold mb-1">Aún no tienes pedidos</h3>
                 <p className="text-sm text-muted-foreground max-w-sm">
-                  Cuando tus clientes hagan pedidos desde tu mini web,
+                  Cuando tus clientes hagan pedidos desde tu Kinec,
                   aparecerán aquí para que puedas gestionarlos.
                 </p>
               </div>

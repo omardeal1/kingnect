@@ -173,7 +173,247 @@ async function main() {
 
   console.log("Super admin created:", admin.id)
 
-  // Create Platform Settings
+  // ─── Create Demo Client User ──────────────────────────────────────────────────
+  const demoUser = await prisma.user.upsert({
+    where: { email: "demo@kingnect.app" },
+    update: {},
+    create: {
+      name: "Negocio Demo",
+      email: "demo@kingnect.app",
+      passwordHash: hashSync("Demo123!", 12),
+      role: "client",
+      emailVerified: new Date(),
+    },
+  })
+
+  console.log("Demo user created:", demoUser.id)
+
+  // Create Client record for demo user
+  const demoClient = await prisma.client.upsert({
+    where: { ownerUserId: demoUser.id },
+    update: {},
+    create: {
+      ownerUserId: demoUser.id,
+      businessName: "Restaurante El Sabor",
+      contactName: "Negocio Demo",
+      email: "demo@kingnect.app",
+      pipelineStatus: "active",
+      accountStatus: "active",
+    },
+  })
+
+  console.log("Demo client created:", demoClient.id)
+
+  // Create Trial subscription for demo client
+  const existingSubscription = await prisma.subscription.findUnique({
+    where: { clientId: demoClient.id },
+  })
+
+  if (!existingSubscription) {
+    const now = new Date()
+    const trialEnd = new Date(now)
+    trialEnd.setDate(trialEnd.getDate() + 30)
+
+    await prisma.subscription.create({
+      data: {
+        clientId: demoClient.id,
+        planId: trial.id,
+        status: "trial",
+        trialStart: now,
+        trialEnd: trialEnd,
+        currentPeriodStart: now,
+        currentPeriodEnd: trialEnd,
+      },
+    })
+    console.log("Demo subscription created")
+  } else {
+    console.log("Demo subscription already exists, skipping")
+  }
+
+  // Create MiniSite for demo client
+  const demoSite = await prisma.miniSite.upsert({
+    where: { slug: "restaurante-el-sabor" },
+    update: {},
+    create: {
+      clientId: demoClient.id,
+      slug: "restaurante-el-sabor",
+      businessName: "Restaurante El Sabor",
+      tagline: "La mejor comida de la ciudad",
+      description: "Restaurante familiar con más de 20 años de tradición",
+      accentColor: "#D4A849",
+      isActive: true,
+      isPublished: true,
+      showKingBrand: true,
+    },
+  })
+
+  console.log("Demo mini site created:", demoSite.id)
+
+  // ─── Social Links ─────────────────────────────────────────────────────────────
+  const socialLinksData = [
+    { type: "facebook", label: "Facebook", url: "https://facebook.com/restauranteelsabor", sortOrder: 0 },
+    { type: "instagram", label: "Instagram", url: "https://instagram.com/restauranteelsabor", sortOrder: 1 },
+    { type: "whatsapp", label: "WhatsApp", url: "https://wa.me/5215512345678", sortOrder: 2 },
+  ]
+
+  for (const link of socialLinksData) {
+    const existing = await prisma.socialLink.findFirst({
+      where: { miniSiteId: demoSite.id, type: link.type, url: link.url },
+    })
+    if (!existing) {
+      await prisma.socialLink.create({
+        data: { miniSiteId: demoSite.id, ...link, enabled: true },
+      })
+    }
+  }
+
+  // ─── Contact Buttons ──────────────────────────────────────────────────────────
+  const contactButtonsData = [
+    { type: "whatsapp", label: "WhatsApp", value: "5215512345678", sortOrder: 0 },
+    { type: "call", label: "Llamar", value: "+525512345678", sortOrder: 1 },
+  ]
+
+  for (const btn of contactButtonsData) {
+    const existing = await prisma.contactButton.findFirst({
+      where: { miniSiteId: demoSite.id, type: btn.type, value: btn.value },
+    })
+    if (!existing) {
+      await prisma.contactButton.create({
+        data: { miniSiteId: demoSite.id, ...btn, enabled: true },
+      })
+    }
+  }
+
+  // ─── Locations ────────────────────────────────────────────────────────────────
+  const existingLocation = await prisma.location.findFirst({
+    where: { miniSiteId: demoSite.id, name: "Sucursal Centro" },
+  })
+  if (!existingLocation) {
+    await prisma.location.create({
+      data: {
+        miniSiteId: demoSite.id,
+        name: "Sucursal Centro",
+        address: "Av. Reforma 123, Col. Centro, CDMX",
+        mapsUrl: "https://maps.google.com/?q=Av+Reforma+123+CDMX",
+        hours: "Lun-Dom: 12:00 - 22:00",
+        enabled: true,
+        sortOrder: 0,
+      },
+    })
+  }
+
+  // ─── Menu Categories & Items ──────────────────────────────────────────────────
+  // Category 1: Entradas
+  const entradasCat = await prisma.menuCategory.upsert({
+    where: { id: (await prisma.menuCategory.findFirst({ where: { miniSiteId: demoSite.id, name: "Entradas" } }))?.id ?? "__nonexistent__" },
+    update: {},
+    create: {
+      miniSiteId: demoSite.id,
+      name: "Entradas",
+      enabled: true,
+      sortOrder: 0,
+    },
+  })
+
+  const entradasItems = [
+    { name: "Guacamole con Totopos", description: "Guacamole fresco preparado al momento con aguacate, tomate y cilantro", price: 85, sortOrder: 0 },
+    { name: "Quesadillas de Huitlacoche", description: "Tortillas de maíz rellenas de huitlacoche y queso Oaxaca", price: 95, sortOrder: 1 },
+  ]
+
+  for (const item of entradasItems) {
+    const existing = await prisma.menuItem.findFirst({
+      where: { miniSiteId: demoSite.id, categoryId: entradasCat.id, name: item.name },
+    })
+    if (!existing) {
+      await prisma.menuItem.create({
+        data: {
+          miniSiteId: demoSite.id,
+          categoryId: entradasCat.id,
+          name: item.name,
+          description: item.description,
+          price: item.price,
+          isOrderable: true,
+          enabled: true,
+          sortOrder: item.sortOrder,
+        },
+      })
+    }
+  }
+
+  // Category 2: Platos Fuertes
+  const platosCat = await prisma.menuCategory.upsert({
+    where: { id: (await prisma.menuCategory.findFirst({ where: { miniSiteId: demoSite.id, name: "Platos Fuertes" } }))?.id ?? "__nonexistent__" },
+    update: {},
+    create: {
+      miniSiteId: demoSite.id,
+      name: "Platos Fuertes",
+      enabled: true,
+      sortOrder: 1,
+    },
+  })
+
+  const platosItems = [
+    { name: "Mole Poblano con Pollo", description: "Pollo bañado en mole poblano tradicional con arroz y frijoles", price: 165, sortOrder: 0 },
+    { name: "Tacos de Cochinita Pibil", description: "5 tacos de cochinita pibil con cebolla morada y habanero", price: 145, sortOrder: 1 },
+  ]
+
+  for (const item of platosItems) {
+    const existing = await prisma.menuItem.findFirst({
+      where: { miniSiteId: demoSite.id, categoryId: platosCat.id, name: item.name },
+    })
+    if (!existing) {
+      await prisma.menuItem.create({
+        data: {
+          miniSiteId: demoSite.id,
+          categoryId: platosCat.id,
+          name: item.name,
+          description: item.description,
+          price: item.price,
+          isOrderable: true,
+          enabled: true,
+          sortOrder: item.sortOrder,
+        },
+      })
+    }
+  }
+
+  // ─── Gallery Images ───────────────────────────────────────────────────────────
+  const galleryImagesData = [
+    { imageUrl: "/uploads/placeholder-gallery-1.jpg", caption: "Fachada del restaurante", sortOrder: 0 },
+    { imageUrl: "/uploads/placeholder-gallery-2.jpg", caption: "Nuestro mole especial", sortOrder: 1 },
+  ]
+
+  for (const img of galleryImagesData) {
+    const existing = await prisma.galleryImage.findFirst({
+      where: { miniSiteId: demoSite.id, imageUrl: img.imageUrl },
+    })
+    if (!existing) {
+      await prisma.galleryImage.create({
+        data: { miniSiteId: demoSite.id, ...img, enabled: true },
+      })
+    }
+  }
+
+  // ─── Testimonials ─────────────────────────────────────────────────────────────
+  const testimonialsData = [
+    { name: "María García", content: "El mejor mole que he probado en mi vida. El ambiente es increíble y el servicio muy atento.", rating: 5, sortOrder: 0 },
+    { name: "Carlos López", content: "Llevamos 10 años yendo en familia. La cochinita pibil es espectacular, siempre pedimos extra.", rating: 5, sortOrder: 1 },
+  ]
+
+  for (const t of testimonialsData) {
+    const existing = await prisma.testimonial.findFirst({
+      where: { miniSiteId: demoSite.id, name: t.name, content: t.content },
+    })
+    if (!existing) {
+      await prisma.testimonial.create({
+        data: { miniSiteId: demoSite.id, ...t, enabled: true },
+      })
+    }
+  }
+
+  console.log("Demo data seeded successfully")
+
+  // ─── Platform Settings ────────────────────────────────────────────────────────
   const settings = [
     { key: "app_name", value: "Kingnect", type: "text" },
     { key: "app_url", value: "https://links.kingnect.app", type: "text" },

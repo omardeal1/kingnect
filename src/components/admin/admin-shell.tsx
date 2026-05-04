@@ -39,7 +39,7 @@ const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/clients", label: "Clientes", icon: Users },
   { href: "/admin/pipeline", label: "Pipeline", icon: Kanban },
-  { href: "/admin/sites", label: "Mini Webs", icon: Globe },
+  { href: "/admin/sites", label: "Kinecs", icon: Globe },
   { href: "/admin/orders", label: "Pedidos", icon: ShoppingCart },
   { href: "/admin/plans", label: "Planes", icon: CreditCard },
   { href: "/admin/platform-editor", label: "Editor Plataforma", icon: Settings },

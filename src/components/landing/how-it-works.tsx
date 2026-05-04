@@ -47,8 +47,8 @@ const STEPS: Step[] = [
   {
     number: 5,
     icon: Globe,
-    title: "Publica tu mini web",
-    description: "Un clic y tu mini web está online para todo el mundo.",
+    title: "Publica tu Kinec",
+    description: "Un clic y tu Kinec está online para todo el mundo.",
   },
   {
     number: 6,
@@ -91,7 +91,7 @@ export function HowItWorks() {
             ¿Cómo funciona?
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            En solo 7 pasos tu mini web estará lista para recibir clientes
+            En solo 7 pasos tu Kinec estará lista para recibir clientes
           </p>
         </motion.div>
 

@@ -274,7 +274,7 @@ export function TabDatos({ siteId }: TabDatosProps) {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="space-y-2">
-            <Label htmlFor="slug">URL de tu mini web</Label>
+            <Label htmlFor="slug">URL de tu Kinec</Label>
             <div className="flex items-center gap-0">
               <span className="inline-flex items-center rounded-l-md border border-r-0 border-input bg-muted px-3 h-9 text-sm text-muted-foreground">
                 {APP_URL.replace("https://", "")}/
@@ -317,8 +317,8 @@ export function TabDatos({ siteId }: TabDatosProps) {
               <Label>Publicado</Label>
               <p className="text-xs text-muted-foreground">
                 {site.isPublished
-                  ? "Tu mini web es visible públicamente"
-                  : "Tu mini web está en modo borrador"}
+                  ? "Tu Kinec es visible públicamente"
+                  : "Tu Kinec está en modo borrador"}
               </p>
             </div>
             <Switch
@@ -334,7 +334,7 @@ export function TabDatos({ siteId }: TabDatosProps) {
                 Mostrar &quot;Hecho por Kingnect&quot;
               </Label>
               <p className="text-xs text-muted-foreground">
-                Muestra la marca Kingnect en tu mini web
+                Muestra la marca Kingnect en tu Kinec
               </p>
             </div>
             <Switch

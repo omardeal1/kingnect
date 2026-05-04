@@ -15,9 +15,13 @@ interface QrSectionProps {
 export function QrSection({ slug, accentColor, textColor, whatsappNumber }: QrSectionProps) {
   const siteUrl = `${typeof window !== "undefined" ? window.location.origin : "https://links.kingnect.app"}/${slug}`
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(siteUrl)
-    toast.success("Link copiado al portapapeles")
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(siteUrl)
+      toast.success("Link copiado al portapapeles")
+    } catch {
+      toast.error("No se pudo copiar el link")
+    }
   }
 
   const handleShareWhatsApp = () => {
@@ -53,7 +57,7 @@ export function QrSection({ slug, accentColor, textColor, whatsappNumber }: QrSe
         className="text-xl font-bold text-center mb-6"
         style={{ color: textColor }}
       >
-        Comparte esta página
+        Comparte tu Kinec
       </h2>
 
       <div className="flex flex-col items-center gap-5">

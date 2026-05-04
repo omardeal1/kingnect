@@ -29,7 +29,7 @@ const TESTIMONIALS: Testimonial[] = [
     name: "Carlos López",
     business: "Barbería Elite",
     quote:
-      "Mi mini web se ve increíble. Los clientes me encuentran por el QR de mis tarjetas y agendan cita por WhatsApp directamente.",
+      "Mi Kinec se ve increíble. Los clientes me encuentran por el QR de mis tarjetas y agendan cita por WhatsApp directamente.",
     stars: 5,
   },
   {
@@ -43,7 +43,7 @@ const TESTIMONIALS: Testimonial[] = [
     name: "Roberto Sánchez",
     business: "Food Truck El Sabor",
     quote:
-      "Comparto mi ubicación en tiempo real y el menú del día desde mi mini web. ¡Mis seguidores siempre saben dónde estoy!",
+      "Comparto mi ubicación en tiempo real y el menú del día desde mi Kinec. ¡Mis seguidores siempre saben dónde estoy!",
     stars: 4,
   },
   {

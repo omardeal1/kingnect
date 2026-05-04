@@ -94,7 +94,7 @@ export function Footer() {
             ))}
           </nav>
           <p className="text-xs text-muted-foreground">
-            © 2024 King Designs. Todos los derechos reservados.
+            © 2025 King Designs. Todos los derechos reservados.
           </p>
         </div>
       </div>

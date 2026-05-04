@@ -23,7 +23,7 @@ export function CTASection() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl">
-            ¿Listo para crear tu mini web?
+            ¿Listo para crear tu Kinec?
           </h2>
           <p className="mt-6 text-lg text-muted-foreground sm:text-xl">
             Únete a cientos de negocios que ya usan Kingnect para tener
@@ -37,7 +37,7 @@ export function CTASection() {
               asChild
             >
               <Link href="/register">
-                Crear mi mini web
+                Crear mi Kinec
                 <ArrowRight className="ml-2 size-5" />
               </Link>
             </Button>

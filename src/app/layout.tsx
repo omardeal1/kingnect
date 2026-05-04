@@ -17,12 +17,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kingnect — Tu negocio en una mini web profesional con QR",
+  title: "Kingnect — Tu negocio en un Kinec profesional con QR",
   description:
-    "Todos los links de tu negocio en una mini web profesional con QR, lista para compartir e imprimir en tarjetas, carpas, banderas, flyers, stickers, menús y publicidad.",
+    "Todos los links de tu negocio en un Kinec profesional con QR, lista para compartir e imprimir en tarjetas, carpas, banderas, flyers, stickers, menús y publicidad.",
   keywords: [
     "Kingnect",
-    "mini web",
+    "Kinec",
     "QR",
     "negocio",
     "link en bio",
@@ -35,9 +35,9 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.webmanifest",
   openGraph: {
-    title: "Kingnect — Mini web profesional con QR",
+    title: "Kingnect — Kinec profesional con QR",
     description:
-      "Todos los links de tu negocio en una mini web profesional con QR",
+      "Todos los links de tu negocio en un Kinec profesional con QR",
     url: "https://links.kingnect.app",
     siteName: "Kingnect",
     type: "website",

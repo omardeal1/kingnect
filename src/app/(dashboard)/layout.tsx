@@ -15,7 +15,7 @@ export default async function DashboardLayout({
     redirect("/login")
   }
 
-  // Fetch client data with subscription and mini site
+  // Fetch client data with subscription and Kinec
   const client = await db.client.findUnique({
     where: { ownerUserId: session.user.id },
     include: {

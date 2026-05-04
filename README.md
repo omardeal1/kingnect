@@ -1,6 +1,6 @@
 # KINGNECT by King Designs
 
-> Todos los links de tu negocio en una mini web profesional con QR, lista para compartir e imprimir en tarjetas, carpas, banderas, flyers, stickers, menús y publicidad.
+> Todos los links de tu negocio en un Kinec profesional con QR, lista para compartir e imprimir en tarjetas, carpas, banderas, flyers, stickers, menús y publicidad.
 
 **Dominio:** [links.kingnect.app](https://links.kingnect.app)
 
@@ -153,7 +153,7 @@ kingnect/
 ├── src/
 │   ├── app/
 │   │   ├── page.tsx                           # Landing page
-│   │   ├── [slug]/page.tsx                    # Mini web pública
+│   │   ├── [slug]/page.tsx                    # Kinec pública
 │   │   ├── (auth)/
 │   │   │   ├── login/page.tsx                 # Iniciar sesión
 │   │   │   ├── register/page.tsx              # Registro
@@ -163,19 +163,19 @@ kingnect/
 │   │   │       ├── page.tsx                   # Panel cliente
 │   │   │       ├── billing/page.tsx           # Facturación
 │   │   │       ├── orders/page.tsx            # Pedidos
-│   │   │       └── sites/[id]/edit/page.tsx   # Editor mini web
+│   │   │       └── sites/[id]/edit/page.tsx   # Editor Kinec
 │   │   ├── (admin)/
 │   │   │   └── admin/
 │   │   │       ├── page.tsx                   # Dashboard admin
 │   │   │       ├── clients/page.tsx           # Clientes
 │   │   │       ├── pipeline/page.tsx          # CRM Kanban
-│   │   │       ├── sites/page.tsx             # Mini webs
+│   │   │       ├── sites/page.tsx             # Kinecs
 │   │   │       ├── orders/page.tsx            # Pedidos globales
 │   │   │       ├── plans/page.tsx             # Planes y precios
 │   │   │       └── platform-editor/page.tsx   # CMS sin código
 │   │   └── api/
 │   │       ├── auth/                          # Autenticación
-│   │       ├── sites/[id]/                    # CRUD mini web + sub-recursos
+│   │       ├── sites/[id]/                    # CRUD Kinec + sub-recursos
 │   │       ├── admin/                         # APIs del admin
 │   │       ├── stripe/                        # Pagos Stripe
 │   │       ├── orders/                        # Pedidos
@@ -188,7 +188,7 @@ kingnect/
 │   │   ├── landing/          # Componentes de la landing
 │   │   ├── dashboard/        # Componentes del dashboard
 │   │   ├── editor/           # 12 tabs del editor
-│   │   ├── minisite/         # Componentes de la mini web pública
+│   │   ├── minisite/         # Componentes del Kinec público
 │   │   ├── admin/            # Componentes del panel admin
 │   │   └── providers/        # ThemeProvider, QueryProvider
 │   ├── lib/
@@ -213,7 +213,7 @@ kingnect/
 | Rol | Acceso | Descripción |
 |-----|--------|-------------|
 | **Super Admin** | `/admin` | Control total de la plataforma (King Designs) |
-| **Cliente** | `/dashboard` | Gestión de su propia mini web |
+| **Cliente** | `/dashboard` | Gestión de su propio Kinec |
 
 ---
 
@@ -221,9 +221,9 @@ kingnect/
 
 | Plan | Precio | Incluye |
 |------|--------|---------|
-| **Trial** | Gratis (1 mes) | 1 mini web · QR PNG · Catálogo básico · Marca Kingnect |
-| **Básico** | $9.99/mes | 1 mini web · QR PNG · Redes · WhatsApp · Ubicación · Galería |
-| **Pro** | $24.99/mes | 1 mini web · QR PNG+SVG · Catálogo completo · Pedidos WhatsApp · Estadísticas · Sin marca |
+| **Trial** | Gratis (1 mes) | 1 Kinec · QR PNG · Catálogo básico · Marca Kingnect |
+| **Básico** | $9.99/mes | 1 Kinec · QR PNG · Redes · WhatsApp · Ubicación · Galería |
+| **Pro** | $24.99/mes | 1 Kinec · QR PNG+SVG · Catálogo completo · Pedidos WhatsApp · Estadísticas · Sin marca |
 | **Premium** | $49.99/mes | Todo · Pedidos internos · Múltiples ubicaciones · Dominio personalizado · Analíticas avanzadas |
 
 Los planes son editables desde `/admin/plans`.
@@ -250,7 +250,7 @@ Los planes son editables desde `/admin/plans`.
 - Instalable como app desde el navegador
 - Funciona offline con página de fallback
 
-### Cada Mini Web
+### Cada Kinec
 - Cada negocio puede instalarse como app independiente
 - Manifest dinámico con nombre y logo del negocio
 - Funciona offline mostrando datos en caché

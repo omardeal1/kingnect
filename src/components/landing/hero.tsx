@@ -63,8 +63,8 @@ export function Hero() {
             className="mt-4 text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl"
             variants={itemVariants}
           >
-            Tu negocio en una{" "}
-            <span className="gold-gradient-text">mini web profesional</span>{" "}
+            Tu negocio en un{" "}
+            <span className="gold-gradient-text">Kinec profesional</span>{" "}
             con QR
           </motion.h1>
 
@@ -87,7 +87,7 @@ export function Hero() {
               asChild
             >
               <Link href="/register">
-                Crear mi mini web
+                Crear mi Kinec
                 <ArrowRight className="ml-1 size-4" />
               </Link>
             </Button>
@@ -199,14 +199,18 @@ export function Hero() {
             >
               <div className="flex h-full w-full items-center justify-center rounded-lg bg-foreground/5">
                 <div className="grid grid-cols-5 gap-[2px]">
-                  {Array.from({ length: 25 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`size-[3px] rounded-[1px] ${
-                        Math.random() > 0.35 ? "bg-foreground" : "bg-transparent"
-                      }`}
-                    />
-                  ))}
+                  {Array.from({ length: 25 }).map((_, i) => {
+                    const row = Math.floor(i / 5)
+                    const col = i % 5
+                    return (
+                      <div
+                        key={i}
+                        className={`size-[3px] rounded-[1px] ${
+                          (row + col) % 3 === 0 ? "bg-foreground" : "bg-transparent"
+                        }`}
+                      />
+                    )
+                  })}
                 </div>
               </div>
             </motion.div>

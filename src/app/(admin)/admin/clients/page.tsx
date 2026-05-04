@@ -303,7 +303,7 @@ export default function AdminClientsPage() {
                       <TableHead>Plan</TableHead>
                       <TableHead>Vencimiento</TableHead>
                       <TableHead>Estado</TableHead>
-                      <TableHead>Mini Web</TableHead>
+                      <TableHead>Kinec</TableHead>
                       <TableHead className="text-right">Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -481,7 +481,7 @@ export default function AdminClientsPage() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Mini Web</p>
+                  <p className="text-xs text-muted-foreground">Kinec</p>
                   {selectedClient.miniSites[0] ? (
                     <a
                       href={`/${selectedClient.miniSites[0].slug}`}

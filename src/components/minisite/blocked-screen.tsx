@@ -25,7 +25,7 @@ export function BlockedScreen({ businessName }: BlockedScreenProps) {
           </h1>
         )}
         <p className="text-gray-500 text-base leading-relaxed">
-          Esta mini web está temporalmente desactivada.
+          Este centro digital está temporalmente desactivado.
         </p>
         <p className="text-gray-400 text-sm mt-2">
           Contacta al negocio o al administrador.

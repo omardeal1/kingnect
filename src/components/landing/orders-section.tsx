@@ -63,7 +63,7 @@ export function OrdersSection() {
                 Pedidos por WhatsApp
               </h3>
               <p className="mt-3 text-muted-foreground leading-relaxed">
-                Tus clientes arman su pedido desde tu mini web y al confirmar
+                Tus clientes arman su pedido desde tu Kinec y al confirmar
                 se abre WhatsApp con el detalle completo. Tú recibes el
                 mensaje y gestionas todo desde tu celular.
               </p>

@@ -83,7 +83,7 @@ export function Navbar() {
             className="bg-gold text-gold-foreground hover:bg-gold-hover"
             asChild
           >
-            <Link href="/register">Crear mi mini web</Link>
+            <Link href="/register">Crear mi Kinec</Link>
           </Button>
         </div>
 
@@ -134,7 +134,7 @@ export function Navbar() {
                     className="w-full bg-gold text-gold-foreground hover:bg-gold-hover"
                     asChild
                   >
-                    <Link href="/register">Crear mi mini web</Link>
+                    <Link href="/register">Crear mi Kinec</Link>
                   </Button>
                 </SheetClose>
               </div>

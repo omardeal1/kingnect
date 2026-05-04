@@ -60,7 +60,7 @@ export function EditorHeader({ onSaveDraft, onPublish, onPreview }: EditorHeader
             <span className="hidden sm:inline">Vista previa</span>
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Abrir mini web en nueva pestaña</TooltipContent>
+        <TooltipContent>Abrir Kinec en nueva pestaña</TooltipContent>
       </Tooltip>
 
       {/* Save draft button */}

@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { PLAN_FEATURES } from "@/lib/constants"
 import { useDashboardStore } from "@/lib/dashboard-store"
+import { toast } from "sonner"
 
 const container = {
   hidden: { opacity: 0 },
@@ -85,7 +86,10 @@ export default function BillingPage() {
                     Actualiza tu método de pago para reactivar tu suscripción
                   </p>
                 </div>
-                <Button size="sm" className="ml-auto shrink-0">
+                <Button size="sm" className="ml-auto shrink-0" onClick={() => {
+                  toast.info("Redirigiendo al portal de pagos...")
+                  // In production: redirect to Stripe portal
+                }}>
                   Reactivar ahora
                 </Button>
               </div>
@@ -129,7 +133,10 @@ export default function BillingPage() {
             </div>
             <Separator />
             <div className="flex gap-2">
-              <Button variant="outline" className="flex-1 gap-1.5">
+              <Button variant="outline" className="flex-1 gap-1.5" onClick={() => {
+                toast.info("Redirigiendo al portal de pagos...")
+                // In production: redirect to Stripe portal
+              }}>
                 <ExternalLink className="size-3.5" />
                 Gestionar suscripción
               </Button>
@@ -215,6 +222,11 @@ export default function BillingPage() {
                       <Button
                         variant={plan.popular ? "default" : "outline"}
                         className="w-full gap-1.5"
+                        onClick={() => {
+                          if (plan.price === 0) return
+                          toast.info("Redirigiendo al portal de pagos...")
+                          // In production: redirect to Stripe checkout
+                        }}
                       >
                         {plan.price === 0 ? "Comenzar gratis" : "Cambiar plan"}
                         <ArrowRight className="size-3.5" />

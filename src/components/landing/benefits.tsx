@@ -24,7 +24,7 @@ const BENEFITS: Benefit[] = [
     icon: Link2,
     title: "Todos tus links en un lugar",
     description:
-      "Reúne tus redes sociales, WhatsApp, ubicación y sitio web en una sola mini web. Tus clientes encuentran todo al instante.",
+      "Reúne tus redes sociales, WhatsApp, ubicación y sitio web en un solo Kinec. Tus clientes encuentran todo al instante.",
   },
   {
     icon: QrCode,
@@ -36,7 +36,7 @@ const BENEFITS: Benefit[] = [
     icon: CreditCard,
     title: "Para tarjetas, carpas y banderas",
     description:
-      "Imprime tu QR en tarjetas de presentación, carpas publicitarias, banderas y flyers. Tu mini web siempre accesible.",
+      "Imprime tu QR en tarjetas de presentación, carpas publicitarias, banderas y flyers. Tu Kinec siempre accesible.",
   },
   {
     icon: Code,
@@ -48,7 +48,7 @@ const BENEFITS: Benefit[] = [
     icon: Settings,
     title: "Edita desde tu panel",
     description:
-      "Cambia textos, fotos, colores y botones cuando quieras. Los cambios se reflejan al instante en tu mini web.",
+      "Cambia textos, fotos, colores y botones cuando quieras. Los cambios se reflejan al instante en tu Kinec.",
   },
   {
     icon: Store,
@@ -60,7 +60,7 @@ const BENEFITS: Benefit[] = [
     icon: MessageCircle,
     title: "Más contactos por WhatsApp",
     description:
-      "Un botón de WhatsApp directo en tu mini web. Tus clientes te contactan con un solo toque desde su celular.",
+      "Un botón de WhatsApp directo en tu Kinec. Tus clientes te contactan con un solo toque desde su celular.",
   },
   {
     icon: ShoppingBag,

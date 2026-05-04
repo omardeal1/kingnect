@@ -1,6 +1,6 @@
 "use client"
 
-import { React } from "react"
+import * as React from "react"
 import { EditorLayout } from "@/components/editor/editor-layout"
 
 export default function SiteEditPage({

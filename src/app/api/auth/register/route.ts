@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { hashPassword } from "@/lib/auth"
+import { rateLimitRegister } from "@/lib/rate-limit"
 
 const registerSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
@@ -41,6 +42,13 @@ async function generateUniqueSlug(businessName: string): Promise<string> {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit by IP
+    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown"
+    const rateLimitResult = rateLimitRegister(ip)
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json({ error: "Demasiados intentos de registro. Intenta de nuevo más tarde." }, { status: 429 })
+    }
+
     const body = await request.json()
     const result = registerSchema.safeParse(body)
 
@@ -69,7 +77,7 @@ export async function POST(request: NextRequest) {
     // Hash password
     const passwordHash = await hashPassword(password)
 
-    // Create user with client, subscription, and mini site in a transaction
+    // Create user with client, subscription, and Kinec in a transaction
     const user = await db.$transaction(async (tx) => {
       // 1. Create user with role "client"
       const newUser = await tx.user.create({
@@ -93,38 +101,20 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      // 3. Find or create the "free" plan for trial
+      // 3. Find the "trial" plan (seeded in database)
       let plan = await tx.plan.findFirst({
-        where: { slug: "free" },
+        where: { slug: "trial" },
       })
 
       if (!plan) {
-        plan = await tx.plan.create({
-          data: {
-            name: "Gratis",
-            slug: "free",
-            price: 0,
-            currency: "USD",
-            billingInterval: "month",
-            trialDays: 30,
-            isActive: true,
-            sortOrder: 0,
-            features: JSON.stringify({
-              customDomain: false,
-              analytics: true,
-              qrCode: true,
-              orderManagement: false,
-              removeBranding: false,
-            }),
-            limits: JSON.stringify({
-              miniSites: 1,
-              socialLinks: 10,
-              galleryImages: 20,
-              menuItems: 50,
-              services: 10,
-            }),
-          },
+        // Fallback: try to find any active plan with price 0
+        plan = await tx.plan.findFirst({
+          where: { price: 0, isActive: true },
         })
+      }
+
+      if (!plan) {
+        throw new Error("No se encontró un plan de trial disponible")
       }
 
       // 4. Create trial subscription (30 days)
@@ -144,7 +134,7 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      // 5. Create default mini site with slug derived from businessName
+      // 5. Create default Kinec with slug derived from businessName
       const slug = await generateUniqueSlug(businessName)
 
       // We need to check uniqueness within the transaction as well
@@ -162,7 +152,7 @@ export async function POST(request: NextRequest) {
           clientId: client.id,
           slug: finalSlug,
           businessName,
-          description: `Mini web de ${businessName}`,
+          description: `Kinec de ${businessName}`,
           accentColor: "#D4A849",
           isActive: true,
           isPublished: false,

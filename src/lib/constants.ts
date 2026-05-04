@@ -19,11 +19,11 @@ import {
 // ─── App Info ────────────────────────────────────────────────────────────────────
 
 export const APP_NAME = "Kingnect"
-export const APP_URL = "https://links.kingnect.app"
+export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://links.kingnect.app"
 export const APP_DESCRIPTION =
-  "Todos los links de tu negocio en una mini web profesional con QR, lista para compartir e imprimir en tarjetas, carpas, banderas, flyers, stickers, menús y publicidad."
+  "Todos los links de tu negocio en un Kinec profesional con QR, lista para compartir e imprimir en tarjetas, carpas, banderas, flyers, stickers, menús y publicidad."
 export const APP_TAGLINE =
-  "Todos los links de tu negocio en una mini web profesional con QR"
+  "Todos los links de tu negocio en un Kinec profesional con QR"
 
 // ─── Social Types ────────────────────────────────────────────────────────────────
 
@@ -185,7 +185,7 @@ export const PLAN_FEATURES: PlanInfo[] = [
     billingInterval: "month",
     description: "1 mes gratis para probar Kingnect",
     features: [
-      "1 mini web",
+      "1 Kinec",
       "QR en PNG",
       "Catálogo básico",
       "Con marca Kingnect",
@@ -199,7 +199,7 @@ export const PLAN_FEATURES: PlanInfo[] = [
     billingInterval: "month",
     description: "Todo lo esencial para tu negocio",
     features: [
-      "1 mini web",
+      "1 Kinec",
       "QR en PNG",
       "Redes sociales",
       "WhatsApp y ubicación",
@@ -215,7 +215,7 @@ export const PLAN_FEATURES: PlanInfo[] = [
     billingInterval: "month",
     description: "Para negocios que quieren más",
     features: [
-      "1 mini web",
+      "1 Kinec",
       "QR en PNG y SVG",
       "Catálogo completo",
       "Pedidos por WhatsApp",

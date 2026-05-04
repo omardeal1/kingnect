@@ -87,7 +87,7 @@ export default function AdminSitesPage() {
       const data = await res.json()
       setSites(data.sites ?? [])
     } catch {
-      toast.error("Error al cargar mini webs")
+      toast.error("Error al cargar Kinecs")
     } finally {
       setLoading(false)
     }
@@ -122,7 +122,7 @@ export default function AdminSitesPage() {
         body: JSON.stringify({ siteId, isActive: !currentActive }),
       })
       if (res.ok) {
-        toast.success(currentActive ? "Mini web desactivada" : "Mini web activada")
+        toast.success(currentActive ? "Kinec desactivada" : "Kinec activada")
         fetchSites()
       }
     } catch {
@@ -138,7 +138,7 @@ export default function AdminSitesPage() {
         body: JSON.stringify({ siteId, isPublished: true }),
       })
       if (res.ok) {
-        toast.success("Mini web publicada")
+        toast.success("Kinec publicada")
         fetchSites()
       }
     } catch {
@@ -180,15 +180,15 @@ export default function AdminSitesPage() {
       })
       const data = await res.json()
       if (res.ok) {
-        toast.success("Mini web creada")
+        toast.success("Kinec creada")
         setCreateOpen(false)
         setCreateForm({ clientId: "", slug: "", businessName: "" })
         fetchSites()
       } else {
-        toast.error(data.error ?? "Error al crear mini web")
+        toast.error(data.error ?? "Error al crear Kinec")
       }
     } catch {
-      toast.error("Error al crear mini web")
+      toast.error("Error al crear Kinec")
     }
   }
 
@@ -223,14 +223,14 @@ export default function AdminSitesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Mini Webs</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">Kinecs</h1>
           <p className="text-muted-foreground mt-1">
-            Administra todas las mini webs de la plataforma
+            Administra todas las Kinecs de la plataforma
           </p>
         </div>
         <Button className="gold-gradient text-black font-semibold" onClick={() => setCreateOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
-          Nueva Mini Web
+          Nuevo Kinec
         </Button>
       </div>
 
@@ -279,7 +279,7 @@ export default function AdminSitesPage() {
             </div>
           ) : filteredSites.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
-              No se encontraron mini webs
+              No se encontraron Kinecs
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -392,7 +392,7 @@ export default function AdminSitesPage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Crear Nueva Mini Web</DialogTitle>
+            <DialogTitle>Crear Nuevo Kinec</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -440,7 +440,7 @@ export default function AdminSitesPage() {
               />
             </div>
             <Button className="w-full gold-gradient text-black font-semibold" onClick={createSite}>
-              Crear Mini Web
+              Crear Kinec
             </Button>
           </div>
         </DialogContent>
@@ -454,7 +454,7 @@ export default function AdminSitesPage() {
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Mini web: <strong>{selectedSite?.businessName}</strong>
+              Kinec: <strong>{selectedSite?.businessName}</strong>
             </p>
             <div>
               <Label>Nuevo slug</Label>
