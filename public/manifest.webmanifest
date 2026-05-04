@@ -1,0 +1,26 @@
+{
+  "name": "Kingnect",
+  "short_name": "Kingnect",
+  "description": "Todos los links de tu negocio en una mini web profesional con QR",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#D4A849",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,0 +1,377 @@
+// KINGNECT by King Designs — Database Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  name          String?
+  email         String   @unique
+  emailVerified DateTime?
+  passwordHash  String?
+  image         String?
+  role          String   @default("client") // "super_admin" | "client"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  client        Client?
+  accounts      Account[]
+  sessions      Session[]
+  activityLogs  ActivityLog[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Client {
+  id             String   @id @default(cuid())
+  ownerUserId    String   @unique
+  businessName   String
+  contactName    String?
+  phone          String?
+  whatsapp       String?
+  email          String?
+  pipelineStatus String   @default("lead") // lead | contacted | demo | active | churned
+  accountStatus  String   @default("active") // active | blocked | cancelled
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  owner         User           @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  subscription  Subscription?
+  miniSites     MiniSite[]
+}
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  clientId             String   @unique
+  planId               String
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  stripePriceId        String?
+  status               String   @default("inactive") // active | past_due | cancelled | inactive | trial
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  blockedAt            DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  plan   Plan   @relation(fields: [planId], references: [id])
+}
+
+model Plan {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  price           Float    @default(0)
+  currency        String   @default("USD")
+  billingInterval String   @default("month") // month | year
+  trialDays       Int      @default(0)
+  isActive        Boolean  @default(true)
+  sortOrder       Int      @default(0)
+  features        String   @default("{}") // JSON string of features
+  limits          String   @default("{}") // JSON string of limits
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  subscriptions Subscription[]
+}
+
+model MiniSite {
+  id                 String   @id @default(cuid())
+  clientId           String
+  slug               String   @unique
+  businessName       String
+  tagline            String?
+  description        String?
+  logoUrl            String?
+  faviconUrl         String?
+  backgroundType     String   @default("color") // color | gradient | image
+  backgroundColor    String   @default("#FFFFFF")
+  backgroundGradient String?
+  backgroundImageUrl String?
+  cardColor          String   @default("#FFFFFF")
+  textColor          String   @default("#0A0A0A")
+  accentColor        String   @default("#D4A849")
+  themeMode          String   @default("light") // light | dark | both
+  isActive           Boolean  @default(true)
+  isPublished        Boolean  @default(false)
+  showKingBrand      Boolean  @default(true)
+  metaTitle          String?
+  metaDescription    String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  client         Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  socialLinks    SocialLink[]
+  contactButtons ContactButton[]
+  locations      Location[]
+  slides         Slide[]
+  menuCategories MenuCategory[]
+  menuItems      MenuItem[]
+  galleryImages  GalleryImage[]
+  services       Service[]
+  testimonials   Testimonial[]
+  customLinks    CustomLink[]
+  orders         Order[]
+  analyticsEvents AnalyticsEvent[]
+}
+
+model SocialLink {
+  id         String   @id @default(cuid())
+  miniSiteId String
+  type       String   // facebook | instagram | tiktok | pinterest | youtube | linkedin | twitter | snapchat | threads | yelp | google_reviews | website | custom
+  label      String?
+  url        String
+  enabled    Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  miniSite MiniSite @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
+}
+
+model ContactButton {
+  id         String   @id @default(cuid())
+  miniSiteId String
+  type       String   // whatsapp | call | sms | email | maps | share | copy_link | order
+  label      String?
+  value      String
+  enabled    Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  miniSite MiniSite @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
+}
+
+model Location {
+  id         String   @id @default(cuid())
+  miniSiteId String
+  name       String
+  address    String?
+  mapsUrl    String?
+  hours      String?
+  enabled    Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  miniSite MiniSite @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
+}
+
+model Slide {
+  id         String   @id @default(cuid())
+  miniSiteId String
+  imageUrl   String?
+  title      String?
+  subtitle   String?
+  buttonLabel String?
+  buttonUrl  String?
+  enabled    Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  miniSite MiniSite @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
+}
+
+model MenuCategory {
+  id         String   @id @default(cuid())
+  miniSiteId String
+  name       String
+  enabled    Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  miniSite   MiniSite    @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
+  menuItems  MenuItem[]
+}
+
+model MenuItem {
+  id          String   @id @default(cuid())
+  miniSiteId  String
+  categoryId  String
+  name        String
+  description String?
+  price       Float?
+  imageUrl    String?
+  isOrderable Boolean  @default(false)
+  enabled     Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  miniSite  MiniSite      @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
+  category  MenuCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model GalleryImage {
+  id         String   @id @default(cuid())
+  miniSiteId String
+  imageUrl   String
+  caption    String?
+  enabled    Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  miniSite MiniSite @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  miniSiteId  String
+  name        String
+  description String?
+  price       String?
+  imageUrl    String?
+  buttonLabel String?
+  buttonUrl   String?
+  enabled     Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  miniSite MiniSite @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
+}
+
+model Testimonial {
+  id         String   @id @default(cuid())
+  miniSiteId String
+  name       String
+  photoUrl   String?
+  rating     Int      @default(5)
+  content    String
+  enabled    Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  miniSite MiniSite @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
+}
+
+model CustomLink {
+  id         String   @id @default(cuid())
+  miniSiteId String
+  label      String
+  url        String
+  enabled    Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  miniSite MiniSite @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id             String   @id @default(cuid())
+  miniSiteId     String
+  customerName   String
+  customerPhone  String?
+  deliveryType   String   @default("pickup") // pickup | delivery
+  status         String   @default("new") // new | confirmed | preparing | ready | delivered | cancelled
+  total          Float    @default(0)
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  miniSite   MiniSite    @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  name      String
+  quantity  Int     @default(1)
+  unitPrice Float   @default(0)
+  total     Float   @default(0)
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model PlatformSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  type      String   @default("text") // text | json | number | boolean
+  updatedBy String?
+  updatedAt DateTime @updatedAt
+}
+
+model PlatformSection {
+  id         String   @id @default(cuid())
+  sectionKey String   @unique
+  title      String?
+  subtitle   String?
+  content    String?
+  imageUrl   String?
+  enabled    Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  updatedAt  DateTime @updatedAt
+}
+
+model AnalyticsEvent {
+  id         String   @id @default(cuid())
+  miniSiteId String
+  eventType  String // view | click_whatsapp | click_link | order_created | qr_scan
+  metadata   String? // JSON
+  createdAt  DateTime @default(now())
+
+  miniSite MiniSite @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  userId     String
+  action     String
+  entityType String?
+  entityId   String?
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
