@@ -1,44 +1,30 @@
-import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 
-export default withAuth({
-  callbacks: {
-    authorized({ token, req }) {
-      const pathname = req.nextUrl.pathname
+// Simple middleware that doesn't depend on next-auth withAuth
+// which can cause runtime errors in serverless environments
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
 
-      // Admin routes - only super_admin
-      if (pathname.startsWith("/admin")) {
-        return token?.role === "super_admin"
-      }
+  // Get token from cookies (next-auth-jwt)
+  const token = request.cookies.get("next-auth.session-token")?.value
+    || request.cookies.get("__Secure-next-auth.session-token")?.value
 
-      // Dashboard routes - any authenticated user
-      if (pathname.startsWith("/dashboard")) {
-        return !!token
-      }
+  // Protected routes - redirect to login if not authenticated
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/admin")) {
+    if (!token) {
+      const loginUrl = new URL("/login", request.url)
+      loginUrl.searchParams.set("callbackUrl", pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+  }
 
-      // Auth pages - redirect to dashboard if already logged in
-      if (pathname === "/login" || pathname === "/register" || pathname === "/forgot-password") {
-        if (token) {
-          // Return true to allow, the redirect will be handled client-side
-          return true
-        }
-        return true
-      }
-
-      return true
-    },
-  },
-  pages: {
-    signIn: "/login",
-  },
-})
+  return NextResponse.next()
+}
 
 export const config = {
   matcher: [
     "/dashboard/:path*",
     "/admin/:path*",
-    "/login",
-    "/register",
-    "/forgot-password",
   ],
 }
