@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Genera la guia de despliegue a produccion para Kinec SaaS.
-Salida: /home/z/my-project/download/Kinec-Guia-Despliegue-Produccion.pdf
+Genera la guia de despliegue a produccion para QAIROSS SaaS.
+Salida: /home/z/my-project/download/QAIROSS-Guia-Despliegue-Produccion.pdf
 """
 
 import os
@@ -250,7 +250,7 @@ story = []
 
 # ---- COVER PAGE ----
 story.append(Spacer(1, 2.2 * inch))
-story.append(Paragraph("Kinec", style_cover_title))
+story.append(Paragraph("QAIROSS", style_cover_title))
 story.append(Spacer(1, 8))
 story.append(Paragraph("Guia de Despliegue a Produccion", ParagraphStyle(
     'CoverTitle2', fontName=HEADING_FONT, fontSize=22, leading=30,
@@ -259,7 +259,7 @@ story.append(Paragraph("Guia de Despliegue a Produccion", ParagraphStyle(
 story.append(Spacer(1, 16))
 story.append(Paragraph("Plataforma SaaS de Centros Digitales con QR", style_cover_subtitle))
 story.append(Spacer(1, 1.5 * inch))
-story.append(Paragraph("King Designs", style_cover_info))
+story.append(Paragraph("QAIROSS", style_cover_info))
 story.append(Paragraph("Mayo 2026", style_cover_info))
 story.append(Spacer(1, 0.6 * inch))
 
@@ -282,7 +282,7 @@ toc_entries = [
     ("1", "Requisitos Previos"),
     ("2", "Base de Datos - Supabase PostgreSQL"),
     ("3", "Despliegue en Vercel"),
-    ("4", "Dominio Personalizado - links.kingnect.app"),
+    ("4", "Dominio Personalizado - links.qaiross.app"),
     ("5", "Stripe - Pagos Reales"),
     ("6", "Email - Resend"),
     ("7", "Supabase Storage - Uploads"),
@@ -308,10 +308,10 @@ story.append(h1("Seccion 1: Requisitos Previos"))
 story.append(spacer(6))
 
 story.append(body(
-    "Antes de iniciar el proceso de despliegue a produccion de la plataforma Kinec, es fundamental "
+    "Antes de iniciar el proceso de despliegue a produccion de la plataforma QAIROSS, es fundamental "
     "asegurarse de contar con todas las cuentas de servicio necesarias y las herramientas de desarrollo "
     "adecuadas. Esta seccion detalla cada uno de los requisitos que deben cumplirse para garantizar un "
-    "despliegue exitoso y sin interrupciones. La plataforma Kinec depende de multiples servicios en la nube "
+    "despliegue exitoso y sin interrupciones. La plataforma QAIROSS depende de multiples servicios en la nube "
     "para su funcionamiento completo: Vercel para el hosting de la aplicacion Next.js, Supabase como "
     "proveedor de base de datos PostgreSQL y almacenamiento de archivos, Stripe para el procesamiento de "
     "pagos y suscripciones, Resend para el envio de correos electronicos transaccionales, Google Cloud "
@@ -358,7 +358,7 @@ story.append(h1("Seccion 2: Base de Datos - Supabase PostgreSQL"))
 story.append(spacer(6))
 
 story.append(body(
-    "Supabase es la plataforma de base de datos como servicio que utiliza Kinec para almacenar toda la "
+    "Supabase es la plataforma de base de datos como servicio que utiliza QAIROSS para almacenar toda la "
     "informacion de la aplicacion, incluyendo datos de usuarios, centros, planes de suscripcion, pagos y "
     "configuraciones. A diferencia del entorno de desarrollo que utiliza SQLite con Prisma, el entorno de "
     "produccion requiere PostgreSQL para manejar conexiones concurrentes, escalabilidad y funcionalidades "
@@ -389,7 +389,7 @@ story.append(bullet(
 
 story.append(h2("Migracion de Prisma: SQLite a PostgreSQL"))
 story.append(body(
-    "El proyecto Kinec utiliza Prisma como ORM y viene configurado por defecto con SQLite para desarrollo "
+    "El proyecto QAIROSS utiliza Prisma como ORM y viene configurado por defecto con SQLite para desarrollo "
     "local. Para produccion, es necesario cambiar el provider a PostgreSQL. El proyecto incluye un archivo "
     "schema.prisma.prod que ya tiene la configuracion correcta para PostgreSQL. Simplemente copie este "
     "archivo sobre el schema.prisma principal antes de ejecutar las migraciones. Los comandos necesarios son:"
@@ -443,7 +443,7 @@ story.append(bullet(
     "Crear una cuenta en vercel.com (se recomienda usar la cuenta de GitHub del proyecto)."
 ))
 story.append(bullet(
-    "Hacer clic en 'Add New Project' y seleccionar el repositorio de GitHub de Kinec."
+    "Hacer clic en 'Add New Project' y seleccionar el repositorio de GitHub de QAIROSS."
 ))
 story.append(bullet(
     "En Framework Preset, seleccionar 'Next.js' (Vercel lo detecta automaticamente)."
@@ -475,11 +475,11 @@ vercel_env_rows = [
     ["STRIPE_SECRET_KEY", "Clave secreta de Stripe (sk_live_...)"],
     ["STRIPE_WEBHOOK_SECRET", "Secreto del webhook de Stripe (whsec_...)"],
     ["RESEND_API_KEY", "Clave API de Resend para emails"],
-    ["EMAIL_FROM", "Email remitente (noreply@kingnect.app)"],
+    ["EMAIL_FROM", "Email remitente (noreply@qaiross.app)"],
     ["NEXT_PUBLIC_GOOGLE_MAPS_API_KEY", "Clave API de Google Maps"],
-    ["NEXT_PUBLIC_APP_URL", "https://links.kingnect.app"],
+    ["NEXT_PUBLIC_APP_URL", "https://links.qaiross.app"],
     ["NEXTAUTH_SECRET", "Secreto para NextAuth (generar con openssl rand -base64 32)"],
-    ["NEXTAUTH_URL", "https://links.kingnect.app"],
+    ["NEXTAUTH_URL", "https://links.qaiross.app"],
     ["DATABASE_URL", "Cadena de conexion PostgreSQL de Supabase"],
 ]
 story.append(make_table_left_first(vercel_env_headers, vercel_env_rows, [CONTENT_W * 0.48, CONTENT_W * 0.52]))
@@ -506,16 +506,16 @@ story.append(PageBreak())
 # ============================================================
 # SECTION 4: Dominio Personalizado
 # ============================================================
-story.append(h1("Seccion 4: Dominio Personalizado - links.kingnect.app"))
+story.append(h1("Seccion 4: Dominio Personalizado - links.qaiross.app"))
 story.append(spacer(6))
 
 story.append(body(
     "Configurar un dominio personalizado es esencial para la identidad de marca y la confianza de los "
-    "usuarios. El dominio links.kingnect.app sera la URL principal de la plataforma Kinec en produccion. "
+    "usuarios. El dominio links.qaiross.app sera la URL principal de la plataforma QAIROSS en produccion. "
     "Vercel facilita la configuracion de dominios personalizados con SSL automatico mediante Let's Encrypt. "
     "El proceso involucra dos partes: la configuracion en Vercel y la actualizacion de los registros DNS "
     "en el registrador del dominio. Antes de comenzar, asegurese de tener acceso de administrador al "
-    "panel de DNS del dominio kingnect.app. Si el dominio fue adquirido en Namecheap, el panel de DNS "
+    "panel de DNS del dominio qaiross.app. Si el dominio fue adquirido en Namecheap, el panel de DNS "
     "se encuentra en Domain List > Manage > Advanced DNS. Para GoDaddy, esta en My Products > DNS > DNS "
     "Records. El subdominio 'links' se creara mediante un registro CNAME que apunte a Vercel."
 ))
@@ -525,7 +525,7 @@ story.append(bullet(
     "Ir a Settings > Domains en el dashboard del proyecto en Vercel."
 ))
 story.append(bullet(
-    "Ingresar 'links.kingnect.app' en el campo de nuevo dominio y hacer clic en 'Add'."
+    "Ingresar 'links.qaiross.app' en el campo de nuevo dominio y hacer clic en 'Add'."
 ))
 story.append(bullet(
     "Vercel mostrara los registros DNS necesarios para configurar. Anotar el valor del CNAME."
@@ -533,7 +533,7 @@ story.append(bullet(
 
 story.append(h2("Paso 2: Configurar DNS en el Registrador"))
 story.append(body(
-    "Agregar un registro CNAME en el panel de DNS del dominio kingnect.app con los siguientes valores:"
+    "Agregar un registro CNAME en el panel de DNS del dominio qaiross.app con los siguientes valores:"
 ))
 
 dns_headers = ["Campo", "Valor"]
@@ -553,7 +553,7 @@ story.append(body(
     "automaticamente generara y configurara un certificado SSL a traves de Let's Encrypt. Puede verificar "
     "el estado de la configuracion en Settings > Domains de Vercel, donde deberia aparecer un check verde "
     "junto al dominio. Para confirmar que todo funciona correctamente, abra un navegador y visite "
-    "https://links.kingnect.app. Deberia ver la pagina principal de Kinec con el candado de SSL en la "
+    "https://links.qaiross.app. Deberia ver la pagina principal de QAIROSS con el candado de SSL en la "
     "barra de direcciones."
 ))
 
@@ -573,7 +573,7 @@ story.append(h1("Seccion 5: Stripe - Pagos Reales"))
 story.append(spacer(6))
 
 story.append(body(
-    "Stripe es la plataforma de procesamiento de pagos que utiliza Kinec para gestionar las suscripciones "
+    "Stripe es la plataforma de procesamiento de pagos que utiliza QAIROSS para gestionar las suscripciones "
     "de los centros digitales. En el entorno de desarrollo se utilizan claves de prueba (pk_test_ y "
     "sk_test_), pero para produccion es necesario activar la cuenta de Stripe y obtener las claves reales "
     "(pk_live_ y sk_live_). Antes de poder procesar pagos reales, Stripe requiere completar un proceso de "
@@ -602,7 +602,7 @@ story.append(bullet(
 
 story.append(h2("Configuracion del Webhook"))
 story.append(body(
-    "Los webhooks de Stripe son esenciales para que Kinec reciba notificaciones en tiempo real sobre "
+    "Los webhooks de Stripe son esenciales para que QAIROSS reciba notificaciones en tiempo real sobre "
     "eventos de pago, como suscripciones completadas, facturas pagadas o fallos en el cobro. Sin el "
     "webhook configurado, la aplicacion no podra actualizar automaticamente el estado de las suscripciones "
     "de los usuarios. Para configurar el webhook, siga estos pasos:"
@@ -612,7 +612,7 @@ story.append(bullet(
 ))
 story.append(bullet(
     "Hacer clic en 'Add endpoint' e ingresar la URL: "
-    "https://links.kingnect.app/api/stripe/webhook"
+    "https://links.qaiross.app/api/stripe/webhook"
 ))
 story.append(bullet(
     "Seleccionar los siguientes eventos que la aplicacion necesita escuchar:"
@@ -647,13 +647,13 @@ story.append(h1("Seccion 6: Email - Resend"))
 story.append(spacer(6))
 
 story.append(body(
-    "Resend es el servicio de email transaccional que utiliza Kinec para enviar correos de verificacion de "
+    "Resend es el servicio de email transaccional que utiliza QAIROSS para enviar correos de verificacion de "
     "cuenta, recuperacion de contrasena, confirmaciones de pago y notificaciones del sistema. A diferencia "
     "de otros servicios como SendGrid o Mailgun, Resend ofrece una API moderna y simple, con una excelente "
     "tasa de entrega y precios competitivos. Para utilizar Resend en produccion, es obligatorio verificar "
     "el dominio de envio, lo que garantiza que los correos no sean marcados como spam y mejora la "
     "reputacion del remitente. El proceso de verificacion requiere agregar registros DNS especificos "
-    "(SPF, DKIM y DMARC) en el panel de DNS del dominio kingnect.app."
+    "(SPF, DKIM y DMARC) en el panel de DNS del dominio qaiross.app."
 ))
 
 story.append(h2("Configuracion Paso a Paso"))
@@ -661,7 +661,7 @@ story.append(bullet(
     "Crear una cuenta en resend.com (se recomienda usar la cuenta de GitHub del proyecto)."
 ))
 story.append(bullet(
-    "Ir a Domains > Add Domain e ingresar 'kingnect.app'."
+    "Ir a Domains > Add Domain e ingresar 'qaiross.app'."
 ))
 story.append(bullet(
     "Resend mostrara tres registros DNS que deben agregarse en el panel del dominio:"
@@ -689,7 +689,7 @@ story.append(bullet(
     "Nombrar la clave (ej: 'kinec-production') y copiarla. Solo se muestra una vez."
 ))
 story.append(bullet(
-    "Configurar en Vercel: RESEND_API_KEY=[clave] y EMAIL_FROM=noreply@kingnect.app"
+    "Configurar en Vercel: RESEND_API_KEY=[clave] y EMAIL_FROM=noreply@qaiross.app"
 ))
 
 story.append(h2("Prueba de Envio"))
@@ -710,10 +710,10 @@ story.append(h1("Seccion 7: Supabase Storage - Uploads"))
 story.append(spacer(6))
 
 story.append(body(
-    "Supabase Storage es el servicio de almacenamiento de archivos que utiliza Kinec para guardar las "
+    "Supabase Storage es el servicio de almacenamiento de archivos que utiliza QAIROSS para guardar las "
     "imagenes subidas por los usuarios, como logos de centros, fotos de perfil y otros recursos visuales. "
     "Los archivos se almacenan en buckets (contenedores) con politicas de acceso configurables. Para la "
-    "plataforma Kinec, se necesita un bucket llamado 'uploads' con acceso publico de lectura, lo que "
+    "plataforma QAIROSS, se necesita un bucket llamado 'uploads' con acceso publico de lectura, lo que "
     "permite que las imagenes sean accesibles desde cualquier navegador sin necesidad de autenticacion. "
     "Las variables de entorno necesarias para el almacenamiento ya fueron configuradas en el Paso 2 "
     "(Supabase), ya que Storage utiliza las mismas credenciales que la base de datos. No se requieren "
@@ -722,7 +722,7 @@ story.append(body(
 
 story.append(h2("Creacion del Bucket"))
 story.append(bullet(
-    "Ir al dashboard de Supabase y seleccionar el proyecto de Kinec."
+    "Ir al dashboard de Supabase y seleccionar el proyecto de QAIROSS."
 ))
 story.append(bullet(
     "Navegar a Storage en el menu lateral izquierdo."
@@ -770,7 +770,7 @@ story.append(h1("Seccion 8: Google Maps API"))
 story.append(spacer(6))
 
 story.append(body(
-    "La integracion con Google Maps es fundamental para la plataforma Kinec, ya que permite mostrar la "
+    "La integracion con Google Maps es fundamental para la plataforma QAIROSS, ya que permite mostrar la "
     "ubicacion de los centros digitales en un mapa interactivo y habilitar la busqueda de centros cercanos "
     "basada en la geolocalizacion del usuario. Google Cloud Platform ofrece la Maps JavaScript API que "
     "proporciona todas las funcionalidades necesarias para renderizar mapas, colocar marcadores y calcular "
@@ -785,7 +785,7 @@ story.append(bullet(
     "Navegar a console.cloud.google.com e iniciar sesion con una cuenta de Google."
 ))
 story.append(bullet(
-    "Crear un nuevo proyecto haciendo clic en 'Select a project' > 'New Project'. Nombrarlo 'Kinec Production'."
+    "Crear un nuevo proyecto haciendo clic en 'Select a project' > 'New Project'. Nombrarlo 'QAIROSS Production'."
 ))
 story.append(bullet(
     "Ir a 'APIs &amp; Services' > 'Library' y buscar 'Maps JavaScript API'."
@@ -803,7 +803,7 @@ story.append(bullet(
     "En 'Application restrictions', seleccionar 'HTTP referrers (web sites)'."
 ))
 story.append(bullet(
-    "Agregar el dominio: https://links.kingnect.app/* y hacer clic en 'Save'."
+    "Agregar el dominio: https://links.qaiross.app/* y hacer clic en 'Save'."
 ))
 
 story.append(h2("Configuracion en Vercel"))
@@ -834,17 +834,17 @@ story.append(spacer(6))
 story.append(body(
     "Los iconos de la Progressive Web App (PWA) son esenciales para que la aplicacion pueda instalarse "
     "en dispositivos moviles y mostrarse correctamente en las pantallas de inicio, barras de tareas y "
-    "menus de aplicaciones. Kinec esta configurado como una PWA, lo que permite a los usuarios agregar "
+    "menus de aplicaciones. QAIROSS esta configurado como una PWA, lo que permite a los usuarios agregar "
     "la aplicacion a su pantalla de inicio desde el navegador y obtener una experiencia similar a una "
     "aplicacion nativa. El archivo manifest.webmanifest ya esta configurado en el proyecto y hace "
     "referencia a los iconos en las rutas /public/icons/icon-192x192.png y /public/icons/icon-512x512.png. "
-    "Solo es necesario generar los archivos de imagen con el logo de Kinec y colocarlos en las ubicaciones "
+    "Solo es necesario generar los archivos de imagen con el logo de QAIROSS y colocarlos en las ubicaciones "
     "correctas."
 ))
 
 story.append(h2("Generacion de Iconos"))
 story.append(bullet(
-    "Utilizar el logo oficial de Kinec como base para los iconos."
+    "Utilizar el logo oficial de QAIROSS como base para los iconos."
 ))
 story.append(bullet(
     "Generar un icono de 192x192 pixeles en formato PNG con fondo transparente."
@@ -890,7 +890,7 @@ story.append(spacer(6))
 
 story.append(body(
     "Esta seccion presenta un resumen completo de todas las variables de entorno necesarias para el "
-    "funcionamiento de la plataforma Kinec en produccion. Todas estas variables deben configurarse en "
+    "funcionamiento de la plataforma QAIROSS en produccion. Todas estas variables deben configurarse en "
     "Vercel (Settings > Environment Variables) antes de realizar el primer despliegue. Es fundamental "
     "no omitir ninguna variable, ya que la aplicacion fallara al iniciar si alguna de las claves "
     "requeridas no esta definida. Se recomienda copiar los valores exactamente como se muestran en los "
@@ -910,11 +910,11 @@ env_rows = [
     ["STRIPE_SECRET_KEY", "sk_live_...", "Stripe > Developers > API Keys"],
     ["STRIPE_WEBHOOK_SECRET", "whsec_...", "Stripe > Developers > Webhooks"],
     ["RESEND_API_KEY", "re_...", "Resend > API Keys"],
-    ["EMAIL_FROM", "noreply@kingnect.app", "Email verificado en Resend"],
+    ["EMAIL_FROM", "noreply@qaiross.app", "Email verificado en Resend"],
     ["NEXT_PUBLIC_GOOGLE_MAPS_API_KEY", "AIza...", "Google Cloud > Credentials"],
-    ["NEXT_PUBLIC_APP_URL", "https://links.kingnect.app", "URL del dominio configurado"],
+    ["NEXT_PUBLIC_APP_URL", "https://links.qaiross.app", "URL del dominio configurado"],
     ["NEXTAUTH_SECRET", "[cadena aleatoria 32 chars]", "Generar: openssl rand -base64 32"],
-    ["NEXTAUTH_URL", "https://links.kingnect.app", "URL del dominio configurado"],
+    ["NEXTAUTH_URL", "https://links.qaiross.app", "URL del dominio configurado"],
 ]
 cw = [CONTENT_W * 0.34, CONTENT_W * 0.30, CONTENT_W * 0.36]
 story.append(make_table_left_first(env_headers, env_rows, cw))
@@ -947,7 +947,7 @@ story.append(h1("Seccion 11: Checklist de Verificacion"))
 story.append(spacer(6))
 
 story.append(body(
-    "Antes de declarar la plataforma Kinec como lista para produccion, es imprescindible verificar cada "
+    "Antes de declarar la plataforma QAIROSS como lista para produccion, es imprescindible verificar cada "
     "uno de los siguientes items. Este checklist asegura que no se ha omitido ningun paso critico en el "
     "proceso de configuracion y que todos los servicios estan funcionando correctamente. Imprima esta "
     "pagina y marque cada item a medida que lo verifica. Si algun item no pasa la verificacion, no "
@@ -964,10 +964,10 @@ check_rows = [
     ["4", "Repositorio conectado a Vercel y primer despliegue exitoso", ""],
     ["5", "Build command configurado: npx prisma generate && next build", ""],
     ["6", "Region de Vercel configurada como iad1", ""],
-    ["7", "Dominio links.kingnect.app agregado en Vercel", ""],
+    ["7", "Dominio links.qaiross.app agregado en Vercel", ""],
     ["8", "Registro CNAME configurado en DNS (links -> cname.vercel-dns.com)", ""],
     ["9", "Certificado SSL emitido y activo (candado verde en navegador)", ""],
-    ["10", "Sitio accesible en https://links.kingnect.app", ""],
+    ["10", "Sitio accesible en https://links.qaiross.app", ""],
     ["11", "Cuenta de Stripe activada y verificada", ""],
     ["12", "Claves live de Stripe configuradas (pk_live_ y sk_live_)", ""],
     ["13", "Webhook de Stripe creado con los 5 eventos requeridos", ""],
@@ -978,7 +978,7 @@ check_rows = [
     ["18", "Bucket 'uploads' creado en Supabase Storage", ""],
     ["19", "Politica de acceso publico configurada en el bucket", ""],
     ["20", "Google Maps API habilitada y clave API generada", ""],
-    ["21", "Clave API de Google Maps restringida a links.kingnect.app", ""],
+    ["21", "Clave API de Google Maps restringida a links.qaiross.app", ""],
     ["22", "Iconos PWA generados (192x192 y 512x512) y colocados en /public/icons/", ""],
     ["23", "Todas las variables de entorno configuradas en Vercel", ""],
     ["24", "NEXTAUTH_SECRET generado con cadena aleatoria segura", ""],
@@ -1009,7 +1009,7 @@ story.append(h2("1. Crear el Super Administrador"))
 story.append(body(
     "El primer usuario que se cree en la plataforma debe tener el rol de super_admin, que otorga acceso "
     "total al sistema, incluyendo la gestion de otros administradores y la configuracion global. Para crear "
-    "este usuario, acceda a https://links.kingnect.app y complete el formulario de registro. Luego, "
+    "este usuario, acceda a https://links.qaiross.app y complete el formulario de registro. Luego, "
     "utilice el panel de SQL de Supabase para actualizar el rol del usuario recien creado:"
 ))
 story.append(code_block(
@@ -1071,7 +1071,7 @@ story.append(body(
 
 story.append(spacer(20))
 story.append(body(
-    "Con todas estas pruebas completadas exitosamente, la plataforma Kinec esta lista para recibir "
+    "Con todas estas pruebas completadas exitosamente, la plataforma QAIROSS esta lista para recibir "
     "usuarios reales. Se recomienda monitorear los primeros dias de operacion utilizando los dashboards "
     "de Vercel (Analytics), Supabase (Logs) y Stripe (Dashboard) para detectar y resolver cualquier "
     "problema que no se haya identificado durante las pruebas. Mantenga un canal de comunicacion directo "
@@ -1082,7 +1082,7 @@ story.append(body(
 # ============================================================
 # BUILD PDF
 # ============================================================
-OUTPUT_PATH = "/home/z/my-project/download/Kinec-Guia-Despliegue-Produccion.pdf"
+OUTPUT_PATH = "/home/z/my-project/download/QAIROSS-Guia-Despliegue-Produccion.pdf"
 
 doc = SimpleDocTemplate(
     OUTPUT_PATH,
@@ -1091,9 +1091,9 @@ doc = SimpleDocTemplate(
     rightMargin=RIGHT_MARGIN,
     topMargin=TOP_MARGIN,
     bottomMargin=BOTTOM_MARGIN,
-    title="Kinec - Guia de Despliegue a Produccion",
-    author="King Designs",
-    subject="Guia de despliegue de la plataforma SaaS Kinec",
+    title="QAIROSS - Guia de Despliegue a Produccion",
+    author="QAIROSS",
+    subject="Guia de despliegue de la plataforma SaaS QAIROSS",
 )
 
 doc.build(story, onFirstPage=add_page_number, onLaterPages=add_page_number)

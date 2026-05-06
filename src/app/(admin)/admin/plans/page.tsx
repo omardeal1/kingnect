@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
+import { useTranslations } from "@/i18n/provider"
 import {
   Plus,
   Edit,
@@ -89,6 +90,7 @@ export default function AdminPlansPage() {
   const [form, setForm] = useState<PlanForm>(emptyForm)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const { t } = useTranslations("admin")
 
   const fetchPlans = async () => {
     setLoading(true)
@@ -97,7 +99,7 @@ export default function AdminPlansPage() {
       const data = await res.json()
       setPlans(data.plans ?? [])
     } catch {
-      toast.error("Error al cargar planes")
+      toast.error(t("plans.errors.loadFailed"))
     } finally {
       setLoading(false)
     }
@@ -168,14 +170,14 @@ export default function AdminPlansPage() {
       const data = await res.json()
 
       if (res.ok) {
-        toast.success(isCreating ? "Plan creado" : "Plan actualizado")
+        toast.success(isCreating ? t("plans.toastSuccess.created") : t("plans.toastSuccess.updated"))
         cancelEdit()
         fetchPlans()
       } else {
-        toast.error(data.error ?? "Error al guardar plan")
+        toast.error(data.error ?? t("plans.errors.saveFailed"))
       }
     } catch {
-      toast.error("Error al guardar plan")
+      toast.error(t("plans.errors.saveFailed"))
     } finally {
       setSaving(false)
     }
@@ -189,14 +191,14 @@ export default function AdminPlansPage() {
       })
       const data = await res.json()
       if (res.ok) {
-        toast.success("Plan eliminado")
+        toast.success(t("plans.toastSuccess.deleted"))
         setDeleteId(null)
         fetchPlans()
       } else {
-        toast.error(data.error ?? "Error al eliminar plan")
+        toast.error(data.error ?? t("plans.errors.deleteFailed"))
       }
     } catch {
-      toast.error("Error al eliminar plan")
+      toast.error(t("plans.errors.deleteFailed"))
     }
   }
 
@@ -213,15 +215,15 @@ export default function AdminPlansPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Planes</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">{t("plans.title")}</h1>
           <p className="text-muted-foreground mt-1">
-            Gestiona los planes de suscripción
+            {t("plans.subtitle")}
           </p>
         </div>
         {!isCreating && !editingId && (
           <Button className="gold-gradient text-black font-semibold" onClick={startCreate}>
             <Plus className="w-4 h-4 mr-2" />
-            Nuevo Plan
+            {t("plans.newPlan")}
           </Button>
         )}
       </div>
@@ -236,13 +238,13 @@ export default function AdminPlansPage() {
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-primary" />
-                {isCreating ? "Crear Nuevo Plan" : `Editar Plan: ${form.name}`}
+                {isCreating ? t("plans.createPlan") : `${t("plans.editPlan")}: ${form.name}`}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <Label>Nombre</Label>
+                  <Label>{t("plans.planName")}</Label>
                   <Input
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -265,7 +267,7 @@ export default function AdminPlansPage() {
                   />
                 </div>
                 <div>
-                  <Label>Precio</Label>
+                  <Label>{t("plans.price")}</Label>
                   <Input
                     type="number"
                     value={form.price}
@@ -274,7 +276,7 @@ export default function AdminPlansPage() {
                   />
                 </div>
                 <div>
-                  <Label>Moneda</Label>
+                  <Label>{t("plans.currency")}</Label>
                   <Select
                     value={form.currency}
                     onValueChange={(v) => setForm({ ...form, currency: v })}
@@ -292,7 +294,7 @@ export default function AdminPlansPage() {
                   </Select>
                 </div>
                 <div>
-                  <Label>Ciclo de facturación</Label>
+                  <Label>{t("plans.billingCycle")}</Label>
                   <Select
                     value={form.billingInterval}
                     onValueChange={(v) => setForm({ ...form, billingInterval: v })}
@@ -301,13 +303,13 @@ export default function AdminPlansPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="month">Mensual</SelectItem>
-                      <SelectItem value="year">Anual</SelectItem>
+                      <SelectItem value="month">{t("plans.monthly")}</SelectItem>
+                      <SelectItem value="year">{t("plans.yearly")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label>Días de trial</Label>
+                  <Label>{t("plans.trialDays")}</Label>
                   <Input
                     type="number"
                     value={form.trialDays}
@@ -316,7 +318,7 @@ export default function AdminPlansPage() {
                   />
                 </div>
                 <div>
-                  <Label>Orden</Label>
+                  <Label>{t("plans.sortOrder")}</Label>
                   <Input
                     type="number"
                     value={form.sortOrder}
@@ -329,14 +331,14 @@ export default function AdminPlansPage() {
                     checked={form.isActive}
                     onCheckedChange={(v) => setForm({ ...form, isActive: v })}
                   />
-                  <Label>Activo</Label>
+                  <Label>{t("plans.active")}</Label>
                 </div>
               </div>
 
               <Separator />
 
               <div>
-                <Label>Features (JSON)</Label>
+                <Label>{t("plans.features")}</Label>
                 <Textarea
                   value={form.features}
                   onChange={(e) => setForm({ ...form, features: e.target.value })}
@@ -346,7 +348,7 @@ export default function AdminPlansPage() {
               </div>
 
               <div>
-                <Label>Limits (JSON)</Label>
+                <Label>{t("plans.limits")}</Label>
                 <Textarea
                   value={form.limits}
                   onChange={(e) => setForm({ ...form, limits: e.target.value })}
@@ -366,11 +368,11 @@ export default function AdminPlansPage() {
                   ) : (
                     <Save className="w-4 h-4 mr-2" />
                   )}
-                  {isCreating ? "Crear Plan" : "Guardar Cambios"}
+                  {isCreating ? t("plans.createButton") : t("plans.saveChanges")}
                 </Button>
                 <Button variant="outline" onClick={cancelEdit}>
                   <X className="w-4 h-4 mr-2" />
-                  Cancelar
+                  Cancel
                 </Button>
               </div>
             </CardContent>
@@ -406,16 +408,16 @@ export default function AdminPlansPage() {
                 <div className="mb-4">
                   <span className="text-3xl font-bold">${plan.price}</span>
                   <span className="text-muted-foreground text-sm">
-                    /{plan.billingInterval === "month" ? "mes" : "año"}
+                    /{plan.billingInterval === "month" ? t("plans.perMonth").slice(1) : t("plans.perYear").slice(1)}
                   </span>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {plan.currency} · {plan.trialDays} días trial
+                    {plan.currency} · {plan.trialDays} {t("plans.trialDaysLabel")}
                   </p>
                 </div>
 
                 <div className="space-y-1 mb-4">
                   <Badge variant="secondary" className="text-xs">
-                    {plan._count.subscriptions} suscripciones
+                    {plan._count.subscriptions} {t("plans.subscriptions")}
                   </Badge>
                 </div>
 
@@ -427,7 +429,7 @@ export default function AdminPlansPage() {
                     onClick={() => startEdit(plan)}
                   >
                     <Edit className="w-3 h-3 mr-1" />
-                    Editar
+                    {t("plans.editPlan")}
                   </Button>
                   <Button
                     variant="outline"
@@ -449,18 +451,18 @@ export default function AdminPlansPage() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar plan?</AlertDialogTitle>
+            <AlertDialogTitle>{t("plans.deleteConfirm")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. Solo se pueden eliminar planes sin suscripciones activas.
+              {t("plans.deleteConfirmDesc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={deletePlan}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Eliminar
+              {t("plans.deleteConfirm").replace("?", "")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

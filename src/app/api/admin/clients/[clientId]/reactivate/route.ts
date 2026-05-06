@@ -1,4 +1,4 @@
-// ─── KINGNECT — Reactivar Cliente (Admin) ──────────────────────────────────────
+// ─── QAIROSS — Reactivar Cliente (Admin) ──────────────────────────────────────
 // Permite al super_admin reactivar un cliente bloqueado/cancelado
 
 import { NextResponse } from "next/server"

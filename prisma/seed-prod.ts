@@ -1,4 +1,4 @@
-// KINGNECT — Production Seed Script
+// QAIROSS — Production Seed Script
 // ⚠️  Este script se usa en producción para crear los datos mínimos necesarios.
 // ⚠️  Cambia el hash del admin ANTES de desplegar.
 //
@@ -181,11 +181,11 @@ async function main() {
     "$2a$12$CHANGE_THIS_HASH_IN_PRODUCTION_REPLACE_WITH_REAL_BCRYPT_HASH"
 
   const admin = await prisma.user.upsert({
-    where: { email: "admin@kingnect.app" },
+    where: { email: "admin@qaiross.app" },
     update: {},
     create: {
-      name: "King Designs Admin",
-      email: "admin@kingnect.app",
+      name: "QAIROSS Admin",
+      email: "admin@qaiross.app",
       passwordHash: ADMIN_PASSWORD_HASH,
       role: "super_admin",
       emailVerified: new Date(),
@@ -197,10 +197,10 @@ async function main() {
   // ── 3. Platform Settings ────────────────────────────────────────────────────
 
   const settings = [
-    { key: "app_name", value: "Kingnect", type: "text" },
-    { key: "app_url", value: "https://links.kingnect.app", type: "text" },
+    { key: "app_name", value: "QAIROSS", type: "text" },
+    { key: "app_url", value: "https://links.qaiross.app", type: "text" },
     { key: "primary_color", value: "#D4A849", type: "text" },
-    { key: "contact_email", value: "soporte@kingnect.app", type: "text" },
+    { key: "contact_email", value: "soporte@qaiross.app", type: "text" },
     { key: "whatsapp_number", value: "5215512345678", type: "text" },
     { key: "facebook_url", value: "", type: "text" },
     { key: "instagram_url", value: "", type: "text" },
@@ -266,7 +266,7 @@ async function main() {
     {
       sectionKey: "testimonials",
       title: "Lo que dicen nuestros clientes",
-      subtitle: "Negocios reales que ya usan Kingnect",
+      subtitle: "Negocios reales que ya usan QAIROSS",
       content: "",
       sortOrder: 5,
     },
@@ -276,12 +276,12 @@ async function main() {
       subtitle: "Resolvemos tus dudas",
       content: JSON.stringify([
         {
-          q: "¿Qué es Kingnect?",
-          a: "Kingnect es una plataforma que te permite crear una mini web profesional con código QR para tu negocio, sin necesidad de saber programar.",
+          q: "¿Qué es QAIROSS?",
+          a: "QAIROSS es una plataforma que te permite crear una mini web profesional con código QR para tu negocio, sin necesidad de saber programar.",
         },
         {
           q: "¿Necesito saber programar?",
-          a: "No, Kingnect está diseñado para que cualquier persona pueda crear su mini web de forma intuitiva desde su celular o computadora.",
+          a: "No, QAIROSS está diseñado para que cualquier persona pueda crear su mini web de forma intuitiva desde su celular o computadora.",
         },
         {
           q: "¿Puedo editar mi mini web cuando quiera?",

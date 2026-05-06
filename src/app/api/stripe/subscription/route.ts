@@ -1,4 +1,4 @@
-// ─── KINGNECT — Estado de Suscripción ──────────────────────────────────────────
+// ─── QAIROSS — Estado de Suscripción ──────────────────────────────────────────
 // Obtiene el estado actual de la suscripción del cliente autenticado
 
 import { NextResponse } from "next/server"

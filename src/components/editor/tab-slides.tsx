@@ -14,6 +14,7 @@ import {
   Subtitles,
   MousePointerClick,
   ToggleLeft,
+  Pencil,
 } from "lucide-react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -21,6 +22,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { useEditorStore, type SlideData } from "@/lib/editor-store"
+import { ImageEditor } from "@/components/editor/image-editor"
 
 interface TabSlidesProps {
   siteId: string
@@ -36,10 +38,26 @@ export function TabSlides({ siteId }: TabSlidesProps) {
 
   const [uploadingSlideId, setUploadingSlideId] = React.useState<string | null>(null)
   const [saving, setSaving] = React.useState(false)
+  const [imageEditorOpen, setImageEditorOpen] = React.useState(false)
+  const [editingSlideId, setEditingSlideId] = React.useState<string | null>(null)
 
   if (!site) return null
 
   const slides = [...(site.slides ?? [])].sort((a, b) => a.sortOrder - b.sortOrder)
+
+  const editingSlide = slides.find((s) => s.id === editingSlideId)
+
+  const handleEditImageSave = async (imageUrl: string) => {
+    if (!editingSlideId) return
+    handleUpdateSlide(editingSlideId, { imageUrl })
+    setImageEditorOpen(false)
+    setEditingSlideId(null)
+  }
+
+  const handleOpenImageEditor = (slideId: string) => {
+    setEditingSlideId(slideId)
+    setImageEditorOpen(true)
+  }
 
   const handleAddSlide = async () => {
     if (slides.length >= MAX_SLIDES) {
@@ -251,12 +269,18 @@ export function TabSlides({ siteId }: TabSlidesProps) {
                   <Label className="text-xs">Imagen</Label>
                   <div className="flex items-start gap-3">
                     {slide.imageUrl ? (
-                      <div className="relative size-20 rounded-md border overflow-hidden shrink-0">
+                      <div className="relative size-20 rounded-md border overflow-hidden shrink-0 group/img">
                         <img
                           src={slide.imageUrl}
                           alt={`Slide ${idx + 1}`}
                           className="size-full object-cover"
                         />
+                        <button
+                          onClick={() => handleOpenImageEditor(slide.id)}
+                          className="absolute -top-1.5 -right-1.5 size-5 rounded-full bg-[#D4A849] text-white flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity hover:bg-[#C49A3D]"
+                        >
+                          <Pencil className="size-3" />
+                        </button>
                       </div>
                     ) : (
                       <div className="size-20 rounded-md border-2 border-dashed border-muted-foreground/25 flex items-center justify-center shrink-0">
@@ -394,6 +418,19 @@ export function TabSlides({ siteId }: TabSlidesProps) {
           )}
         </CardContent>
       </Card>
+
+      {/* Image Editor Dialog */}
+      <ImageEditor
+        open={imageEditorOpen}
+        onOpenChange={(open) => {
+          setImageEditorOpen(open)
+          if (!open) setEditingSlideId(null)
+        }}
+        currentImageUrl={editingSlide?.imageUrl}
+        onSave={handleEditImageSave}
+        aspectRatio="landscape"
+        title="Editar imagen del slide"
+      />
     </div>
   )
 }

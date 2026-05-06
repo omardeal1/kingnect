@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
+import { useTranslations } from "@/i18n/provider"
 import {
   Globe,
   Users,
@@ -55,6 +56,7 @@ const item = {
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
+  const { t } = useTranslations("admin")
 
   useEffect(() => {
     fetch("/api/admin/stats")
@@ -75,77 +77,77 @@ export default function AdminDashboard() {
   if (!stats) {
     return (
       <div className="flex items-center justify-center h-[60vh]">
-        <p className="text-muted-foreground">Error al cargar estadísticas</p>
+        <p className="text-muted-foreground">{t("dashboard.errorLoading")}</p>
       </div>
     )
   }
 
   const metricCards = [
     {
-      label: "Kinecs Activas",
+      label: t("dashboard.sites.active"),
       value: stats.sites.active,
       icon: CheckCircle2,
       color: "text-emerald-500",
       bgColor: "bg-emerald-500/10",
     },
     {
-      label: "Kinecs Inactivas",
+      label: t("dashboard.sites.inactive"),
       value: stats.sites.inactive,
       icon: XCircle,
       color: "text-red-500",
       bgColor: "bg-red-500/10",
     },
     {
-      label: "Kinecs Borrador",
+      label: t("dashboard.sites.draft"),
       value: stats.sites.draft,
       icon: FileEdit,
       color: "text-amber-500",
       bgColor: "bg-amber-500/10",
     },
     {
-      label: "Clientes Nuevos (Mes)",
+      label: t("dashboard.clients.newThisMonth"),
       value: stats.clients.newThisMonth,
       icon: TrendingUp,
       color: "text-primary",
       bgColor: "bg-primary/10",
     },
     {
-      label: "Clientes Activos",
+      label: t("dashboard.clients.active"),
       value: stats.clients.active,
       icon: Users,
       color: "text-emerald-500",
       bgColor: "bg-emerald-500/10",
     },
     {
-      label: "Clientes Bloqueados",
+      label: t("dashboard.clients.blocked"),
       value: stats.clients.blocked,
       icon: AlertCircle,
       color: "text-red-500",
       bgColor: "bg-red-500/10",
     },
     {
-      label: "En Trial",
+      label: t("dashboard.clients.trial"),
       value: stats.clients.trial,
       icon: Clock,
       color: "text-amber-500",
       bgColor: "bg-amber-500/10",
     },
     {
-      label: "MRR Estimado",
+      label: t("dashboard.revenue.mrr"),
       value: `$${stats.revenue.mrr.toLocaleString("es")}`,
       icon: DollarSign,
       color: "text-primary",
       bgColor: "bg-primary/10",
     },
     {
-      label: "Pedidos Hoy",
+      label: t("dashboard.orders.today"),
       value: stats.orders.today,
       icon: ShoppingCart,
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
     },
     {
-      label: "Pedidos Este Mes",
+      label: t("dashboard.orders.thisMonth"),
       value: stats.orders.thisMonth,
       icon: ShoppingCart,
       color: "text-blue-500",
@@ -158,15 +160,15 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Dashboard Admin</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">{t("dashboard.title")}</h1>
           <p className="text-muted-foreground mt-1">
-            Vista general de KINGNECT
+            {t("dashboard.subtitle")}
           </p>
         </div>
         <Button asChild className="gold-gradient text-black font-semibold">
           <Link href="/admin/sites">
             <Plus className="w-4 h-4 mr-2" />
-            Nuevo Kinec
+            {t("dashboard.newQaiross")}
           </Link>
         </Button>
       </div>
@@ -202,13 +204,13 @@ export default function AdminDashboard() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Activity className="w-4 h-4 text-primary" />
-              Última Actividad
+              {t("dashboard.lastActivity")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {stats.recentActivity.length === 0 ? (
               <p className="text-sm text-muted-foreground py-4 text-center">
-                Sin actividad reciente
+                {t("dashboard.noActivity")}
               </p>
             ) : (
               <div className="space-y-3">
@@ -221,7 +223,7 @@ export default function AdminDashboard() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{log.action}</p>
                       <p className="text-xs text-muted-foreground">
-                        {log.user?.name ?? "Sistema"} ·{" "}
+                        {log.user?.name ?? "System"} ·{" "}
                         {new Date(log.createdAt).toLocaleDateString("es", {
                           day: "numeric",
                           month: "short",
@@ -242,14 +244,14 @@ export default function AdminDashboard() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Globe className="w-4 h-4 text-primary" />
-              Resumen de Kinecs
+              {t("dashboard.qairossSummary")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Eye className="w-4 h-4 text-emerald-500" />
-                <span className="text-sm">Publicadas y Activas</span>
+                <span className="text-sm">{t("dashboard.publishedActive")}</span>
               </div>
               <Badge variant="secondary" className="font-bold">
                 {stats.sites.active}
@@ -258,7 +260,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <EyeOff className="w-4 h-4 text-red-500" />
-                <span className="text-sm">Desactivadas</span>
+                <span className="text-sm">{t("dashboard.deactivated")}</span>
               </div>
               <Badge variant="secondary" className="font-bold">
                 {stats.sites.inactive}
@@ -267,7 +269,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <FileEdit className="w-4 h-4 text-amber-500" />
-                <span className="text-sm">Borrador</span>
+                <span className="text-sm">{t("dashboard.draft")}</span>
               </div>
               <Badge variant="secondary" className="font-bold">
                 {stats.sites.draft}
@@ -283,8 +285,8 @@ export default function AdminDashboard() {
             </div>
             <p className="text-xs text-muted-foreground text-center">
               {stats.sites.total > 0
-                ? `${Math.round((stats.sites.active / stats.sites.total) * 100)}% de Kinecs activas`
-                : "Sin Kinecs"}
+                ? t("dashboard.activePercentage", { percentage: Math.round((stats.sites.active / stats.sites.total) * 100) })
+                : t("dashboard.noQaiross")}
             </p>
           </CardContent>
         </Card>

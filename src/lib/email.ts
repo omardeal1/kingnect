@@ -1,4 +1,4 @@
-// ─── KINGNECT — Email Service (Resend) ──────────────────────────────────────────
+// ─── QAIROSS — Email Service (Resend) ────────────────────────────────────────────
 // Envío de emails transaccionales usando Resend
 // Si Resend no está configurado, los emails se loguean en consola (dev mode)
 
@@ -36,7 +36,7 @@ interface SendPasswordResetParams {
 export async function sendPasswordResetEmail({ to, resetUrl, businessName }: SendPasswordResetParams) {
   const resend = getResend()
   const fromEmail = process.env.EMAIL_FROM || "onboarding@resend.dev"
-  const appName = process.env.NEXT_PUBLIC_APP_NAME || "Kingnect"
+  const appName = process.env.NEXT_PUBLIC_APP_NAME || "QAIROSS"
 
   if (!resend) {
     // Modo desarrollo: loguear el enlace
@@ -78,7 +78,7 @@ export async function sendPasswordResetEmail({ to, resetUrl, businessName }: Sen
             <div class="card">
               <div class="logo">
                 <h1>${appName}</h1>
-                <p>Tu negocio en un Kinec profesional</p>
+                <p>Tu negocio en una página de QAIROSS profesional</p>
               </div>
               <h2>Restablecer tu contraseña</h2>
               <p>Hola${businessName ? ` ${businessName}` : ""},</p>
@@ -95,7 +95,7 @@ export async function sendPasswordResetEmail({ to, resetUrl, businessName }: Sen
               </p>
             </div>
             <div class="footer">
-              <p>© ${new Date().getFullYear()} ${appName} by King Designs. Todos los derechos reservados.</p>
+              <p>© ${new Date().getFullYear()} ${appName} by QAIROSS. Todos los derechos reservados.</p>
             </div>
           </div>
         </body>
@@ -126,7 +126,7 @@ interface SendWelcomeParams {
 export async function sendWelcomeEmail({ to, businessName, loginUrl }: SendWelcomeParams) {
   const resend = getResend()
   const fromEmail = process.env.EMAIL_FROM || "onboarding@resend.dev"
-  const appName = process.env.NEXT_PUBLIC_APP_NAME || "Kingnect"
+  const appName = process.env.NEXT_PUBLIC_APP_NAME || "QAIROSS"
 
   if (!resend) {
     console.log(`📧 [DEV] Welcome email para ${to}`)
@@ -164,10 +164,10 @@ export async function sendWelcomeEmail({ to, businessName, loginUrl }: SendWelco
                 <h1>${appName}</h1>
               </div>
               <h2>¡Bienvenido, ${businessName}! 🎉</h2>
-              <p>Tu cuenta ha sido creada exitosamente. Ya puedes empezar a configurar tu Kinec profesional con QR.</p>
+              <p>Tu cuenta ha sido creada exitosamente. Ya puedes empezar a configurar tu página de QAIROSS profesional con QR.</p>
               <p>Esto es lo que puedes hacer:</p>
               <ul>
-                <li>Personalizar el diseño de tu Kinec</li>
+                <li>Personalizar el diseño de tu QAIROSS</li>
                 <li>Agregar tus redes sociales y WhatsApp</li>
                 <li>Subir tu catálogo o menú</li>
                 <li>Descargar tu código QR</li>
@@ -177,7 +177,7 @@ export async function sendWelcomeEmail({ to, businessName, loginUrl }: SendWelco
               </div>
             </div>
             <div class="footer">
-              <p>© ${new Date().getFullYear()} ${appName} by King Designs</p>
+              <p>© ${new Date().getFullYear()} ${appName} by QAIROSS</p>
             </div>
           </div>
         </body>

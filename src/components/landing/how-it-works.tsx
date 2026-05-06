@@ -11,58 +11,14 @@ import {
   Printer,
   type LucideIcon,
 } from "lucide-react"
+import { useTranslations } from "@/i18n/provider"
 
 interface Step {
   number: number
   icon: LucideIcon
-  title: string
-  description: string
+  titleKey: string
+  descriptionKey: string
 }
-
-const STEPS: Step[] = [
-  {
-    number: 1,
-    icon: UserPlus,
-    title: "Regístrate",
-    description: "Crea tu cuenta gratis en menos de un minuto.",
-  },
-  {
-    number: 2,
-    icon: Image,
-    title: "Sube tu logo y datos",
-    description: "Agrega tu logo, nombre, descripción y colores de marca.",
-  },
-  {
-    number: 3,
-    icon: ToggleRight,
-    title: "Activa tus redes y botones",
-    description: "Conecta WhatsApp, Instagram, Facebook y más con un clic.",
-  },
-  {
-    number: 4,
-    icon: PackagePlus,
-    title: "Agrega productos o menú",
-    description: "Sube tu catálogo con fotos, precios y descripciones.",
-  },
-  {
-    number: 5,
-    icon: Globe,
-    title: "Publica tu Kinec",
-    description: "Un clic y tu Kinec está online para todo el mundo.",
-  },
-  {
-    number: 6,
-    icon: Download,
-    title: "Descarga tu QR",
-    description: "Obtén tu código QR en PNG y SVG para imprimir.",
-  },
-  {
-    number: 7,
-    icon: Printer,
-    title: "Imprímelo en tarjetas, carpas o banderas",
-    description: "Usa tu QR en cualquier material impreso y recibe clientes.",
-  },
-]
 
 const stepVariants = {
   hidden: { opacity: 0, y: 30 },
@@ -74,6 +30,53 @@ const stepVariants = {
 }
 
 export function HowItWorks() {
+  const { t } = useTranslations("landing.howItWorks")
+
+  const STEPS: Step[] = [
+    {
+      number: 1,
+      icon: UserPlus,
+      titleKey: "steps.register.title",
+      descriptionKey: "steps.register.description",
+    },
+    {
+      number: 2,
+      icon: Image,
+      titleKey: "steps.logo.title",
+      descriptionKey: "steps.logo.description",
+    },
+    {
+      number: 3,
+      icon: ToggleRight,
+      titleKey: "steps.networks.title",
+      descriptionKey: "steps.networks.description",
+    },
+    {
+      number: 4,
+      icon: PackagePlus,
+      titleKey: "steps.products.title",
+      descriptionKey: "steps.products.description",
+    },
+    {
+      number: 5,
+      icon: Globe,
+      titleKey: "steps.publish.title",
+      descriptionKey: "steps.publish.description",
+    },
+    {
+      number: 6,
+      icon: Download,
+      titleKey: "steps.downloadQr.title",
+      descriptionKey: "steps.downloadQr.description",
+    },
+    {
+      number: 7,
+      icon: Printer,
+      titleKey: "steps.print.title",
+      descriptionKey: "steps.print.description",
+    },
+  ]
+
   return (
     <section id="como-funciona" className="bg-muted/40 py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -85,13 +88,13 @@ export function HowItWorks() {
           transition={{ duration: 0.5 }}
         >
           <span className="mb-3 inline-block rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-sm font-medium text-gold">
-            Paso a paso
+            {t("badge")}
           </span>
           <h2 className="mt-4 text-3xl font-bold text-foreground sm:text-4xl">
-            ¿Cómo funciona?
+            {t("title")}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            En solo 7 pasos tu Kinec estará lista para recibir clientes
+            {t("subtitle")}
           </p>
         </motion.div>
 
@@ -122,10 +125,10 @@ export function HowItWorks() {
                     </div>
                   </div>
                   <h3 className="mt-4 text-sm font-semibold text-foreground">
-                    {step.title}
+                    {t(step.titleKey)}
                   </h3>
                   <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                    {step.description}
+                    {t(step.descriptionKey)}
                   </p>
                 </motion.div>
               ))}
@@ -161,10 +164,10 @@ export function HowItWorks() {
                   </div>
                   <div className="pt-2">
                     <h3 className="text-base font-semibold text-foreground">
-                      {step.title}
+                      {t(step.titleKey)}
                     </h3>
                     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                      {step.description}
+                      {t(step.descriptionKey)}
                     </p>
                   </div>
                 </motion.div>

@@ -1,4 +1,4 @@
-// ─── KINGNECT — Supabase Client ────────────────────────────────────────────────
+// ─── QAIROSS — Supabase Client ────────────────────────────────────────────────
 // Clientes de Supabase para browser y servidor
 // El cliente de servidor usa service role key para operaciones privilegiadas (uploads)
 

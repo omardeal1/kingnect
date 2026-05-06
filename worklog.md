@@ -1,4 +1,4 @@
-# KINGNECT — Work Log
+# QAIROSS — Work Log
 
 ---
 Task ID: 1
@@ -11,12 +11,12 @@ Work Log:
 - Pushed schema to SQLite database and seeded with 4 plans + admin
 - Created lib files: auth.ts, validations.ts, permissions.ts, constants.ts, editor-store.ts, query-client.ts
 - Created .env, PWA files, database/ SQL files
-- Updated globals.css with KINGNECT light/dark theme
+- Updated globals.css with QAIROSS light/dark theme
 - Updated root layout.tsx with ThemeProvider and QueryProvider
 
 Stage Summary:
 - Complete database schema functional
-- Super admin: admin@kingnect.app / Admin123!
+- Super admin: admin@qaiross.app / Admin123!
 - Lint passes with 0 errors
 
 ---
@@ -115,57 +115,57 @@ Work Log:
 - FIX 5: Added input validation to sites PUT: businessName, slug format/uniqueness, hex color validation, string trimming, enum checks
 - FIX 6: Order total now calculated server-side from items; individual item totals also server-computed
 - FIX 7: Prisma logging now dev-only (query in development, error in production)
-- FIX 8: Created demo user (demo@kingnect.app / Demo123!) with full sample data: client, subscription, mini site, social links, contact buttons, location, menu (2 categories × 2 items), gallery, testimonials
+- FIX 8: Created demo user (demo@qaiross.app / Demo123!) with full sample data: client, subscription, mini site, social links, contact buttons, location, menu (2 categories × 2 items), gallery, testimonials
 - Also updated security.ts to remove SVG from ALLOWED_IMAGE_TYPES
 
 Stage Summary:
 - All 8 security/backend fixes applied successfully
 - Lint passes with 0 errors
 - Dev server running without errors
-- Demo credentials: demo@kingnect.app / Demo123!
+- Demo credentials: demo@qaiross.app / Demo123!
 - Demo site slug: restaurante-el-sabor
 
 ---
 Task ID: fix-critical-branding
 Agent: Critical Bug Fix & Branding Agent
-Task: Fix 10 Critical Bugs + Full "mini web" → "Kinec" Branding Update
+Task: Fix 10 Critical Bugs + Full "mini web" → "QAIROSS" Branding Update
 
 Work Log:
 - FIX 1: Changed `import { React } from "react"` → `import * as React from "react"` in sites/[id]/edit/page.tsx (was causing runtime crash)
 - FIX 2: Replaced `Math.random() > 0.35 ? "bg-foreground" : "bg-transparent"` with deterministic `(row + col) % 3 === 0 ? "bg-foreground" : "bg-transparent"` in hero.tsx QR grid (was causing hydration mismatch)
 - FIX 3: Removed DOM memory leak in qr-display.tsx — deleted tempDiv creation + appendChild to document.body, removed unused canvasRef and hidden QRCodeCanvas component
 - FIX 4: Added `.safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }` CSS rule to globals.css for iOS safe area support
-- FIX 5: Created error.tsx (global error boundary with "Algo salió mal" message + retry button) and [slug]/not-found.tsx ("Kinec no encontrado" with SearchX icon + back link)
+- FIX 5: Created error.tsx (global error boundary with "Algo salió mal" message + retry button) and [slug]/not-found.tsx ("QAIROSS no encontrado" with SearchX icon + back link)
 - FIX 6: Added onClick handlers with toast.info() to "Reactivar ahora", "Gestionar suscripción", and "Cambiar plan" buttons in billing page (were dead/non-functional)
-- FIX 7: Changed `APP_URL = "https://links.kingnect.app"` to `APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://links.kingnect.app"` in constants.ts
+- FIX 7: Changed `APP_URL = "https://links.qaiross.app"` to `APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://links.qaiross.app"` in constants.ts
 - FIX 8: Updated copyright year from "© 2024" to "© 2025" in footer.tsx
 - FIX 9: Wrapped all navigator.clipboard.writeText() calls in try/catch with toast.error fallback across 3 files: qr-display.tsx, qr-section.tsx, contact-buttons.tsx
 - FIX 10: Expanded account status check in [slug]/page.tsx from just "blocked" to also include "payment_failed", "cancelled", "trial_expired"
 
-BRANDING CHANGES — "mini web" → "Kinec" / "centro digital" across 20+ files:
-- constants.ts: APP_DESCRIPTION, APP_TAGLINE, PLAN_FEATURES (1 Kinec instead of 1 mini web)
-- hero.tsx: "mini web profesional" → "Kinec profesional", "Crear mi mini web" → "Crear mi Kinec"
-- cta-section.tsx: "crear tu mini web" → "crear tu Kinec", "Crear mi mini web" → "Crear mi Kinec"
+BRANDING CHANGES — "mini web" → "QAIROSS" / "centro digital" across 20+ files:
+- constants.ts: APP_DESCRIPTION, APP_TAGLINE, PLAN_FEATURES (1 QAIROSS instead of 1 mini web)
+- hero.tsx: "mini web profesional" → "QAIROSS profesional", "Crear mi mini web" → "Crear mi QAIROSS"
+- cta-section.tsx: "crear tu mini web" → "crear tu QAIROSS", "Crear mi mini web" → "Crear mi QAIROSS"
 - footer.tsx: © 2024 → © 2025 (already done)
-- dashboard-shell.tsx: "Mi Mini Web" → "Mi Kinec" (nav label + comment)
-- admin-shell.tsx: "Mini Webs" → "Kinecs" (nav label)
-- editor-layout.tsx: "Editar Mini Web" → "Editar Kinec", "¡Mini web publicada!" → "¡Kinec publicado!"
-- editor-header.tsx: "Abrir mini web" → "Abrir Kinec" tooltip
+- dashboard-shell.tsx: "Mi Mini Web" → "Mi QAIROSS" (nav label + comment)
+- admin-shell.tsx: "Mini Webs" → "QAIROSSs" (nav label)
+- editor-layout.tsx: "Editar Mini Web" → "Editar QAIROSS", "¡Mini web publicada!" → "¡QAIROSS publicado!"
+- editor-header.tsx: "Abrir mini web" → "Abrir QAIROSS" tooltip
 - blocked-screen.tsx: "Esta mini web está desactivada" → "Este centro digital está desactivado"
-- qr-section.tsx: "Comparte esta página" → "Comparte tu Kinec"
-- [slug]/page.tsx: "Mini Web" → "Kinec" in metadata title
-- layout.tsx: All "mini web" → "Kinec" in metadata
-- Admin pages (admin/page.tsx, sites/page.tsx, clients/page.tsx): "Mini Web" → "Kinec", "Mini Webs" → "Kinecs"
-- Dashboard pages (page.tsx, orders/page.tsx): "mini web" → "Kinec"
-- Editor tabs (tab-datos.tsx, tab-links.tsx, tab-seo.tsx): "mini web" → "Kinec"
-- Landing components (benefits.tsx, faq-section.tsx, navbar.tsx, orders-section.tsx, how-it-works.tsx, testimonials-section.tsx): all "mini web" → "Kinec"
-- API routes (manifest, sites, stats, auth/register): "mini web" → "Kinec"
-- permissions.ts, security.ts: "mini site" → "Kinec"
-- README.md: All "mini web" → "Kinec", "Mini Web" → "Kinec", "Mini Webs" → "Kinecs"
+- qr-section.tsx: "Comparte esta página" → "Comparte tu QAIROSS"
+- [slug]/page.tsx: "Mini Web" → "QAIROSS" in metadata title
+- layout.tsx: All "mini web" → "QAIROSS" in metadata
+- Admin pages (admin/page.tsx, sites/page.tsx, clients/page.tsx): "Mini Web" → "QAIROSS", "Mini Webs" → "QAIROSSs"
+- Dashboard pages (page.tsx, orders/page.tsx): "mini web" → "QAIROSS"
+- Editor tabs (tab-datos.tsx, tab-links.tsx, tab-seo.tsx): "mini web" → "QAIROSS"
+- Landing components (benefits.tsx, faq-section.tsx, navbar.tsx, orders-section.tsx, how-it-works.tsx, testimonials-section.tsx): all "mini web" → "QAIROSS"
+- API routes (manifest, sites, stats, auth/register): "mini web" → "QAIROSS"
+- permissions.ts, security.ts: "mini site" → "QAIROSS"
+- README.md: All "mini web" → "QAIROSS", "Mini Web" → "QAIROSS", "Mini Webs" → "QAIROSSs"
 
 Stage Summary:
 - All 10 critical bug fixes applied
-- Full rebranding from "mini web" to "Kinec" across entire codebase
+- Full rebranding from "mini web" to "QAIROSS" across entire codebase
 - Zero "mini web" / "Mini Web" / "mini site" references remaining in src/ or README.md
 - Lint passes with 0 errors (3 pre-existing warnings only)
 - Dev server running without errors
@@ -235,7 +235,7 @@ Stage Summary:
 ---
 Task ID: 5
 Agent: Analytics Agent
-Task: Implement real analytics tracking for Kinec public pages
+Task: Implement real analytics tracking for QAIROSS public pages
 
 Work Log:
 - Created /src/lib/analytics.ts — client-side analytics tracking module
@@ -320,14 +320,14 @@ Work Log:
 - Updated next.config.ts:
   - Removed `ignoreBuildErrors: true` (was hiding TypeScript errors)
   - Enabled `reactStrictMode: true` (was false)
-  - Added `images.remotePatterns` for *.supabase.co, *.googleapis.com, links.kingnect.app
+  - Added `images.remotePatterns` for *.supabase.co, *.googleapis.com, links.qaiross.app
   - Added security headers on all routes: X-Frame-Options DENY, X-Content-Type-Options nosniff, Referrer-Policy strict-origin-when-cross-origin, Permissions-Policy
   - Added X-Robots-Tag noindex/nofollow on /api/* routes
 - Updated public/manifest.webmanifest:
-  - Changed name from "Kingnect — Mini Webs Profesionales" to "Kingnect"
+  - Changed name from "QAIROSS — Mini Webs Profesionales" to "QAIROSS"
   - Replaced all /logo.svg icon references with proper PNG icons: /icons/icon-192x192.png, /icons/icon-512x512.png
   - Added both "any" and "maskable" purpose entries for each size
-  - Updated shortcut "Crear Mini Web" → "Crear Kinec"
+  - Updated shortcut "Crear Mini Web" → "Crear QAIROSS"
 - Updated src/app/layout.tsx:
   - Changed icons from /logo.svg to /icons/favicon-32x32.png + /icons/apple-touch-icon.png
   - Added SWProvider import and component inside AuthProvider
@@ -337,11 +337,11 @@ Work Log:
   - Logs registration success/failure to console
 - Created public/offline.html:
   - Standalone HTML page for offline PWA fallback
-  - Kingnect branded with gold #D4A849 accent
+  - QAIROSS branded with gold #D4A849 accent
   - Shows "Sin conexión" message with description
   - "Reintentar" button that reloads the page
   - Responsive and mobile-friendly design
-  - Powered by Kingnect footer
+  - Powered by QAIROSS footer
 
 Stage Summary:
 - Production-ready Next.js config with security headers and image optimization
@@ -418,7 +418,7 @@ Stage Summary:
 ---
 Task ID: 7
 Agent: E2E Testing Agent
-Task: Set up Playwright E2E testing for the Kinec platform
+Task: Set up Playwright E2E testing for the QAIROSS platform
 
 Work Log:
 - Created /playwright.config.ts with:
@@ -433,7 +433,7 @@ Work Log:
 - Created /tests/api-health.spec.ts — 2 tests: GET /api/health returns 200, response contains status: "ok"
 - Added scripts to package.json: "test:e2e", "test:e2e:ui", "test:e2e:headed"
 - Installed Playwright Chromium browser via npx playwright install chromium
-- Used actual DB credentials (admin@kingnect.app / Admin123!) instead of task-specified ones (admin@kingnect.com / admin123) which don't exist
+- Used actual DB credentials (admin@qaiross.app / Admin123!) instead of task-specified ones (admin@qaiross.com / admin123) which don't exist
 - Fixed selectors iteratively: .first() for multi-match texts, getByRole("heading") for dashboard, getByPlaceholder() for register form fields (react-hook-form auto-IDs)
 
 Stage Summary:

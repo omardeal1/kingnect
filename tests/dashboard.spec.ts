@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 // Helper to log in as a client user via the UI
 async function loginAsClient(page: import("@playwright/test").Page) {
   await page.goto("/login");
-  await page.fill('input[id="email"]', "demo@kingnect.app");
+  await page.fill('input[id="email"]', "demo@qaiross.app");
   await page.fill('input[id="password"]', "Demo123!");
   await page.getByRole("button", { name: "Iniciar sesión" }).click();
   // Wait for redirect to dashboard

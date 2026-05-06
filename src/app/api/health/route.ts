@@ -1,4 +1,4 @@
-// ─── KINGNECT — Health Check API ────────────────────────────────────────────────
+// ─── QAIROSS — Health Check API ────────────────────────────────────────────────
 // Endpoint público de salud para monitoreo de uptime (sin autenticación)
 // Verifica: base de datos, Stripe, email (Resend), storage (Supabase)
 

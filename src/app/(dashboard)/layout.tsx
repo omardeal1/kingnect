@@ -15,7 +15,7 @@ export default async function DashboardLayout({
     redirect("/login")
   }
 
-  // Fetch client data with subscription and Kinec
+  // Fetch client data with subscription and QAIROSS
   const client = await db.client.findUnique({
     where: { ownerUserId: session.user.id },
     include: {

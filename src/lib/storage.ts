@@ -1,4 +1,4 @@
-// ─── KINGNECT — Storage Upload ─────────────────────────────────────────────────
+// ─── QAIROSS — Storage Upload ─────────────────────────────────────────────────
 // Abstracción de upload que soporta Supabase Storage (producción)
 // y fallback a filesystem local (desarrollo)
 

@@ -5,13 +5,13 @@
 
 ## Summary
 
-Created complete authentication system for KINGNECT with login, register, and forgot-password pages, plus supporting API routes. All pages use Spanish text, premium white/gold (#D4A849) design, Framer Motion animations, and are mobile responsive.
+Created complete authentication system for QAIROSS with login, register, and forgot-password pages, plus supporting API routes. All pages use Spanish text, premium white/gold (#D4A849) design, Framer Motion animations, and are mobile responsive.
 
 ## Files Created
 
 ### 1. `/src/app/(auth)/layout.tsx` — Auth Layout
 - Centered container with max-w-md
-- Kingnect logo at top (Crown icon + styled text in black/gold)
+- QAIROSS logo at top (Crown icon + styled text in black/gold)
 - Theme toggle (sun/moon) in top-right corner using next-themes
 - Subtle background with gold decorative elements (blurred circles, gradient lines, floating particles)
 - Framer Motion entrance animations

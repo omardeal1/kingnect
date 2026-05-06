@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { CheckCircle2 } from "lucide-react"
+import { useTranslations } from "@/i18n/provider"
 
 interface OrderSuccessProps {
   orderNumber: string
@@ -10,6 +11,7 @@ interface OrderSuccessProps {
 }
 
 export function OrderSuccess({ orderNumber, accentColor, textColor }: OrderSuccessProps) {
+  const { t } = useTranslations("minisite")
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -28,7 +30,7 @@ export function OrderSuccess({ orderNumber, accentColor, textColor }: OrderSucce
       </motion.div>
 
       <h3 className="text-lg font-bold mb-2" style={{ color: textColor }}>
-        ¡Tu pedido ha sido confirmado!
+        {t("orders.success")}
       </h3>
 
       <div
@@ -39,7 +41,7 @@ export function OrderSuccess({ orderNumber, accentColor, textColor }: OrderSucce
       </div>
 
       <p className="text-sm opacity-70" style={{ color: textColor }}>
-        Te contactaremos pronto para confirmar los detalles.
+        {t("orders.successDesc")}
       </p>
     </motion.div>
   )

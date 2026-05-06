@@ -23,6 +23,7 @@ import { Separator } from "@/components/ui/separator"
 import { PLAN_FEATURES } from "@/lib/constants"
 import { useDashboardStore } from "@/lib/dashboard-store"
 import { toast } from "sonner"
+import { useTranslations, useLocale } from "@/i18n/provider"
 
 interface PlanData {
   id: string
@@ -50,6 +51,8 @@ const item = {
 }
 
 export default function BillingPage() {
+  const { t } = useTranslations("dashboard")
+  const { locale } = useLocale()
   const dashboardData = useDashboardStore((s) => s.data)
   const { planName, planPrice, planSlug, isBlocked, periodEnd, clientId } = dashboardData
 
@@ -60,7 +63,7 @@ export default function BillingPage() {
     queryKey: ["plans"],
     queryFn: async () => {
       const res = await fetch("/api/plans")
-      if (!res.ok) throw new Error("Error al cargar planes")
+      if (!res.ok) throw new Error("Error")
       return res.json()
     },
   })
@@ -80,7 +83,7 @@ export default function BillingPage() {
   const [checkoutLoading, setCheckoutLoading] = React.useState<string | null>(null)
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat("es-MX", {
+    return new Intl.DateTimeFormat(locale === "es" ? "es-MX" : "en-US", {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -104,7 +107,7 @@ export default function BillingPage() {
 
   const handleOpenPortal = async () => {
     if (!clientId) {
-      toast.error("No se pudo identificar tu cuenta")
+      toast.error(t("billing.idRequired"))
       return
     }
     setPortalLoading(true)
@@ -117,9 +120,9 @@ export default function BillingPage() {
       const data = await res.json()
       if (!res.ok) {
         if (data.code === "STRIPE_NOT_CONFIGURED") {
-          toast.error("Los pagos en línea no están disponibles en este momento. Contacta al soporte.")
+          toast.error(t("billing.stripeNotConfigured"))
         } else {
-          toast.error(data.error || "Error al abrir el portal de pagos")
+          toast.error(data.error || t("billing.portalError"))
         }
         return
       }
@@ -127,7 +130,7 @@ export default function BillingPage() {
         window.location.href = data.url
       }
     } catch {
-      toast.error("Error de conexión. Intenta de nuevo.")
+      toast.error(t("billing.connectionError"))
     } finally {
       setPortalLoading(false)
     }
@@ -135,16 +138,16 @@ export default function BillingPage() {
 
   const handleChangePlan = async (planSlug: string) => {
     if (planSlug === "trial") {
-      toast.info("El plan Trial es gratuito y se asigna automáticamente.")
+      toast.info(t("billing.trialFree"))
       return
     }
     if (!clientId) {
-      toast.error("No se pudo identificar tu cuenta")
+      toast.error(t("billing.idRequired"))
       return
     }
     const planId = plansById[planSlug]
     if (!planId) {
-      toast.error("Plan no encontrado. Intenta recargar la página.")
+      toast.error(t("billing.planNotFound"))
       return
     }
     setCheckoutLoading(planSlug)
@@ -157,9 +160,9 @@ export default function BillingPage() {
       const data = await res.json()
       if (!res.ok) {
         if (data.code === "STRIPE_NOT_CONFIGURED") {
-          toast.error("Los pagos en línea no están disponibles en este momento. Contacta al soporte.")
+          toast.error(t("billing.stripeNotConfigured"))
         } else {
-          toast.error(data.error || "Error al iniciar el proceso de pago")
+          toast.error(data.error || t("billing.checkoutError"))
         }
         return
       }
@@ -167,7 +170,7 @@ export default function BillingPage() {
         window.location.href = data.url
       }
     } catch {
-      toast.error("Error de conexión. Intenta de nuevo.")
+      toast.error(t("billing.connectionError"))
     } finally {
       setCheckoutLoading(null)
     }
@@ -189,10 +192,10 @@ export default function BillingPage() {
                 <AlertTriangle className="size-5 text-destructive shrink-0" />
                 <div>
                   <p className="font-medium text-destructive">
-                    Tu cuenta está pausada
+                    {t("billing.accountPaused")}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Actualiza tu método de pago para reactivar tu suscripción
+                    {t("billing.accountPausedDesc")}
                   </p>
                 </div>
                 <Button
@@ -204,7 +207,7 @@ export default function BillingPage() {
                   {portalLoading ? (
                     <Loader2 className="size-3.5 animate-spin mr-1.5" />
                   ) : null}
-                  Reactivar ahora
+                  {t("billing.reactivateNow")}
                 </Button>
               </div>
             </CardContent>
@@ -218,11 +221,11 @@ export default function BillingPage() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <CreditCard className="size-4" />
-              Plan actual
+              {t("billing.currentPlan")}
             </CardTitle>
-            <CardDescription>Detalles de tu suscripción</CardDescription>
+            <CardDescription>{t("billing.currentSubscription")}</CardDescription>
             <CardAction>
-              <Badge variant="secondary">Activo</Badge>
+              <Badge variant="secondary">{t("billing.active")}</Badge>
             </CardAction>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -234,7 +237,7 @@ export default function BillingPage() {
                 <div>
                   <p className="font-semibold">{planName}</p>
                   <p className="text-sm text-muted-foreground">
-                    Vence el {formatDate(pEnd)}
+                    {t("billing.expires", { date: formatDate(pEnd) })}
                   </p>
                 </div>
               </div>
@@ -242,7 +245,7 @@ export default function BillingPage() {
                 <span className="text-2xl font-bold">
                   ${planPrice}
                 </span>
-                <span className="text-sm text-muted-foreground">/mes</span>
+                <span className="text-sm text-muted-foreground">{t("billing.perMonth")}</span>
               </div>
             </div>
             <Separator />
@@ -258,7 +261,7 @@ export default function BillingPage() {
                 ) : (
                   <ExternalLink className="size-3.5" />
                 )}
-                Gestionar suscripción
+                {t("billing.manageSubscription")}
               </Button>
             </div>
           </CardContent>
@@ -268,9 +271,9 @@ export default function BillingPage() {
       {/* Plan Comparison */}
       <motion.div variants={item}>
         <div className="mb-4">
-          <h2 className="text-lg font-semibold">Elige tu plan</h2>
+          <h2 className="text-lg font-semibold">{t("billing.choosePlan")}</h2>
           <p className="text-sm text-muted-foreground">
-            Cambia de plan en cualquier momento
+            {t("billing.choosePlanDesc")}
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -289,13 +292,13 @@ export default function BillingPage() {
                 >
                   {isCurrent && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <Badge className="text-[10px]">Plan actual</Badge>
+                      <Badge className="text-[10px]">{t("billing.currentPlanBadge")}</Badge>
                     </div>
                   )}
                   {plan.popular && !isCurrent && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                       <Badge className="text-[10px] bg-accent text-accent-foreground">
-                        Popular
+                        {t("billing.popular")}
                       </Badge>
                     </div>
                   )}
@@ -314,7 +317,7 @@ export default function BillingPage() {
                         ${plan.price}
                       </span>
                       <span className="text-sm text-muted-foreground">
-                        /{plan.billingInterval === "month" ? "mes" : "año"}
+                        /{plan.billingInterval === "month" ? t("billing.perMonth").slice(1) : t("billing.perYear").slice(1)}
                       </span>
                     </div>
                     <ul className="space-y-2">
@@ -336,7 +339,7 @@ export default function BillingPage() {
                         className="w-full"
                         disabled
                       >
-                        Plan actual
+                        {t("billing.currentPlanBadge")}
                       </Button>
                     ) : (
                       <Button
@@ -348,10 +351,10 @@ export default function BillingPage() {
                         {checkoutLoading === plan.slug ? (
                           <Loader2 className="size-3.5 animate-spin" />
                         ) : plan.price === 0 ? (
-                          "Comenzar gratis"
+                          t("billing.startFree")
                         ) : (
                           <>
-                            Cambiar plan
+                            {t("billing.changePlan")}
                             <ArrowRight className="size-3.5" />
                           </>
                         )}
@@ -371,20 +374,20 @@ export default function BillingPage() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Receipt className="size-4" />
-              Historial de pagos
+              {t("billing.invoiceHistory")}
             </CardTitle>
             <CardDescription>
-              Tus pagos y facturas anteriores
+              {t("billing.noInvoicesDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Receipt className="size-12 text-muted-foreground/30 mb-4" />
               <p className="text-sm font-medium text-muted-foreground">
-                No hay pagos registrados
+                {t("billing.noInvoices")}
               </p>
               <p className="text-xs text-muted-foreground/70 mt-1">
-                Tus pagos aparecerán aquí una vez que se procesen
+                {t("billing.noInvoicesDesc")}
               </p>
             </div>
           </CardContent>

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X } from "lucide-react"
 import Image from "next/image"
+import { useTranslations } from "@/i18n/provider"
 
 interface GalleryImageData {
   id: string
@@ -20,6 +21,7 @@ interface GallerySectionProps {
 
 export function GallerySection({ images, accentColor, textColor }: GallerySectionProps) {
   const [selectedImage, setSelectedImage] = useState<GalleryImageData | null>(null)
+  const { t } = useTranslations("minisite")
   const enabledImages = images.filter((i) => i.enabled)
 
   if (enabledImages.length === 0) return null
@@ -36,7 +38,7 @@ export function GallerySection({ images, accentColor, textColor }: GallerySectio
         className="text-xl font-bold text-center mb-6"
         style={{ color: textColor }}
       >
-        Galería
+        {t("gallery.title")}
       </h2>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -52,7 +54,7 @@ export function GallerySection({ images, accentColor, textColor }: GallerySectio
           >
             <Image
               src={img.imageUrl}
-              alt={img.caption || "Galería"}
+              alt={img.caption || t("gallery.title")}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-110"
               sizes="(max-width: 640px) 50vw, 33vw"
@@ -88,14 +90,14 @@ export function GallerySection({ images, accentColor, textColor }: GallerySectio
               <button
                 onClick={() => setSelectedImage(null)}
                 className="absolute -top-3 -right-3 z-10 w-8 h-8 rounded-full bg-white shadow-lg flex items-center justify-center"
-                aria-label="Cerrar"
+                aria-label={t("gallery.close")}
               >
                 <X className="w-4 h-4 text-gray-800" />
               </button>
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
                 <Image
                   src={selectedImage.imageUrl}
-                  alt={selectedImage.caption || "Galería"}
+                  alt={selectedImage.caption || t("gallery.title")}
                   fill
                   className="object-contain bg-black"
                   sizes="512px"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# ─── Kinec — Guía de Despliegue a Producción ─────────────────────────────────
+# ─── QAIROSS — Guía de Despliegue a Producción ─────────────────────────────────
 # Genera un PDF profesional con la guía completa para deployar la plataforma
-# Kinec en producción con Vercel + Supabase + Stripe
+# QAIROSS en producción con Vercel + Supabase + Stripe
 
 import os
 from reportlab.lib.pagesizes import A4
@@ -174,11 +174,11 @@ def page_footer(canvas, doc):
     canvas.saveState()
     canvas.setFont('Carlito', 8)
     canvas.setFillColor(TEXT_MUTED)
-    canvas.drawCentredString(PAGE_W / 2, 0.5 * inch, f'Kinec - Guia de Despliegue a Produccion | Pagina {doc.page}')
+    canvas.drawCentredString(PAGE_W / 2, 0.5 * inch, f'QAIROSS - Guia de Despliegue a Produccion | Pagina {doc.page}')
     canvas.restoreState()
 
 # ─── Build PDF ───────────────────────────────────────────────────────────────
-output_path = '/home/z/my-project/download/Kinec-Guia-Deploy-Produccion.pdf'
+output_path = '/home/z/my-project/download/QAIROSS-Guia-Deploy-Produccion.pdf'
 
 doc = SimpleDocTemplate(
     output_path, pagesize=A4,
@@ -190,7 +190,7 @@ story = []
 
 # ─── Cover Page ──────────────────────────────────────────────────────────────
 story.append(Spacer(1, 2.0 * inch))
-story.append(Paragraph('<b>Kinec</b>', title_style))
+story.append(Paragraph('<b>QAIROSS</b>', title_style))
 story.append(Spacer(1, 8))
 story.append(Paragraph('Guia Completa de Despliegue a Produccion', subtitle_style))
 story.append(Spacer(1, 24))
@@ -201,7 +201,7 @@ story.append(Paragraph('Plataforma SaaS para Centros Digitales con QR', Paragrap
 story.append(Spacer(1, 36))
 
 cover_info = [
-    ['Dominio', 'links.kingnect.app'],
+    ['Dominio', 'links.qaiross.app'],
     ['Plataforma', 'Vercel + Supabase + Stripe'],
     ['Framework', 'Next.js 16 (App Router)'],
     ['Base de Datos', 'PostgreSQL (Supabase)'],
@@ -224,7 +224,7 @@ cover_table.setStyle(TableStyle([
 ]))
 story.append(cover_table)
 story.append(Spacer(1, 48))
-story.append(Paragraph('por King Designs', ParagraphStyle(
+story.append(Paragraph('por QAIROSS', ParagraphStyle(
     name='CoverFooter', fontName='Carlito', fontSize=11,
     leading=16, alignment=TA_CENTER, textColor=TEXT_MUTED
 )))
@@ -262,7 +262,7 @@ story.append(PageBreak())
 # ═══════════════════════════════════════════════════════════════════════════════
 story.append(heading1('1. Resumen de Arquitectura'))
 story.append(body(
-    'Kinec es una plataforma SaaS que permite a negocios crear su propio centro digital '
+    'QAIROSS es una plataforma SaaS que permite a negocios crear su propio centro digital '
     '(mini web profesional) con codigo QR personalizado. La aplicacion esta construida con '
     'Next.js 16, React 19, TypeScript, Tailwind CSS y shadcn/ui en el frontend, con Prisma ORM '
     'como capa de datos, NextAuth.js para autenticacion, Stripe para pagos recurrentes y '
@@ -298,8 +298,8 @@ story.append(spacer(12))
 story.append(heading2('Arquitectura de Dominios'))
 story.append(body(
     'La plataforma opera bajo dos esquemas de URL principales. El dominio principal '
-    '<b>links.kingnect.app</b> es donde reside la aplicacion SaaS (landing, dashboard, admin). '
-    'Cada centro digital creado por un cliente se accede via <b>links.kingnect.app/[slug]</b>, '
+    '<b>links.qaiross.app</b> es donde reside la aplicacion SaaS (landing, dashboard, admin). '
+    'Cada centro digital creado por un cliente se accede via <b>links.qaiross.app/[slug]</b>, '
     'donde [slug] es el identificador unico del negocio. Esta estructura permite que todos los '
     'centros digitales compartan el mismo dominio sin necesidad de subdominios adicionales, '
     'simplificando la gestion de SSL y DNS.'
@@ -311,7 +311,7 @@ story.append(body(
 story.append(heading1('2. Paso 1: Configurar Supabase'))
 story.append(body(
     'Supabase es la base de datos PostgreSQL administrada y el servicio de almacenamiento '
-    'de archivos para Kinec. A diferencia de SQLite usado en desarrollo, PostgreSQL soporta '
+    'de archivos para QAIROSS. A diferencia de SQLite usado en desarrollo, PostgreSQL soporta '
     'tipos de datos avanzados como Decimal para precios, campos Text para contenido largo, '
     'y conexiones concurrentes que una plataforma SaaS en produccion requiere.'
 ))
@@ -353,7 +353,7 @@ story.append(bullet('Esto permite que las imagenes subidas sean accesibles publi
 
 story.append(heading2('2.4 Configurar RLS (Row Level Security)'))
 story.append(body(
-    'Supabase recomienda habilitar RLS en todas las tablas. Sin embargo, como Kinec accede a la base '
+    'Supabase recomienda habilitar RLS en todas las tablas. Sin embargo, como QAIROSS accede a la base '
     'de datos exclusivamente desde el backend (Prisma ORM), las consultas no pasan por el cliente de '
     'Supabase sino por la conexion directa PostgreSQL. Esto significa que RLS no afecta las operaciones '
     'de Prisma. Si en el futuro deseas agregar acceso directo desde el navegador del cliente usando '
@@ -365,7 +365,7 @@ story.append(body(
 # ═══════════════════════════════════════════════════════════════════════════════
 story.append(heading1('3. Paso 2: Configurar Stripe'))
 story.append(body(
-    'Stripe maneja todos los pagos recurrentes de Kinec. La integracion ya esta programada '
+    'Stripe maneja todos los pagos recurrentes de QAIROSS. La integracion ya esta programada '
     'en el codigo: creacion de sesiones de checkout, portal de clientes para gestionar suscripciones, '
     'y webhooks para sincronizar el estado de pagos con la base de datos. Solo necesitas configurar '
     'las credenciales y activar los webhooks.'
@@ -374,7 +374,7 @@ story.append(body(
 story.append(heading2('3.1 Crear Cuenta de Stripe'))
 story.append(bullet('Ir a <b>stripe.com</b> y crear una cuenta'))
 story.append(bullet('Completar la verificacion de negocio (requiere datos fiscales)'))
-story.append(bullet('En Settings > Business, configurar el nombre publico: <b>Kinec by King Designs</b>'))
+story.append(bullet('En Settings > Business, configurar el nombre publico: <b>QAIROSS by QAIROSS</b>'))
 
 story.append(heading2('3.2 Obtener Claves API'))
 story.append(body('En el dashboard de Stripe, ve a Developers > API keys:'))
@@ -393,7 +393,7 @@ story.append(Paragraph('<b>Importante:</b> Primero prueba con las claves de test
 
 story.append(heading2('3.3 Configurar Productos y Precios'))
 story.append(body(
-    'Kinec ya tiene la logica para crear productos y precios automaticamente en Stripe cuando '
+    'QAIROSS ya tiene la logica para crear productos y precios automaticamente en Stripe cuando '
     'un cliente inicia checkout. Sin embargo, es buena practica crear los productos manualmente '
     'en el dashboard de Stripe para tener control sobre los IDs. Ve a Products y crea los 4 planes:'
 ))
@@ -420,7 +420,7 @@ story.append(bullet('<b>Transferencia bancaria</b> (opcional, segun pais)'))
 # ═══════════════════════════════════════════════════════════════════════════════
 story.append(heading1('4. Paso 3: Configurar Resend (Emails)'))
 story.append(body(
-    'Resend es el servicio de email transaccional de Kinec. Se usa para enviar correos de '
+    'Resend es el servicio de email transaccional de QAIROSS. Se usa para enviar correos de '
     'recuperacion de contrasena y de bienvenida cuando un nuevo cliente se registra. La '
     'integracion ya esta programada con fallback a consola en modo desarrollo, asi que en '
     'produccion solo necesitas agregar la API key.'
@@ -428,14 +428,14 @@ story.append(body(
 
 story.append(heading2('4.1 Crear Cuenta'))
 story.append(bullet('Ir a <b>resend.com</b> y crear cuenta'))
-story.append(bullet('Agregar y verificar tu dominio <b>kingnect.app</b>'))
+story.append(bullet('Agregar y verificar tu dominio <b>qaiross.app</b>'))
 story.append(bullet('En DNS agregar los registros MX y TXT que Resend indica'))
 story.append(bullet('Esperar la verificacion (puede tomar hasta 48 horas)'))
 
 story.append(heading2('4.2 Obtener API Key'))
-story.append(bullet('En API Keys, crear una nueva key con nombre "Kinec Production"'))
+story.append(bullet('En API Keys, crear una nueva key con nombre "QAIROSS Production"'))
 story.append(bullet('Guardar el valor como <b>RESEND_API_KEY</b>'))
-story.append(bullet('Configurar EMAIL_FROM = <b>noreply@kingnect.app</b>'))
+story.append(bullet('Configurar EMAIL_FROM = <b>noreply@qaiross.app</b>'))
 
 story.append(heading2('4.3 Alternativa: SendGrid'))
 story.append(body(
@@ -459,7 +459,7 @@ story.append(body(
 story.append(heading2('5.1 Preparar el Repositorio'))
 story.append(bullet('Crear un repositorio en GitHub (privado o publico)'))
 story.append(bullet('Subir el codigo del proyecto:'))
-story.append(code('git init\ngit add .\ngit commit -m "Kinec v1.0.0 - Production ready"\ngit remote add origin https://github.com/TU-USUARIO/kinec.git\ngit push -u origin main'))
+story.append(code('git init\ngit add .\ngit commit -m "QAIROSS v1.0.0 - Production ready"\ngit remote add origin https://github.com/TU-USUARIO/kinec.git\ngit push -u origin main'))
 story.append(spacer(4))
 story.append(Paragraph('<b>Importante:</b> Asegurate de que el archivo <b>.gitignore</b> incluya '
     '.env, .env.local, .env.production, node_modules/, .next/, y prisma/*.db. '
@@ -468,7 +468,7 @@ story.append(Paragraph('<b>Importante:</b> Asegurate de que el archivo <b>.gitig
 story.append(heading2('5.2 Importar en Vercel'))
 story.append(bullet('Ir a <b>vercel.com</b> y crear cuenta con GitHub'))
 story.append(bullet('Click en "Add New Project"'))
-story.append(bullet('Seleccionar el repositorio de Kinec'))
+story.append(bullet('Seleccionar el repositorio de QAIROSS'))
 story.append(bullet('En configuracion del proyecto:'))
 story.append(bullet('Framework Preset: <b>Next.js</b> (se detecta automaticamente)'))
 story.append(bullet('Build Command: <b>npm run vercel-build</b> (ya configurado en vercel.json)'))
@@ -500,14 +500,14 @@ story.append(body(
 # ═══════════════════════════════════════════════════════════════════════════════
 story.append(heading1('6. Paso 5: Configurar Dominio Personalizado'))
 story.append(body(
-    'Para que la plataforma sea accesible en links.kingnect.app, necesitas configurar '
+    'Para que la plataforma sea accesible en links.qaiross.app, necesitas configurar '
     'los registros DNS en tu proveedor de dominio y agregar el dominio en Vercel. Este '
     'proceso no genera downtime y se puede hacer en paralelo con la configuracion de Vercel.'
 ))
 
 story.append(heading2('6.1 Agregar Dominio en Vercel'))
 story.append(bullet('En el dashboard del proyecto, ve a Settings > Domains'))
-story.append(bullet('Agregar <b>links.kingnect.app</b>'))
+story.append(bullet('Agregar <b>links.qaiross.app</b>'))
 story.append(bullet('Vercel mostrara los registros DNS necesarios'))
 
 story.append(heading2('6.2 Configurar DNS'))
@@ -527,7 +527,7 @@ story.append(Paragraph('<b>Nota:</b> Si usas Cloudflare como proxy (naranja), lo
 story.append(heading2('6.3 Verificar SSL'))
 story.append(bullet('Vercel genera automaticamente un certificado SSL gratuito'))
 story.append(bullet('Esperar 5-10 minutos tras configurar DNS'))
-story.append(bullet('Verificar que https://links.kingnect.app carga correctamente'))
+story.append(bullet('Verificar que https://links.qaiross.app carga correctamente'))
 story.append(bullet('Vercel redirige automaticamente HTTP a HTTPS'))
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -546,9 +546,9 @@ story.append(make_table(
     [
         ['DATABASE_URL', 'postgresql://postgres.abc:pass@aws-0...pooler.supabase.com:6543/postgres', 'Conexion PostgreSQL (usar Pooler)'],
         ['NEXTAUTH_SECRET', '(generar con openssl rand -base64 32)', 'Secreto para firmar sesiones JWT'],
-        ['NEXTAUTH_URL', 'https://links.kingnect.app', 'URL canonica para NextAuth'],
-        ['NEXT_PUBLIC_APP_URL', 'https://links.kingnect.app', 'URL base de la app'],
-        ['NEXT_PUBLIC_APP_NAME', 'Kinec', 'Nombre de la aplicacion'],
+        ['NEXTAUTH_URL', 'https://links.qaiross.app', 'URL canonica para NextAuth'],
+        ['NEXT_PUBLIC_APP_URL', 'https://links.qaiross.app', 'URL base de la app'],
+        ['NEXT_PUBLIC_APP_NAME', 'QAIROSS', 'Nombre de la aplicacion'],
         ['STRIPE_SECRET_KEY', 'sk_live_...', 'Clave secreta de Stripe'],
         ['NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY', 'pk_live_...', 'Clave publica de Stripe'],
         ['STRIPE_WEBHOOK_SECRET', 'whsec_...', 'Secreto del webhook (paso 9)'],
@@ -556,7 +556,7 @@ story.append(make_table(
         ['SUPABASE_SERVICE_ROLE_KEY', 'eyJ...', 'Clave de servicio Supabase'],
         ['NEXT_PUBLIC_SUPABASE_ANON_KEY', 'eyJ...', 'Clave anonima Supabase'],
         ['RESEND_API_KEY', 're_...', 'API key de Resend'],
-        ['EMAIL_FROM', 'noreply@kingnect.app', 'Email remitente'],
+        ['EMAIL_FROM', 'noreply@qaiross.app', 'Email remitente'],
     ],
     [2.2*inch, 2.0*inch, 2.0*inch]
 ))
@@ -619,7 +619,7 @@ story.append(heading2('8.3 Ejecutar Seed de Produccion'))
 story.append(code('ADMIN_PASSWORD_HASH="$2a$12$..." npx tsx prisma/seed-prod.ts'))
 story.append(body('Este script crea:'))
 story.append(bullet('<b>4 planes</b>: Trial (gratuito, 30 dias), Basico ($9.99/mes), Pro ($24.99/mes), Premium ($49.99/mes)'))
-story.append(bullet('<b>Super Admin</b>: admin@kingnect.app con tu hash de contrasena'))
+story.append(bullet('<b>Super Admin</b>: admin@qaiross.app con tu hash de contrasena'))
 story.append(bullet('<b>Platform Settings</b>: 16 configuraciones del sistema (nombre, colores, contacto, etc.)'))
 story.append(bullet('<b>Platform Sections</b>: 6 secciones de la landing page (hero, beneficios, como funciona, precios, testimonios, FAQ)'))
 
@@ -632,7 +632,7 @@ story.append(Paragraph('<b>Importante:</b> El seed usa upsert, lo que significa 
 # ═══════════════════════════════════════════════════════════════════════════════
 story.append(heading1('9. Paso 8: Configurar Webhooks de Stripe'))
 story.append(body(
-    'Los webhooks son la forma en que Stripe notifica a Kinec sobre eventos de pago en tiempo '
+    'Los webhooks son la forma en que Stripe notifica a QAIROSS sobre eventos de pago en tiempo '
     'real: suscripciones activadas, pagos fallidos, cancelaciones, etc. Sin webhooks, la base '
     'de datos no se actualizaria cuando un cliente paga o cancela.'
 ))
@@ -640,11 +640,11 @@ story.append(body(
 story.append(heading2('9.1 Crear el Webhook'))
 story.append(bullet('En el dashboard de Stripe, ve a Developers > Webhooks'))
 story.append(bullet('Click en "Add endpoint"'))
-story.append(bullet('Endpoint URL: <b>https://links.kingnect.app/api/stripe/webhook</b>'))
+story.append(bullet('Endpoint URL: <b>https://links.qaiross.app/api/stripe/webhook</b>'))
 story.append(bullet('Eventos a escuchar (seleccionar manualmente):'))
 
 story.append(make_table(
-    ['Evento', 'Accion en Kinec'],
+    ['Evento', 'Accion en QAIROSS'],
     [
         ['checkout.session.completed', 'Activar suscripcion tras pago exitoso'],
         ['invoice.paid', 'Reactivar cuenta si estaba bloqueada por pago fallido'],
@@ -679,11 +679,11 @@ story.append(heading2('10.1 Checklist de Verificacion'))
 story.append(make_table(
     ['Verificacion', 'Como Probar', 'Resultado Esperado'],
     [
-        ['Landing carga', 'Visitar links.kingnect.app', 'Pagina completa con secciones'],
+        ['Landing carga', 'Visitar links.qaiross.app', 'Pagina completa con secciones'],
         ['Registro', 'Crear cuenta nueva', 'Cuenta creada, redirige a dashboard'],
         ['Login', 'Iniciar sesion', 'Redirige al dashboard del cliente'],
         ['Dashboard', 'Ver panel principal', 'Muestra datos del plan Trial'],
-        ['Crear Kinec', 'Nuevo centro digital', 'Editor con preview movil'],
+        ['Crear QAIROSS', 'Nuevo centro digital', 'Editor con preview movil'],
         ['Checkout', 'Subir de plan', 'Redirige a Stripe Checkout'],
         ['Webhook', 'Completar pago test', 'Suscripcion activada en BD'],
         ['Recuperar clave', 'Click "Olvide mi clave"', 'Email recibido'],
@@ -706,7 +706,7 @@ story.append(body(
 story.append(heading2('10.3 Go-Live Checklist'))
 story.append(bullet('Cambiar STRIPE_SECRET_KEY de sk_test_ a sk_live_'))
 story.append(bullet('Cambiar NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY de pk_test_ a pk_live_'))
-story.append(bullet('Crear webhook de produccion con URL https://links.kingnect.app'))
+story.append(bullet('Crear webhook de produccion con URL https://links.qaiross.app'))
 story.append(bullet('Verificar que el dominio esta verificado en Resend'))
 story.append(bullet('Redeploy en Vercel para aplicar todos los cambios'))
 story.append(bullet('Realizar un pago real de prueba con tarjeta propia'))
@@ -717,7 +717,7 @@ story.append(bullet('Verificar que el email de bienvenida llega correctamente'))
 # ═══════════════════════════════════════════════════════════════════════════════
 story.append(heading1('11. Checklist de Produccion'))
 story.append(body(
-    'Esta es la lista definitiva de todo lo que necesitas configurar antes de que Kinec '
+    'Esta es la lista definitiva de todo lo que necesitas configurar antes de que QAIROSS '
     'este listo para recibir clientes reales. Marca cada item conforme lo completes.'
 ))
 
@@ -785,7 +785,7 @@ story.append(body(
 story.append(heading2('Error: "Email no enviado"'))
 story.append(body(
     'Si los emails no se envian, verifica: (1) RESEND_API_KEY esta configurada correctamente, '
-    '(2) el dominio kingnect.app esta verificado en Resend, (3) EMAIL_FROM usa un dominio '
+    '(2) el dominio qaiross.app esta verificado en Resend, (3) EMAIL_FROM usa un dominio '
     'verificado. Si estas en modo desarrollo, los emails se loguean en consola en lugar de enviarse.'
 ))
 

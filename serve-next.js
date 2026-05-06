@@ -46,7 +46,7 @@ http.createServer((req, res) => {
   const ext = fp.split('.').pop();
   const ct = MIME_EXT[ext] || 'application/octet-stream';
   streamFile(fp, ct, lc, res);
-}).listen(3000, '0.0.0.0', () => console.log('Kinec :3000'));
+}).listen(3000, '0.0.0.0', () => console.log('QAIROSS :3000'));
 
 function streamFile(fp, ct, lc, res) {
   fs.stat(fp, (e, s) => {

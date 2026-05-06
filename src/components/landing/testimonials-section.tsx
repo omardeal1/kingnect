@@ -9,58 +9,14 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "@/components/ui/carousel"
+import { useTranslations } from "@/i18n/provider"
 
 interface Testimonial {
-  name: string
-  business: string
-  quote: string
+  nameKey: string
+  businessKey: string
+  quoteKey: string
   stars: number
 }
-
-const TESTIMONIALS: Testimonial[] = [
-  {
-    name: "María García",
-    business: "Restaurante La Casa",
-    quote:
-      "Desde que puse el QR en las mesas, mis clientes consultan el menú desde su celular. ¡Los pedidos por WhatsApp se duplicaron!",
-    stars: 5,
-  },
-  {
-    name: "Carlos López",
-    business: "Barbería Elite",
-    quote:
-      "Mi Kinec se ve increíble. Los clientes me encuentran por el QR de mis tarjetas y agendan cita por WhatsApp directamente.",
-    stars: 5,
-  },
-  {
-    name: "Ana Martínez",
-    business: "Clínica Dental Sonrisa",
-    quote:
-      "Profesional y fácil de usar. Mis pacientes pueden ver mis servicios y agendar desde su celular. El panel es muy intuitivo.",
-    stars: 5,
-  },
-  {
-    name: "Roberto Sánchez",
-    business: "Food Truck El Sabor",
-    quote:
-      "Comparto mi ubicación en tiempo real y el menú del día desde mi Kinec. ¡Mis seguidores siempre saben dónde estoy!",
-    stars: 4,
-  },
-  {
-    name: "Laura Torres",
-    business: "Boutique Elegante",
-    quote:
-      "Antes no tenía presencia digital. Ahora mis clientes ven mis productos nuevos y me escriben por WhatsApp para comprar.",
-    stars: 5,
-  },
-  {
-    name: "Diego Ramírez",
-    business: "Taller Mecánico DR",
-    quote:
-      "Mis clientes ven la lista de servicios y precios. Me ahorra mucho tiempo responder las mismas preguntas una y otra vez.",
-    stars: 5,
-  },
-]
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -80,6 +36,47 @@ const cardVariants = {
 }
 
 export function TestimonialsSection() {
+  const { t } = useTranslations("landing.testimonials")
+
+  const TESTIMONIALS: Testimonial[] = [
+    {
+      nameKey: "items.maria.name",
+      businessKey: "items.maria.business",
+      quoteKey: "items.maria.quote",
+      stars: 5,
+    },
+    {
+      nameKey: "items.carlos.name",
+      businessKey: "items.carlos.business",
+      quoteKey: "items.carlos.quote",
+      stars: 5,
+    },
+    {
+      nameKey: "items.ana.name",
+      businessKey: "items.ana.business",
+      quoteKey: "items.ana.quote",
+      stars: 5,
+    },
+    {
+      nameKey: "items.roberto.name",
+      businessKey: "items.roberto.business",
+      quoteKey: "items.roberto.quote",
+      stars: 4,
+    },
+    {
+      nameKey: "items.laura.name",
+      businessKey: "items.laura.business",
+      quoteKey: "items.laura.quote",
+      stars: 5,
+    },
+    {
+      nameKey: "items.diego.name",
+      businessKey: "items.diego.business",
+      quoteKey: "items.diego.quote",
+      stars: 5,
+    },
+  ]
+
   return (
     <section className="bg-muted/40 py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -91,13 +88,13 @@ export function TestimonialsSection() {
           transition={{ duration: 0.5 }}
         >
           <span className="mb-3 inline-block rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-sm font-medium text-gold">
-            Testimonios
+            {t("badge")}
           </span>
           <h2 className="mt-4 text-3xl font-bold text-foreground sm:text-4xl">
-            Lo que dicen nuestros clientes
+            {t("title")}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Negocios reales que ya usan Kingnect para crecer
+            {t("subtitle")}
           </p>
         </motion.div>
 
@@ -105,15 +102,15 @@ export function TestimonialsSection() {
         <div className="mt-14 md:hidden">
           <Carousel opts={{ align: "start", loop: true }} className="w-full">
             <CarouselContent className="-ml-4">
-              {TESTIMONIALS.map((t) => (
-                <CarouselItem key={t.name} className="pl-4">
+              {TESTIMONIALS.map((testimonial) => (
+                <CarouselItem key={testimonial.nameKey} className="pl-4">
                   <div className="rounded-2xl border bg-card p-6 shadow-sm">
                     <div className="flex items-center gap-1">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <Star
                           key={i}
                           className={`size-4 ${
-                            i < t.stars
+                            i < testimonial.stars
                               ? "fill-gold text-gold"
                               : "fill-muted text-muted"
                           }`}
@@ -121,18 +118,18 @@ export function TestimonialsSection() {
                       ))}
                     </div>
                     <p className="mt-4 text-sm leading-relaxed text-foreground">
-                      &ldquo;{t.quote}&rdquo;
+                      &ldquo;{t(testimonial.quoteKey)}&rdquo;
                     </p>
                     <div className="mt-4 flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gold/10 text-sm font-bold text-gold">
-                        {t.name[0]}
+                        {t(testimonial.nameKey)[0]}
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-foreground">
-                          {t.name}
+                          {t(testimonial.nameKey)}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {t.business}
+                          {t(testimonial.businessKey)}
                         </p>
                       </div>
                     </div>
@@ -153,9 +150,9 @@ export function TestimonialsSection() {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
         >
-          {TESTIMONIALS.map((t) => (
+          {TESTIMONIALS.map((testimonial) => (
             <motion.div
-              key={t.name}
+              key={testimonial.nameKey}
               variants={cardVariants}
               className="rounded-2xl border bg-card p-6 shadow-sm transition-all hover:shadow-md"
             >
@@ -164,7 +161,7 @@ export function TestimonialsSection() {
                   <Star
                     key={i}
                     className={`size-4 ${
-                      i < t.stars
+                      i < testimonial.stars
                         ? "fill-gold text-gold"
                         : "fill-muted text-muted"
                     }`}
@@ -172,17 +169,17 @@ export function TestimonialsSection() {
                 ))}
               </div>
               <p className="mt-4 text-sm leading-relaxed text-foreground">
-                &ldquo;{t.quote}&rdquo;
+                &ldquo;{t(testimonial.quoteKey)}&rdquo;
               </p>
               <div className="mt-4 flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gold/10 text-sm font-bold text-gold">
-                  {t.name[0]}
+                  {t(testimonial.nameKey)[0]}
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">
-                    {t.name}
+                    {t(testimonial.nameKey)}
                   </p>
-                  <p className="text-xs text-muted-foreground">{t.business}</p>
+                  <p className="text-xs text-muted-foreground">{t(testimonial.businessKey)}</p>
                 </div>
               </div>
             </motion.div>

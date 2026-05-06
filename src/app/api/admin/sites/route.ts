@@ -84,7 +84,7 @@ export async function POST(request: Request) {
     await db.activityLog.create({
       data: {
         userId: session.user.id,
-        action: `Kinec creada: ${businessName}`,
+        action: `QAIROSS creada: ${businessName}`,
         entityType: "mini_site",
         entityId: site.id,
       },
@@ -133,7 +133,7 @@ export async function PUT(request: Request) {
     await db.activityLog.create({
       data: {
         userId: session.user.id,
-        action: `Kinec actualizada: ${Object.keys(updateData).join(", ")}`,
+        action: `QAIROSS actualizada: ${Object.keys(updateData).join(", ")}`,
         entityType: "mini_site",
         entityId: siteId,
       },

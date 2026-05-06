@@ -1,4 +1,4 @@
-// ─── KINGNECT — Stripe Helper ──────────────────────────────────────────────────
+// ─── QAIROSS — Stripe Helper ───────────────────────────────────────────────────
 // Integración con Stripe para pagos, suscripciones y webhooks
 // Manejo elegante cuando Stripe no está configurado
 
@@ -201,7 +201,7 @@ async function getOrCreatePrice(plan: { id: string; slug: string; price: number 
 
   // Crear producto
   const product = await stripe.products.create({
-    name: `Kingnect ${plan.slug.charAt(0).toUpperCase() + plan.slug.slice(1)}`,
+    name: `QAIROSS ${plan.slug.charAt(0).toUpperCase() + plan.slug.slice(1)}`,
     metadata: { planId: plan.id },
   })
 

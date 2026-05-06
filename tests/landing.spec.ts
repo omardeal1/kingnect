@@ -5,29 +5,29 @@ test.describe("Landing Page", () => {
     await page.goto("/");
   });
 
-  test("loads correctly with title containing Kingnect or Kinec", async ({ page }) => {
+  test("loads correctly with title containing QAIROSS", async ({ page }) => {
     const title = await page.title();
-    expect(title).toMatch(/Kingnect|Kinec/);
+    expect(title).toMatch(/QAIROSS/);
   });
 
   test("navbar is visible", async ({ page }) => {
     const navbar = page.locator("header nav");
     await expect(navbar).toBeVisible();
 
-    // Verify logo link with "Kingnect" text
+    // Verify logo link with "QAIROSS" text
     const logoLink = page.locator("header a[href='/']");
     await expect(logoLink).toBeVisible();
-    await expect(logoLink).toContainText("King");
+    await expect(logoLink).toContainText("QAIROSS");
   });
 
   test("hero section is visible", async ({ page }) => {
-    // The hero section contains "Kinec profesional" heading
+    // The hero section contains "QAIROSS profesional" heading
     const heroHeading = page.locator("h1");
     await expect(heroHeading).toBeVisible();
-    await expect(heroHeading).toContainText(/Kinec/i);
+    await expect(heroHeading).toContainText(/QAIROSS/i);
 
     // CTA button in hero section should be visible (use .first() since multiple exist on page)
-    await expect(page.locator("a", { hasText: "Crear mi Kinec" }).first()).toBeVisible();
+    await expect(page.locator("a", { hasText: "Crear mi QAIROSS" }).first()).toBeVisible();
   });
 
   test("pricing section is visible", async ({ page }) => {

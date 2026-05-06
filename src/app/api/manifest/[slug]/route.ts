@@ -26,7 +26,7 @@ export async function GET(
   const manifest = {
     name: site.businessName,
     short_name: site.businessName.slice(0, 12),
-    description: `Kinec de ${site.businessName}`,
+    description: `QAIROSS de ${site.businessName}`,
     start_url: `/${slug}`,
     display: "standalone",
     background_color: "#FFFFFF",

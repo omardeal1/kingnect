@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { MapPin, Clock, Navigation } from "lucide-react"
+import { useTranslations } from "@/i18n/provider"
 
 interface LocationData {
   id: string
@@ -25,6 +26,7 @@ export function LocationsSection({
   textColor,
   cardColor,
 }: LocationsSectionProps) {
+  const { t } = useTranslations("minisite")
   const enabledLocations = locations.filter((l) => l.enabled)
 
   if (enabledLocations.length === 0) return null
@@ -41,7 +43,7 @@ export function LocationsSection({
         className="text-xl font-bold text-center mb-6"
         style={{ color: textColor }}
       >
-        Ubicaciones
+        {t("locations.title")}
       </h2>
 
       <div className="flex flex-col gap-4">
@@ -86,7 +88,7 @@ export function LocationsSection({
                 style={{ backgroundColor: accentColor, color: "#FFFFFF" }}
               >
                 <Navigation className="w-3.5 h-3.5" />
-                Ver en mapa
+                {t("locations.viewMap")}
               </a>
             )}
           </motion.div>

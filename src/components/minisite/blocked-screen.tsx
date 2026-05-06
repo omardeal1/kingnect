@@ -2,12 +2,14 @@
 
 import { motion } from "framer-motion"
 import { PowerOff } from "lucide-react"
+import { useTranslations } from "@/i18n/provider"
 
 interface BlockedScreenProps {
   businessName?: string
 }
 
 export function BlockedScreen({ businessName }: BlockedScreenProps) {
+  const { t } = useTranslations("minisite")
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-gray-50">
       <motion.div
@@ -25,10 +27,10 @@ export function BlockedScreen({ businessName }: BlockedScreenProps) {
           </h1>
         )}
         <p className="text-gray-500 text-base leading-relaxed">
-          Este centro digital está temporalmente desactivado.
+          {t("blocked.message")}
         </p>
         <p className="text-gray-400 text-sm mt-2">
-          Contacta al negocio o al administrador.
+          {t("blocked.contact")}
         </p>
       </motion.div>
     </div>

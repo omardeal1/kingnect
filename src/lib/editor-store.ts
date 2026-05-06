@@ -22,6 +22,8 @@ export interface SiteData {
   isActive: boolean
   isPublished: boolean
   showKingBrand: boolean
+  buttonStyle: string
+  menuTemplate: string
   metaTitle: string | null
   metaDescription: string | null
   socialLinks: SocialLinkData[]
@@ -33,6 +35,12 @@ export interface SiteData {
   services: ServiceData[]
   testimonials: TestimonialData[]
   customLinks: CustomLinkData[]
+  branches: BranchData[]
+  reservationConfig: ReservationConfigData | null
+  loyaltyConfig: LoyaltyConfigData | null
+  registrationFields: RegistrationFieldConfigData[]
+  employees: EmployeeData[]
+  menuFeaturedSlides: MenuFeaturedSlideData[]
 }
 
 export interface SocialLinkData {
@@ -92,6 +100,7 @@ export interface MenuItemData {
   isOrderable: boolean
   enabled: boolean
   sortOrder: number
+  badge: string | null
 }
 
 export interface GalleryImageData {
@@ -132,6 +141,102 @@ export interface CustomLinkData {
   sortOrder: number
 }
 
+export interface MenuFeaturedSlideData {
+  id: string
+  imageUrl: string
+  title: string | null
+  enabled: boolean
+  sortOrder: number
+}
+
+export interface BranchData {
+  id: string
+  siteId: string
+  slug: string
+  name: string
+  description: string | null
+  logoUrl: string | null
+  coverUrl: string | null
+  phone: string | null
+  whatsapp: string | null
+  email: string | null
+  website: string | null
+  state: string | null
+  city: string | null
+  address: string | null
+  latitude: number | null
+  longitude: number | null
+  mapsUrl: string | null
+  isActive: boolean
+  isPublished: boolean
+  showQairossBrand: boolean
+  hours: string
+  socialLinks: string
+  themeOverrides: string
+  buttonStyle: string
+  modifiersEnabled: boolean
+  metaTitle: string | null
+  metaDescription: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ReservationConfigData {
+  id: string
+  siteId: string
+  isEnabled: boolean
+  reservationType: string
+  customTypeLabel: string | null
+  slotDurationMinutes: number
+  maxCapacityPerSlot: number
+  minAdvanceHours: number
+  maxAdvanceDays: number
+  autoApprove: boolean
+  confirmationMessage: string
+  googleCalendarConnected: boolean
+  googleCalendarId: string | null
+  availableDays: number[]
+  timeSlots: { start: string; end: string }[]
+}
+
+export interface LoyaltyConfigData {
+  id: string
+  siteId: string
+  isEnabled: boolean
+  accumulationType: string // visits | amount | both
+  targetValue: number
+  rewardType: string // discount | free_product | custom
+  rewardValue: number
+  rewardLabel: string
+  welcomeGiftEnabled: boolean
+  welcomeGiftDescription: string | null
+}
+
+export interface RegistrationFieldConfigData {
+  id: string
+  siteId: string
+  fieldName: string
+  isEnabled: boolean
+  label: string | null
+  message: string | null
+  sortOrder: number
+}
+
+export interface EmployeeData {
+  id: string
+  userId: string | null
+  roleId: string
+  email: string
+  name: string
+  phone: string | null
+  isActive: boolean
+  invitedAt: string
+  invitedBy: string | null
+  accessExpiresAt: string | null
+  lastLoginAt: string | null
+  role?: { id: string; name: string; description: string | null }
+}
+
 // ─── Editor Tab Type ─────────────────────────────────────────────────────────────
 
 export type EditorTab =
@@ -139,6 +244,7 @@ export type EditorTab =
   | "appearance"
   | "social"
   | "contact"
+  | "buttons"
   | "location"
   | "slides"
   | "menu"
@@ -147,6 +253,12 @@ export type EditorTab =
   | "testimonials"
   | "links"
   | "seo"
+  | "modifiers"
+  | "branches"
+  | "reservations"
+  | "loyalty"
+  | "registration"
+  | "employees"
 
 // ─── Editor Store ────────────────────────────────────────────────────────────────
 
@@ -217,6 +329,24 @@ interface EditorState {
   addCustomLink: (link: CustomLinkData) => void
   updateCustomLink: (id: string, fields: Partial<CustomLinkData>) => void
   removeCustomLink: (id: string) => void
+
+  // Branches
+  addBranch: (branch: BranchData) => void
+  updateBranch: (id: string, fields: Partial<BranchData>) => void
+  removeBranch: (id: string) => void
+
+  // Reservation config
+  setReservationConfig: (config: ReservationConfigData | null) => void
+  updateReservationConfig: (fields: Partial<ReservationConfigData>) => void
+
+  // Loyalty config
+  setLoyaltyConfig: (config: LoyaltyConfigData | null) => void
+  updateLoyaltyConfig: (fields: Partial<LoyaltyConfigData>) => void
+
+  // Employees
+  addEmployee: (employee: EmployeeData) => void
+  updateEmployee: (id: string, fields: Partial<EmployeeData>) => void
+  removeEmployee: (id: string) => void
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -598,6 +728,102 @@ export const useEditorStore = create<EditorState>((set) => ({
         ? {
             ...state.site,
             customLinks: state.site.customLinks.filter((l) => l.id !== id),
+          }
+        : null,
+    })),
+
+  addBranch: (branch) =>
+    set((state) => ({
+      hasUnsavedChanges: true,
+      site: state.site
+        ? { ...state.site, branches: [...state.site.branches, branch] }
+        : null,
+    })),
+  updateBranch: (id, fields) =>
+    set((state) => ({
+      hasUnsavedChanges: true,
+      site: state.site
+        ? {
+            ...state.site,
+            branches: state.site.branches.map((b) =>
+              b.id === id ? { ...b, ...fields } : b
+            ),
+          }
+        : null,
+    })),
+  removeBranch: (id) =>
+    set((state) => ({
+      hasUnsavedChanges: true,
+      site: state.site
+        ? {
+            ...state.site,
+            branches: state.site.branches.filter((b) => b.id !== id),
+          }
+        : null,
+    })),
+
+  setReservationConfig: (config) =>
+    set((state) => ({
+      hasUnsavedChanges: true,
+      site: state.site ? { ...state.site, reservationConfig: config } : null,
+    })),
+  updateReservationConfig: (fields) =>
+    set((state) => ({
+      hasUnsavedChanges: true,
+      site: state.site
+        ? {
+            ...state.site,
+            reservationConfig: state.site.reservationConfig
+              ? { ...state.site.reservationConfig, ...fields }
+              : null,
+          }
+        : null,
+    })),
+
+  setLoyaltyConfig: (config) =>
+    set((state) => ({
+      hasUnsavedChanges: true,
+      site: state.site ? { ...state.site, loyaltyConfig: config } : null,
+    })),
+  updateLoyaltyConfig: (fields) =>
+    set((state) => ({
+      hasUnsavedChanges: true,
+      site: state.site
+        ? {
+            ...state.site,
+            loyaltyConfig: state.site.loyaltyConfig
+              ? { ...state.site.loyaltyConfig, ...fields }
+              : null,
+          }
+        : null,
+    })),
+
+  addEmployee: (employee) =>
+    set((state) => ({
+      hasUnsavedChanges: true,
+      site: state.site
+        ? { ...state.site, employees: [...state.site.employees, employee] }
+        : null,
+    })),
+  updateEmployee: (id, fields) =>
+    set((state) => ({
+      hasUnsavedChanges: true,
+      site: state.site
+        ? {
+            ...state.site,
+            employees: state.site.employees.map((e) =>
+              e.id === id ? { ...e, ...fields } : e
+            ),
+          }
+        : null,
+    })),
+  removeEmployee: (id) =>
+    set((state) => ({
+      hasUnsavedChanges: true,
+      site: state.site
+        ? {
+            ...state.site,
+            employees: state.site.employees.filter((e) => e.id !== id),
           }
         : null,
     })),

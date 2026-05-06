@@ -55,6 +55,17 @@ export async function GET(
         customLinks: {
           orderBy: { sortOrder: "asc" },
         },
+        branches: {
+          orderBy: { name: "asc" },
+        },
+        reservationConfig: true,
+        loyaltyConfig: true,
+        registrationFieldConfigs: {
+          orderBy: { sortOrder: "asc" },
+        },
+        menuFeaturedSlides: {
+          orderBy: { sortOrder: "asc" },
+        },
       },
     })
 
@@ -147,6 +158,8 @@ export async function PUT(
       metaTitle,
       metaDescription,
       slug,
+      menuTemplate,
+      buttonStyle,
     } = body
 
     // ─── Input Validation ──────────────────────────────────────────────────────
@@ -249,6 +262,17 @@ export async function PUT(
       }
     }
 
+    // Validate menuTemplate if provided
+    if (menuTemplate !== undefined) {
+      const validTemplates = ["dark_elegant", "fresh_modern", "warm_casual"]
+      if (!validTemplates.includes(menuTemplate)) {
+        return NextResponse.json(
+          { error: "Plantilla de menú no válida. Valores permitidos: dark_elegant, fresh_modern, warm_casual" },
+          { status: 400 }
+        )
+      }
+    }
+
     const updatedSite = await db.miniSite.update({
       where: { id },
       data: {
@@ -271,6 +295,8 @@ export async function PUT(
         ...(showKingBrand !== undefined && { showKingBrand }),
         ...(metaTitle !== undefined && { metaTitle }),
         ...(metaDescription !== undefined && { metaDescription }),
+        ...(menuTemplate !== undefined && { menuTemplate }),
+        ...(buttonStyle !== undefined && { buttonStyle }),
       },
     })
 

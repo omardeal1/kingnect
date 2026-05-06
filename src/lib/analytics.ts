@@ -1,5 +1,5 @@
-// ─── KINGNECT — Client-Side Analytics Tracking ─────────────────────────────────
-// Fire-and-forget analytics tracking for public Kinec pages
+// ─── QAIROSS — Client-Side Analytics Tracking ─────────────────────────────────
+// Fire-and-forget analytics tracking for public QAIROSS pages
 // All calls use .catch() to never block navigation
 
 interface TrackEventPayload {

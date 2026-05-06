@@ -26,6 +26,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
 import { APP_URL, ORDER_STATUSES } from "@/lib/constants"
 import { useDashboardStore } from "@/lib/dashboard-store"
+import { useTranslations, useLocale } from "@/i18n/provider"
 
 interface AnalyticsData {
   totalViews: number
@@ -60,6 +61,8 @@ const item = {
 }
 
 export default function DashboardPage() {
+  const { t } = useTranslations("dashboard")
+  const { locale } = useLocale()
   const dashboardData = useDashboardStore((s) => s.data)
   const {
     businessName,
@@ -80,7 +83,7 @@ export default function DashboardPage() {
     queryKey: ["analytics", siteId],
     queryFn: async () => {
       const res = await fetch(`/api/analytics?siteId=${siteId}`)
-      if (!res.ok) throw new Error("Error al cargar analíticas")
+      if (!res.ok) throw new Error("Error")
       return res.json()
     },
     enabled: !!siteId,
@@ -91,7 +94,7 @@ export default function DashboardPage() {
     queryKey: ["orders", siteId],
     queryFn: async () => {
       const res = await fetch(`/api/orders?siteId=${siteId}`)
-      if (!res.ok) throw new Error("Error al cargar pedidos")
+      if (!res.ok) throw new Error("Error")
       return res.json()
     },
     enabled: !!siteId,
@@ -122,9 +125,9 @@ export default function DashboardPage() {
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(miniWebUrl)
-      toast.success("Link copiado al portapapeles")
+      toast.success(t("billing.copyLinkSuccess"))
     } catch {
-      toast.error("No se pudo copiar el link")
+      toast.error(t("billing.copyLinkError"))
     }
   }
 
@@ -142,7 +145,7 @@ export default function DashboardPage() {
       a.download = `qr-${siteSlug || "mini-web"}.svg`
       a.click()
       URL.revokeObjectURL(url)
-      toast.success("QR SVG descargado")
+      toast.success(t("billing.qrPngDownloaded"))
     } else {
       const svgElement = qrRef.current.querySelector("svg")
       if (!svgElement) return
@@ -163,7 +166,7 @@ export default function DashboardPage() {
         a.href = pngUrl
         a.download = `qr-${siteSlug || "mini-web"}.png`
         a.click()
-        toast.success("QR PNG descargado")
+        toast.success(t("billing.qrPngDownloaded"))
       }
       img.src =
         "data:image/svg+xml;base64," +
@@ -176,7 +179,7 @@ export default function DashboardPage() {
   }
 
   const formatDate = (date: Date | string) => {
-    return new Intl.DateTimeFormat("es-MX", {
+    return new Intl.DateTimeFormat(locale === "es" ? "es-MX" : "en-US", {
       day: "numeric",
       month: "short",
       hour: "2-digit",
@@ -201,10 +204,10 @@ export default function DashboardPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold">
-                  ¡Bienvenido, {businessName || "Negocio"}!
+                  {t("welcome", { name: businessName || "Business" })}
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Administra tu Kinec y pedidos desde aquí
+                  {t("welcomeSubtitle")}
                 </p>
               </div>
             </div>
@@ -217,8 +220,8 @@ export default function DashboardPage() {
         <motion.div variants={item}>
           <Card className="shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
-              <CardTitle className="text-base">Estado del plan</CardTitle>
-              <CardDescription>Tu suscripción actual</CardDescription>
+              <CardTitle className="text-base">{t("planStatus.title")}</CardTitle>
+              <CardDescription>{t("planStatus.currentPlan")}</CardDescription>
               <CardAction>
                 <Badge variant="secondary" className="text-xs">
                   {planName}
@@ -229,10 +232,10 @@ export default function DashboardPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">
-                    Período actual
+                    {t("planStatus.periodEnd")}
                   </span>
                   <span className="font-medium">
-                    {daysRemaining} días restantes
+                    {daysRemaining} {t("planStatus.daysRemaining")}
                   </span>
                 </div>
                 <Progress value={periodProgress} className="h-2" />
@@ -245,12 +248,12 @@ export default function DashboardPage() {
                 <span className="text-2xl font-bold">
                   ${planPrice}
                   <span className="text-sm font-normal text-muted-foreground">
-                    /mes
+                    {t("perMonth")}
                   </span>
                 </span>
                 <Link href="/dashboard/billing">
                   <Button size="sm" variant="outline" className="gap-1.5">
-                    Mejorar plan
+                    {t("planStatus.upgradePlan")}
                     <ArrowRight className="size-3.5" />
                   </Button>
                 </Link>
@@ -259,12 +262,12 @@ export default function DashboardPage() {
           </Card>
         </motion.div>
 
-        {/* Kinec Card */}
+        {/* QAIROSS Card */}
         <motion.div variants={item}>
           <Card className="shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
-              <CardTitle className="text-base">Mi Kinec</CardTitle>
-              <CardDescription>Tu enlace para compartir</CardDescription>
+              <CardTitle className="text-base">{t("qairossCard.title")}</CardTitle>
+              <CardDescription>{t("qairossCard.url")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-2.5">
@@ -288,7 +291,7 @@ export default function DashboardPage() {
                     className="w-full gap-1.5"
                   >
                     <Eye className="size-3.5" />
-                    Ver Kinec
+                    {t("qairossCard.viewQaiross")}
                   </Button>
                 </Link>
                 <Link
@@ -297,7 +300,7 @@ export default function DashboardPage() {
                 >
                   <Button size="sm" className="w-full gap-1.5">
                     <Pencil className="size-3.5" />
-                    Editar
+                    {t("qairossCard.editQaiross")}
                   </Button>
                 </Link>
               </div>
@@ -309,9 +312,9 @@ export default function DashboardPage() {
         <motion.div variants={item}>
           <Card className="shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
-              <CardTitle className="text-base">Código QR</CardTitle>
+              <CardTitle className="text-base">{t("qrCard.title")}</CardTitle>
               <CardDescription>
-                Escanea para ver tu Kinec
+                {t("billing.scanToView")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -356,8 +359,8 @@ export default function DashboardPage() {
         <motion.div variants={item}>
           <Card className="shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
-              <CardTitle className="text-base">Estadísticas</CardTitle>
-              <CardDescription>Últimos 30 días</CardDescription>
+              <CardTitle className="text-base">{t("statsCard.title")}</CardTitle>
+              <CardDescription>{t("statsCard.last30Days")}</CardDescription>
             </CardHeader>
             <CardContent>
               {analyticsLoading ? (
@@ -380,7 +383,7 @@ export default function DashboardPage() {
                       {analytics?.totalViews ?? 0}
                     </div>
                     <div className="text-[11px] text-muted-foreground">
-                      Visitas
+                      {t("statsCard.visits")}
                     </div>
                   </div>
                   <div className="space-y-1.5 text-center">
@@ -391,7 +394,7 @@ export default function DashboardPage() {
                       {analytics?.totalWhatsappClicks ?? 0}
                     </div>
                     <div className="text-[11px] text-muted-foreground">
-                      Clicks WhatsApp
+                      {t("statsCard.clicksWhatsapp")}
                     </div>
                   </div>
                   <div className="space-y-1.5 text-center">
@@ -402,7 +405,7 @@ export default function DashboardPage() {
                       {analytics?.totalOrders ?? 0}
                     </div>
                     <div className="text-[11px] text-muted-foreground">
-                      Pedidos
+                      {t("statsCard.orders")}
                     </div>
                   </div>
                 </div>
@@ -416,12 +419,12 @@ export default function DashboardPage() {
       <motion.div variants={item}>
         <Card className="shadow-sm hover:shadow-md transition-shadow">
           <CardHeader>
-            <CardTitle className="text-base">Pedidos recientes</CardTitle>
-            <CardDescription>Últimos pedidos recibidos</CardDescription>
+            <CardTitle className="text-base">{t("recentOrders.title")}</CardTitle>
+            <CardDescription>{t("recentOrders.noOrdersDesc")}</CardDescription>
             <CardAction>
               <Link href="/dashboard/orders">
                 <Button variant="ghost" size="sm" className="gap-1.5">
-                  Ver todos
+                  {t("recentOrders.viewAll")}
                   <ArrowRight className="size-3.5" />
                 </Button>
               </Link>
@@ -492,7 +495,7 @@ export default function DashboardPage() {
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <ShoppingCart className="size-10 text-muted-foreground/40 mb-3" />
                 <p className="text-sm text-muted-foreground">
-                  Aún no tienes pedidos
+                  {t("recentOrders.noOrders")}
                 </p>
               </div>
             )}

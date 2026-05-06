@@ -1,4 +1,4 @@
-// ─── KINGNECT — Stripe Checkout Session ─────────────────────────────────────────
+// ─── QAIROSS — Stripe Checkout Session ─────────────────────────────────────────
 // Crea una sesión de checkout de Stripe para suscribirse a un plan
 
 import { NextResponse } from "next/server"

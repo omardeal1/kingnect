@@ -9,6 +9,7 @@ import {
   ArrowDown,
   Camera,
   Upload,
+  Pencil,
 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -16,6 +17,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { useEditorStore, type GalleryImageData } from "@/lib/editor-store"
+import { ImageEditor } from "@/components/editor/image-editor"
 
 interface TabGaleriaProps {
   siteId: string
@@ -31,6 +33,9 @@ export function TabGaleria({ siteId }: TabGaleriaProps) {
 
   const images = site?.galleryImages ?? []
   const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+  const [imageEditorOpen, setImageEditorOpen] = React.useState(false)
+  const [editingImageId, setEditingImageId] = React.useState<string | null>(null)
 
   // ─── Upload + create ────────────────────────────────────────────────
   const handleAddImage = async (file: File) => {
@@ -120,6 +125,20 @@ export function TabGaleria({ siteId }: TabGaleriaProps) {
     }
   }
 
+  const editingImage = images.find((img) => img.id === editingImageId)
+
+  const handleEditImageSave = async (imageUrl: string) => {
+    if (!editingImageId) return
+    handleUpdate(editingImageId, { imageUrl })
+    setImageEditorOpen(false)
+    setEditingImageId(null)
+  }
+
+  const handleOpenImageEditor = (imageId: string) => {
+    setEditingImageId(imageId)
+    setImageEditorOpen(true)
+  }
+
   if (!site) return null
 
   return (
@@ -197,6 +216,14 @@ export function TabGaleria({ siteId }: TabGaleriaProps) {
                     <ArrowDown className="size-3.5" />
                   </Button>
                   <Button
+                    variant="secondary"
+                    size="icon"
+                    className="size-7"
+                    onClick={() => handleOpenImageEditor(img.id)}
+                  >
+                    <Pencil className="size-3.5" />
+                  </Button>
+                  <Button
                     variant="destructive"
                     size="icon"
                     className="size-7"
@@ -248,6 +275,18 @@ export function TabGaleria({ siteId }: TabGaleriaProps) {
           <p className="text-xs text-muted-foreground">Haz clic para subir más imágenes</p>
         </div>
       )}
+
+      {/* Image Editor Dialog */}
+      <ImageEditor
+        open={imageEditorOpen}
+        onOpenChange={(open) => {
+          setImageEditorOpen(open)
+          if (!open) setEditingImageId(null)
+        }}
+        currentImageUrl={editingImage?.imageUrl}
+        onSave={handleEditImageSave}
+        title="Editar imagen de galería"
+      />
     </div>
   )
 }

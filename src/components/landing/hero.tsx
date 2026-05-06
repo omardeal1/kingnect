@@ -4,6 +4,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { ArrowRight, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useTranslations } from "@/i18n/provider"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -36,6 +37,8 @@ const phoneVariants = {
 }
 
 export function Hero() {
+  const { t } = useTranslations("landing.hero")
+
   return (
     <section className="relative min-h-screen overflow-hidden pt-16">
       {/* Gold decorative elements */}
@@ -55,7 +58,7 @@ export function Hero() {
         >
           <motion.div variants={itemVariants}>
             <span className="mb-4 inline-block rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-sm font-medium text-gold">
-              Tu negocio digital comienza aquí
+              {t("badge")}
             </span>
           </motion.div>
 
@@ -63,18 +66,16 @@ export function Hero() {
             className="mt-4 text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl"
             variants={itemVariants}
           >
-            Tu negocio en un{" "}
-            <span className="gold-gradient-text">Kinec profesional</span>{" "}
-            con QR
+            {t("title1")}{" "}
+            <span className="gold-gradient-text">{t("titleHighlight")}</span>{" "}
+            {t("title2")}
           </motion.h1>
 
           <motion.p
             className="mt-6 max-w-xl text-lg text-muted-foreground sm:text-xl"
             variants={itemVariants}
           >
-            Todos los links, contactos y servicios de tu negocio en una sola
-            página. Genera tu QR, imprímelo en tarjetas, carpas o banderas, y
-            recibe más clientes.
+            {t("description")}
           </motion.p>
 
           <motion.div
@@ -87,7 +88,7 @@ export function Hero() {
               asChild
             >
               <Link href="/register">
-                Crear mi Kinec
+                {t("cta")}
                 <ArrowRight className="ml-1 size-4" />
               </Link>
             </Button>
@@ -99,7 +100,7 @@ export function Hero() {
             >
               <a href="#como-funciona">
                 <Play className="mr-1 size-4" />
-                Ver demo
+                {t("secondaryCta")}
               </a>
             </Button>
           </motion.div>
@@ -108,7 +109,7 @@ export function Hero() {
             className="mt-4 text-sm text-muted-foreground"
             variants={itemVariants}
           >
-            Sin tarjeta de crédito · Listo en 5 minutos · Prueba gratis
+            {t("stats")}
           </motion.p>
         </motion.div>
 
@@ -134,10 +135,10 @@ export function Hero() {
 
                 {/* Name */}
                 <h3 className="mt-3 text-base font-semibold text-foreground">
-                  Mi Negocio
+                  {t("mockup.businessName")}
                 </h3>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  @minegocio
+                  {t("mockup.handle")}
                 </p>
 
                 {/* Buttons */}
@@ -147,7 +148,7 @@ export function Hero() {
                       <span className="text-xs">💬</span>
                     </div>
                     <span className="text-xs font-medium text-foreground">
-                      WhatsApp
+                      {t("mockup.whatsapp")}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 rounded-xl bg-gold/10 px-3 py-2.5">
@@ -155,7 +156,7 @@ export function Hero() {
                       <span className="text-xs">📍</span>
                     </div>
                     <span className="text-xs font-medium text-foreground">
-                      Ubicación
+                      {t("mockup.location")}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 rounded-xl bg-blue-500/10 px-3 py-2.5">
@@ -163,7 +164,7 @@ export function Hero() {
                       <span className="text-xs">📱</span>
                     </div>
                     <span className="text-xs font-medium text-foreground">
-                      Instagram
+                      {t("mockup.instagram")}
                     </span>
                   </div>
                 </div>
@@ -171,19 +172,19 @@ export function Hero() {
                 {/* Services section */}
                 <div className="mt-4 w-full px-2">
                   <p className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Servicios
+                    {t("mockup.services")}
                   </p>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="rounded-lg border bg-card p-2">
                       <div className="h-8 w-full rounded bg-gold/10" />
                       <p className="mt-1.5 text-[10px] font-medium text-foreground">
-                        Servicio 1
+                        {t("mockup.service1")}
                       </p>
                     </div>
                     <div className="rounded-lg border bg-card p-2">
                       <div className="h-8 w-full rounded bg-gold/10" />
                       <p className="mt-1.5 text-[10px] font-medium text-foreground">
-                        Servicio 2
+                        {t("mockup.service2")}
                       </p>
                     </div>
                   </div>

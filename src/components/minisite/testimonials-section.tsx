@@ -4,6 +4,7 @@ import { useRef } from "react"
 import { motion } from "framer-motion"
 import { Star, ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
+import { useTranslations } from "@/i18n/provider"
 
 interface TestimonialData {
   id: string
@@ -27,6 +28,7 @@ export function TestimonialsSection({
   textColor,
   cardColor,
 }: TestimonialsSectionProps) {
+  const { t } = useTranslations("minisite")
   const scrollRef = useRef<HTMLDivElement>(null)
   const enabledTestimonials = testimonials.filter((t) => t.enabled)
 
@@ -54,7 +56,7 @@ export function TestimonialsSection({
           className="text-xl font-bold"
           style={{ color: textColor }}
         >
-          Testimonios
+          {t("testimonials.title")}
         </h2>
         {enabledTestimonials.length > 2 && (
           <div className="flex gap-2">
@@ -62,7 +64,7 @@ export function TestimonialsSection({
               onClick={() => scroll("left")}
               className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
               style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
-              aria-label="Anterior"
+              aria-label={t("testimonials.previous")}
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -70,7 +72,7 @@ export function TestimonialsSection({
               onClick={() => scroll("right")}
               className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
               style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
-              aria-label="Siguiente"
+              aria-label={t("testimonials.next")}
             >
               <ChevronRight className="w-4 h-4" />
             </button>

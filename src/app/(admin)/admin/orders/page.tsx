@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
+import { useTranslations } from "@/i18n/provider"
 import {
   Search,
   Download,
@@ -70,15 +71,6 @@ interface OrderData {
   orderItems: OrderItem[]
 }
 
-const statusConfig: Record<string, { label: string; className: string }> = {
-  new: { label: "Nuevo", className: "bg-blue-500/10 text-blue-600 border-blue-500/20" },
-  confirmed: { label: "Confirmado", className: "bg-cyan-500/10 text-cyan-600 border-cyan-500/20" },
-  preparing: { label: "Preparando", className: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
-  ready: { label: "Listo", className: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
-  delivered: { label: "Entregado", className: "bg-green-500/10 text-green-600 border-green-500/20" },
-  cancelled: { label: "Cancelado", className: "bg-red-500/10 text-red-600 border-red-500/20" },
-}
-
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<OrderData[]>([])
   const [loading, setLoading] = useState(true)
@@ -89,6 +81,16 @@ export default function AdminOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
   const [newStatus, setNewStatus] = useState("")
+  const { t } = useTranslations("admin")
+
+  const statusConfig: Record<string, { label: string; className: string }> = {
+    new: { label: t("orders.statusLabels.new"), className: "bg-blue-500/10 text-blue-600 border-blue-500/20" },
+    confirmed: { label: t("orders.statusLabels.confirmed"), className: "bg-cyan-500/10 text-cyan-600 border-cyan-500/20" },
+    preparing: { label: t("orders.statusLabels.preparing"), className: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
+    ready: { label: t("orders.statusLabels.ready"), className: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
+    delivered: { label: t("orders.statusLabels.delivered"), className: "bg-green-500/10 text-green-600 border-green-500/20" },
+    cancelled: { label: t("orders.statusLabels.cancelled"), className: "bg-red-500/10 text-red-600 border-red-500/20" },
+  }
 
   const fetchOrders = async () => {
     setLoading(true)
@@ -102,7 +104,7 @@ export default function AdminOrdersPage() {
       const data = await res.json()
       setOrders(data.orders ?? [])
     } catch {
-      toast.error("Error al cargar pedidos")
+      toast.error(t("orders.errors.loadFailed"))
     } finally {
       setLoading(false)
     }
@@ -120,19 +122,19 @@ export default function AdminOrdersPage() {
         body: JSON.stringify({ orderId, status }),
       })
       if (res.ok) {
-        toast.success("Estado actualizado")
+        toast.success(t("orders.toastSuccess.statusUpdated"))
         fetchOrders()
         if (selectedOrder?.id === orderId) {
           setSelectedOrder({ ...selectedOrder, status })
         }
       }
     } catch {
-      toast.error("Error al actualizar estado")
+      toast.error(t("orders.errors.updateFailed"))
     }
   }
 
   const exportCSV = () => {
-    const headers = ["ID", "Negocio", "Cliente", "Total", "Estado", "Tipo entrega", "Fecha"]
+    const headers = ["ID", t("orders.business"), t("orders.customer"), t("orders.total"), t("orders.status"), t("orders.deliveryType"), t("orders.date")]
     const rows = orders.map((o) => [
       o.id,
       o.miniSite.businessName,
@@ -148,10 +150,10 @@ export default function AdminOrdersPage() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `pedidos-${new Date().toISOString().slice(0, 10)}.csv`
+    a.download = `orders-${new Date().toISOString().slice(0, 10)}.csv`
     a.click()
     URL.revokeObjectURL(url)
-    toast.success("CSV descargado")
+    toast.success(t("orders.toastSuccess.csvDownloaded"))
   }
 
   const openDetail = (order: OrderData) => {
@@ -165,14 +167,14 @@ export default function AdminOrdersPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Pedidos</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">{t("orders.title")}</h1>
           <p className="text-muted-foreground mt-1">
-            Todos los pedidos de la plataforma
+            {t("orders.subtitle")}
           </p>
         </div>
         <Button variant="outline" onClick={exportCSV} disabled={orders.length === 0}>
           <Download className="w-4 h-4 mr-2" />
-          Exportar CSV
+          {t("orders.exportCsv")}
         </Button>
       </div>
 
@@ -183,7 +185,7 @@ export default function AdminOrdersPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar por negocio..."
+                placeholder={t("orders.searchPlaceholder")}
                 value={businessSearch}
                 onChange={(e) => setBusinessSearch(e.target.value)}
                 className="pl-9"
@@ -191,10 +193,10 @@ export default function AdminOrdersPage() {
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Estado" />
+                <SelectValue placeholder={t("orders.statusFilter")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="all">{t("orders.allStatuses")}</SelectItem>
                 {Object.entries(statusConfig).map(([key, cfg]) => (
                   <SelectItem key={key} value={key}>
                     {cfg.label}
@@ -208,14 +210,14 @@ export default function AdminOrdersPage() {
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
                 className="w-[140px]"
-                placeholder="Desde"
+                placeholder="From"
               />
               <Input
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
                 className="w-[140px]"
-                placeholder="Hasta"
+                placeholder="To"
               />
             </div>
           </div>
@@ -231,19 +233,19 @@ export default function AdminOrdersPage() {
             </div>
           ) : orders.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
-              No se encontraron pedidos
+              {t("orders.noOrders")}
             </div>
           ) : (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Negocio</TableHead>
-                    <TableHead>Cliente</TableHead>
-                    <TableHead>Total</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead>Fecha</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
+                    <TableHead>{t("orders.business")}</TableHead>
+                    <TableHead>{t("orders.customer")}</TableHead>
+                    <TableHead>{t("orders.total")}</TableHead>
+                    <TableHead>{t("orders.status")}</TableHead>
+                    <TableHead>{t("orders.date")}</TableHead>
+                    <TableHead className="text-right">{t("orders.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -304,7 +306,7 @@ export default function AdminOrdersPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <ShoppingCart className="w-5 h-5" />
-              Pedido #{selectedOrder?.id.slice(-6)}
+              {t("orders.orderNumber", { id: selectedOrder?.id.slice(-6) ?? "" })}
             </DialogTitle>
           </DialogHeader>
 
@@ -312,27 +314,27 @@ export default function AdminOrdersPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <p className="text-xs text-muted-foreground">Negocio</p>
+                  <p className="text-xs text-muted-foreground">{t("orders.business")}</p>
                   <p className="text-sm font-medium">{selectedOrder.miniSite.businessName}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Cliente plataforma</p>
+                  <p className="text-xs text-muted-foreground">{t("orders.platformClient")}</p>
                   <p className="text-sm">{selectedOrder.miniSite.client.businessName}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Cliente pedido</p>
+                  <p className="text-xs text-muted-foreground">{t("orders.orderCustomer")}</p>
                   <p className="text-sm">{selectedOrder.customerName}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Teléfono</p>
+                  <p className="text-xs text-muted-foreground">{t("orders.phone")}</p>
                   <p className="text-sm">{selectedOrder.customerPhone ?? "—"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Tipo entrega</p>
+                  <p className="text-xs text-muted-foreground">{t("orders.deliveryType")}</p>
                   <p className="text-sm capitalize">{selectedOrder.deliveryType}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Fecha</p>
+                  <p className="text-xs text-muted-foreground">{t("orders.date")}</p>
                   <p className="text-sm">
                     {new Date(selectedOrder.createdAt).toLocaleString("es")}
                   </p>
@@ -341,7 +343,7 @@ export default function AdminOrdersPage() {
 
               {selectedOrder.notes && (
                 <div>
-                  <p className="text-xs text-muted-foreground">Notas</p>
+                  <p className="text-xs text-muted-foreground">{t("orders.notes")}</p>
                   <p className="text-sm bg-accent p-2 rounded-lg mt-1">{selectedOrder.notes}</p>
                 </div>
               )}
@@ -350,7 +352,7 @@ export default function AdminOrdersPage() {
 
               {/* Items */}
               <div>
-                <h3 className="text-sm font-semibold mb-2">Items</h3>
+                <h3 className="text-sm font-semibold mb-2">{t("orders.items")}</h3>
                 <div className="space-y-1">
                   {selectedOrder.orderItems.map((item) => (
                     <div key={item.id} className="flex justify-between text-sm">
@@ -362,7 +364,7 @@ export default function AdminOrdersPage() {
                   ))}
                   <Separator className="my-2" />
                   <div className="flex justify-between font-semibold">
-                    <span>Total</span>
+                    <span>{t("orders.total")}</span>
                     <span>${selectedOrder.total.toLocaleString("es", { minimumFractionDigits: 2 })}</span>
                   </div>
                 </div>
@@ -372,7 +374,7 @@ export default function AdminOrdersPage() {
 
               {/* Change Status */}
               <div>
-                <h3 className="text-sm font-semibold mb-2">Cambiar estado</h3>
+                <h3 className="text-sm font-semibold mb-2">{t("orders.changeStatus")}</h3>
                 <div className="flex items-end gap-2">
                   <div className="flex-1">
                     <Select value={newStatus} onValueChange={setNewStatus}>
@@ -392,7 +394,7 @@ export default function AdminOrdersPage() {
                     onClick={() => updateStatus(selectedOrder.id, newStatus)}
                     disabled={newStatus === selectedOrder.status}
                   >
-                    Actualizar
+                    {t("orders.update")}
                   </Button>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-// ─── KINGNECT — Stripe Customer Portal ─────────────────────────────────────────
+// ─── QAIROSS — Stripe Customer Portal ─────────────────────────────────────────
 // Crea una sesión del portal de cliente de Stripe para gestionar suscripción
 
 import { NextResponse } from "next/server"

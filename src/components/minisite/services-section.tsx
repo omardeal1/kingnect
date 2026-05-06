@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { ExternalLink } from "lucide-react"
 import Image from "next/image"
+import { useTranslations } from "@/i18n/provider"
 
 interface ServiceData {
   id: string
@@ -28,6 +29,7 @@ export function ServicesSection({
   textColor,
   cardColor,
 }: ServicesSectionProps) {
+  const { t } = useTranslations("minisite")
   const enabledServices = services.filter((s) => s.enabled)
 
   if (enabledServices.length === 0) return null
@@ -44,7 +46,7 @@ export function ServicesSection({
         className="text-xl font-bold text-center mb-6"
         style={{ color: textColor }}
       >
-        Servicios
+        {t("services.title")}
       </h2>
 
       <div className="flex flex-col gap-4">

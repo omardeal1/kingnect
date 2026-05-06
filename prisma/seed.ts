@@ -160,11 +160,11 @@ async function main() {
 
   // Create Super Admin
   const admin = await prisma.user.upsert({
-    where: { email: "admin@kingnect.app" },
+    where: { email: "admin@qaiross.app" },
     update: {},
     create: {
-      name: "King Designs Admin",
-      email: "admin@kingnect.app",
+      name: "QAIROSS Admin",
+      email: "admin@qaiross.app",
       passwordHash: hashSync("Admin123!", 12),
       role: "super_admin",
       emailVerified: new Date(),
@@ -175,11 +175,11 @@ async function main() {
 
   // ─── Create Demo Client User ──────────────────────────────────────────────────
   const demoUser = await prisma.user.upsert({
-    where: { email: "demo@kingnect.app" },
+    where: { email: "demo@qaiross.app" },
     update: {},
     create: {
       name: "Negocio Demo",
-      email: "demo@kingnect.app",
+      email: "demo@qaiross.app",
       passwordHash: hashSync("Demo123!", 12),
       role: "client",
       emailVerified: new Date(),
@@ -196,7 +196,7 @@ async function main() {
       ownerUserId: demoUser.id,
       businessName: "Restaurante El Sabor",
       contactName: "Negocio Demo",
-      email: "demo@kingnect.app",
+      email: "demo@qaiross.app",
       pipelineStatus: "active",
       accountStatus: "active",
     },
@@ -415,10 +415,10 @@ async function main() {
 
   // ─── Platform Settings ────────────────────────────────────────────────────────
   const settings = [
-    { key: "app_name", value: "Kingnect", type: "text" },
-    { key: "app_url", value: "https://links.kingnect.app", type: "text" },
+    { key: "app_name", value: "QAIROSS", type: "text" },
+    { key: "app_url", value: "https://links.qaiross.app", type: "text" },
     { key: "primary_color", value: "#D4A849", type: "text" },
-    { key: "contact_email", value: "soporte@kingnect.app", type: "text" },
+    { key: "contact_email", value: "soporte@qaiross.app", type: "text" },
     { key: "whatsapp_number", value: "5215512345678", type: "text" },
     { key: "facebook_url", value: "", type: "text" },
     { key: "instagram_url", value: "", type: "text" },
@@ -479,7 +479,7 @@ async function main() {
     {
       sectionKey: "testimonials",
       title: "Lo que dicen nuestros clientes",
-      subtitle: "Negocios reales que ya usan Kingnect",
+      subtitle: "Negocios reales que ya usan QAIROSS",
       content: "",
       sortOrder: 5,
     },
@@ -488,8 +488,8 @@ async function main() {
       title: "Preguntas frecuentes",
       subtitle: "Resolvemos tus dudas",
       content: JSON.stringify([
-        { q: "¿Qué es Kingnect?", a: "Kingnect es una plataforma que te permite crear una mini web profesional con código QR para tu negocio, sin necesidad de saber programar." },
-        { q: "¿Necesito saber programar?", a: "No, Kingnect está diseñado para que cualquier persona pueda crear su mini web de forma intuitiva desde su celular o computadora." },
+        { q: "¿Qué es QAIROSS?", a: "QAIROSS es una plataforma que te permite crear una mini web profesional con código QR para tu negocio, sin necesidad de saber programar." },
+        { q: "¿Necesito saber programar?", a: "No, QAIROSS está diseñado para que cualquier persona pueda crear su mini web de forma intuitiva desde su celular o computadora." },
         { q: "¿Puedo editar mi mini web cuando quiera?", a: "Sí, puedes editar tu mini web en cualquier momento desde tu panel de control y los cambios se reflejan al instante." },
         { q: "¿Cómo recibo pedidos?", a: "Dependiendo de tu plan, puedes recibir pedidos por WhatsApp o directamente en tu panel de control." },
         { q: "¿El QR funciona para imprimir?", a: "Sí, puedes descargar tu QR en PNG o SVG con la resolución perfecta para tarjetas, carpas, banderas y cualquier material impreso." },

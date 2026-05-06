@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
+import { useTranslations } from "@/i18n/provider"
 
 export default function ResetPasswordPage({
   searchParams,
@@ -30,6 +31,7 @@ export default function ResetPasswordPage({
   const router = useRouter()
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const { t } = useTranslations("auth.resetPassword")
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
 
@@ -37,22 +39,22 @@ export default function ResetPasswordPage({
     e.preventDefault()
 
     if (!token) {
-      toast.error("Token requerido", {
-        description: "No se encontró el token de recuperación en la URL.",
+      toast.error(t("errors.tokenRequired"), {
+        description: t("errors.tokenRequiredDesc"),
       })
       return
     }
 
     if (password.length < 6) {
-      toast.error("Contraseña muy corta", {
-        description: "La contraseña debe tener al menos 6 caracteres.",
+      toast.error(t("errors.passwordTooShort"), {
+        description: t("errors.passwordTooShortDesc"),
       })
       return
     }
 
     if (password !== confirmPassword) {
-      toast.error("Las contraseñas no coinciden", {
-        description: "Asegúrate de escribir la misma contraseña en ambos campos.",
+      toast.error(t("errors.passwordMismatch"), {
+        description: t("errors.passwordMismatchDesc"),
       })
       return
     }
@@ -69,15 +71,15 @@ export default function ResetPasswordPage({
       const result = await res.json()
 
       if (!res.ok) {
-        toast.error("Error", {
-          description: result.error || "No se pudo restablecer la contraseña.",
+        toast.error(t("errors.resetFailed"), {
+          description: result.error || t("errors.resetFailedDesc"),
         })
         return
       }
 
       setIsSuccess(true)
-      toast.success("¡Contraseña actualizada!", {
-        description: "Ya puedes iniciar sesión con tu nueva contraseña.",
+      toast.success(t("toastSuccess.title"), {
+        description: t("toastSuccess.desc"),
       })
 
       // Redirect to login after a brief delay
@@ -85,8 +87,8 @@ export default function ResetPasswordPage({
         router.push("/login")
       }, 2000)
     } catch {
-      toast.error("Error de conexión", {
-        description: "No se pudo conectar con el servidor. Inténtalo de nuevo.",
+      toast.error(t("errors.connectionError"), {
+        description: t("errors.connectionErrorDesc"),
       })
     } finally {
       setIsLoading(false)
@@ -103,9 +105,9 @@ export default function ResetPasswordPage({
       >
         <Card className="border-gold/10 shadow-lg shadow-gold/5">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Enlace inválido</CardTitle>
+            <CardTitle className="text-2xl">{t("invalidLink")}</CardTitle>
             <CardDescription>
-              No se encontró el token de recuperación
+              {t("invalidLinkDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -119,10 +121,9 @@ export default function ResetPasswordPage({
                 <XCircle className="h-7 w-7 text-red-600 dark:text-red-400" />
               </div>
               <div className="space-y-2">
-                <p className="font-medium text-foreground">Token no encontrado</p>
+                <p className="font-medium text-foreground">{t("tokenNotFound")}</p>
                 <p className="text-sm text-muted-foreground">
-                  El enlace de recuperación no es válido o está incompleto.
-                  Solicita un nuevo enlace para restablecer tu contraseña.
+                  {t("tokenNotFoundDesc")}
                 </p>
               </div>
               <Button
@@ -131,7 +132,7 @@ export default function ResetPasswordPage({
                 asChild
               >
                 <Link href="/forgot-password">
-                  Solicitar nuevo enlace
+                  {t("requestNewLink")}
                 </Link>
               </Button>
             </motion.div>
@@ -151,9 +152,9 @@ export default function ResetPasswordPage({
       >
         <Card className="border-gold/10 shadow-lg shadow-gold/5">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Contraseña actualizada</CardTitle>
+            <CardTitle className="text-2xl">{t("successTitle")}</CardTitle>
             <CardDescription>
-              Tu contraseña ha sido cambiada exitosamente
+              {t("successTitleDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -167,9 +168,9 @@ export default function ResetPasswordPage({
                 <CheckCircle2 className="h-7 w-7 text-green-600 dark:text-green-400" />
               </div>
               <div className="space-y-2">
-                <p className="font-medium text-foreground">¡Todo listo!</p>
+                <p className="font-medium text-foreground">{t("allDone")}</p>
                 <p className="text-sm text-muted-foreground">
-                  Tu contraseña ha sido actualizada. Serás redirigido al inicio de sesión.
+                  {t("allDoneDesc")}
                 </p>
               </div>
               <Button
@@ -177,7 +178,7 @@ export default function ResetPasswordPage({
                 asChild
               >
                 <Link href="/login">
-                  Ir a iniciar sesión
+                  {t("goToLogin")}
                 </Link>
               </Button>
             </motion.div>
@@ -196,21 +197,21 @@ export default function ResetPasswordPage({
     >
       <Card className="border-gold/10 shadow-lg shadow-gold/5">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Nueva contraseña</CardTitle>
+          <CardTitle className="text-2xl">{t("title")}</CardTitle>
           <CardDescription>
-            Ingresa tu nueva contraseña para restablecer el acceso a tu cuenta
+            {t("subtitleFull")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="password">Nueva contraseña</Label>
+              <Label htmlFor="password">{t("newPassword")}</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Mínimo 6 caracteres"
+                  placeholder={t("passwordPlaceholder")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-9"
@@ -220,13 +221,13 @@ export default function ResetPasswordPage({
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
+              <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="confirmPassword"
                   type="password"
-                  placeholder="Repite tu contraseña"
+                  placeholder={t("confirmPasswordPlaceholder")}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="pl-9"
@@ -244,10 +245,10 @@ export default function ResetPasswordPage({
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Restableciendo...
+                  {t("resetting")}
                 </>
               ) : (
-                "Restablecer contraseña"
+                t("resetButton")
               )}
             </Button>
           </form>
@@ -258,7 +259,7 @@ export default function ResetPasswordPage({
             href="/login"
             className="text-sm text-gold hover:text-gold-dark font-medium transition-colors inline-flex items-center gap-1"
           >
-            Volver a iniciar sesión
+            {t("backToLogin")}
           </Link>
         </CardFooter>
       </Card>

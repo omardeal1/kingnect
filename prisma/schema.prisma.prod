@@ -1,4 +1,4 @@
-// KINGNECT by King Designs — Database Schema (PostgreSQL / Producción)
+// QAIROSS by QAIROSS — Database Schema (PostgreSQL / Producción)
 // Usar este schema en producción con: cp prisma/schema.prisma.prod prisma/schema.prisma
 // O referenciarlo con: npx prisma generate --schema=prisma/schema.prisma.prod
 

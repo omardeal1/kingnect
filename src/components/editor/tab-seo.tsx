@@ -60,7 +60,7 @@ export function TabSeo() {
       <div>
         <h3 className="text-sm font-semibold">SEO Básico</h3>
         <p className="text-xs text-muted-foreground">
-          Optimiza cómo aparece tu Kinec en buscadores
+          Optimiza cómo aparece tu QAIROSS en buscadores
         </p>
       </div>
 
@@ -122,7 +122,7 @@ export function TabSeo() {
             <div>
               <p className="text-sm font-medium">Open Graph</p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Open Graph se genera automáticamente a partir de los datos de tu Kinec.
+                Open Graph se genera automáticamente a partir de los datos de tu QAIROSS.
                 El título, descripción e imagen se tomarán de la información que ya configuraste.
               </p>
             </div>
@@ -135,7 +135,7 @@ export function TabSeo() {
         <CardContent className="p-4 space-y-2">
           <div className="flex items-center gap-2">
             <Globe className="size-4 text-[#D4A849]" />
-            <Label className="text-sm font-medium">URL de tu Kinec</Label>
+            <Label className="text-sm font-medium">URL de tu QAIROSS</Label>
           </div>
           <div className="flex items-center gap-2 p-2.5 rounded-md bg-muted/50 border">
             <code className="text-sm font-mono text-foreground/80 truncate">
@@ -143,7 +143,7 @@ export function TabSeo() {
             </code>
           </div>
           <p className="text-xs text-muted-foreground">
-            Esta es la URL pública de tu Kinec. Se basa en el nombre de tu negocio.
+            Esta es la URL pública de tu QAIROSS. Se basa en el nombre de tu negocio.
           </p>
         </CardContent>
       </Card>

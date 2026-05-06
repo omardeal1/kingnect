@@ -1,4 +1,4 @@
-// ─── KINGNECT — Security Helpers ───────────────────────────────────────────────
+// ─── QAIROSS — Security Helpers ───────────────────────────────────────────────
 // Funciones de seguridad reutilizables en todas las rutas API
 // Validación de slugs, URLs, uploads, verificación de planes y logging
 
@@ -18,7 +18,7 @@ const SLUG_BLACKLIST = new Set([
 ])
 
 /**
- * Valida que un slug sea seguro para usar como URL de Kinec
+ * Valida que un slug sea seguro para usar como URL de QAIROSS
  * - Solo alfanuméricos y guiones
  * - No puede empezar o terminar con guión
  * - Máximo 50 caracteres

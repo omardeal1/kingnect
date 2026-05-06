@@ -8,7 +8,7 @@
 
 ## Summary
 
-Created the complete public mini web page, order module, and QR system for KINGNECT. All 24 files implemented, lint passes with 0 errors, and all routes are verified working.
+Created the complete public mini web page, order module, and QR system for QAIROSS. All 24 files implemented, lint passes with 0 errors, and all routes are verified working.
 
 ---
 
@@ -31,7 +31,7 @@ Created the complete public mini web page, order module, and QR system for KINGN
 | `/src/components/minisite/locations-section.tsx` | Location cards with "Ver en mapa" button |
 | `/src/components/minisite/custom-links-section.tsx` | Styled link buttons |
 | `/src/components/minisite/qr-section.tsx` | QR code section with share buttons (Copy, WhatsApp, SMS, Email) |
-| `/src/components/minisite/site-footer.tsx` | Footer with "Hecho por Kingnect" branding |
+| `/src/components/minisite/site-footer.tsx` | Footer with "Hecho por QAIROSS" branding |
 | `/src/components/minisite/floating-whatsapp.tsx` | Fixed bottom-right WhatsApp button with pulse animation |
 | `/src/components/minisite/blocked-screen.tsx` | Elegant deactivated screen with message |
 

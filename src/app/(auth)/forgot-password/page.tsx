@@ -17,9 +17,11 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
+import { useTranslations } from "@/i18n/provider"
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")
+  const { t } = useTranslations("auth.forgotPassword")
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
 
@@ -27,7 +29,7 @@ export default function ForgotPasswordPage() {
     e.preventDefault()
 
     if (!email.trim()) {
-      toast.error("Campo requerido", { description: "Ingresa tu correo electrónico" })
+      toast.error(t("errors.required"), { description: t("errors.emailRequired") })
       return
     }
 
@@ -44,17 +46,17 @@ export default function ForgotPasswordPage() {
 
       if (res.ok) {
         setIsSuccess(true)
-        toast.success("Correo enviado", {
-          description: result.message || "Si el correo existe, recibirás un enlace de recuperación.",
+        toast.success(t("toastSuccess.title"), {
+          description: result.message || t("toastSuccess.desc"),
         })
       } else {
-        toast.error("Error", {
-          description: result.error || "No se pudo procesar la solicitud.",
+        toast.error(t("errors.requestFailed"), {
+          description: result.error || t("errors.requestFailedDesc"),
         })
       }
     } catch {
-      toast.error("Error de conexión", {
-        description: "No se pudo conectar con el servidor. Inténtalo de nuevo.",
+      toast.error(t("errors.connectionError"), {
+        description: t("errors.connectionErrorDesc"),
       })
     } finally {
       setIsLoading(false)
@@ -69,9 +71,9 @@ export default function ForgotPasswordPage() {
     >
       <Card className="border-gold/10 shadow-lg shadow-gold/5">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Recuperar contraseña</CardTitle>
+          <CardTitle className="text-2xl">{t("title")}</CardTitle>
           <CardDescription>
-            Te enviaremos un enlace para restablecer tu contraseña
+            {t("subtitle")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -86,10 +88,9 @@ export default function ForgotPasswordPage() {
                 <CheckCircle2 className="h-7 w-7 text-green-600 dark:text-green-400" />
               </div>
               <div className="space-y-2">
-                <p className="font-medium text-foreground">Correo enviado</p>
+                <p className="font-medium text-foreground">{t("successTitle")}</p>
                 <p className="text-sm text-muted-foreground">
-                  Si existe una cuenta con <span className="font-medium text-foreground">{email}</span>,
-                  recibirás un enlace para restablecer tu contraseña.
+                  {t("successDesc", { email })}
                 </p>
               </div>
               <Button
@@ -99,20 +100,20 @@ export default function ForgotPasswordPage() {
               >
                 <Link href="/login">
                   <ArrowLeft className="h-4 w-4 mr-1" />
-                  Volver a iniciar sesión
+                  {t("backToLogin")}
                 </Link>
               </Button>
             </motion.div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Correo electrónico</Label>
+                <Label htmlFor="email">{t("email")}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="email"
                     type="email"
-                    placeholder="tu@email.com"
+                    placeholder={t("emailPlaceholder")}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-9"
@@ -130,10 +131,10 @@ export default function ForgotPasswordPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Enviando...
+                    {t("sending")}
                   </>
                 ) : (
-                  "Enviar enlace de recuperación"
+                  t("sendButton")
                 )}
               </Button>
             </form>
@@ -147,7 +148,7 @@ export default function ForgotPasswordPage() {
               className="text-sm text-gold hover:text-gold-dark font-medium transition-colors inline-flex items-center gap-1"
             >
               <ArrowLeft className="h-3 w-3" />
-              Volver a iniciar sesión
+              {t("backToLogin")}
             </Link>
           </CardFooter>
         )}

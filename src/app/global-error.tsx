@@ -1,4 +1,4 @@
-// ─── KINGNECT — Global Error Boundary ───────────────────────────────────────────
+// ─── QAIROSS — Global Error Boundary ───────────────────────────────────────────
 // Captura todos los errores no manejados en la aplicación
 // Envía el error a Sentry (si está configurado) y muestra una UI amigable
 

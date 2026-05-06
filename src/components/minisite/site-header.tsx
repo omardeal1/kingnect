@@ -4,6 +4,8 @@ import { motion } from "framer-motion"
 import { Moon, Sun } from "lucide-react"
 import Image from "next/image"
 import { useTheme } from "next-themes"
+import { useTranslations } from "@/i18n/provider"
+import { LanguageToggle } from "@/components/ui/language-toggle"
 
 interface SiteHeaderProps {
   businessName: string
@@ -23,6 +25,7 @@ export function SiteHeader({
   showDarkToggle,
 }: SiteHeaderProps) {
   const { theme, setTheme } = useTheme()
+  const { t } = useTranslations("minisite")
 
   return (
     <motion.header
@@ -59,16 +62,19 @@ export function SiteHeader({
             </p>
           )}
         </div>
-        {showDarkToggle && (
-          <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="absolute right-0 top-0 p-2 rounded-full transition-colors hover:bg-black/10 dark:hover:bg-white/10"
-            aria-label="Cambiar tema"
-          >
-            <Sun className="w-5 h-5 hidden dark:block" style={{ color: textColor }} />
-            <Moon className="w-5 h-5 block dark:hidden" style={{ color: textColor }} />
-          </button>
-        )}
+        <div className="absolute right-0 top-0 flex items-center gap-1">
+          <LanguageToggle variant="minimal" />
+          {showDarkToggle && (
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="p-2 rounded-full transition-colors hover:bg-black/10 dark:hover:bg-white/10"
+              aria-label={t("header.toggleTheme")}
+            >
+              <Sun className="w-5 h-5 hidden dark:block" style={{ color: textColor }} />
+              <Moon className="w-5 h-5 block dark:hidden" style={{ color: textColor }} />
+            </button>
+          )}
+        </div>
       </div>
     </motion.header>
   )

@@ -1,4 +1,4 @@
-// ─── KINGNECT — Sentry Client Configuration ─────────────────────────────────────
+// ─── QAIROSS — Sentry Client Configuration ─────────────────────────────────────
 // Inicialización de Sentry para el navegador (cliente)
 // Solo se inicializa si NEXT_PUBLIC_SENTRY_DSN está configurado
 

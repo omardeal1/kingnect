@@ -48,7 +48,7 @@
   --color-gold-dark: #B8912E;
 }
 
-/* KINGNECT — Light Mode (Default) */
+/* QAIROSS — Light Mode (Default) */
 :root {
   --radius: 0.75rem;
   --background: #FFFFFF;
@@ -84,7 +84,7 @@
   --sidebar-ring: #D4A849;
 }
 
-/* KINGNECT — Dark Mode */
+/* QAIROSS — Dark Mode */
 .dark {
   --background: #0A0A0F;
   --foreground: #FAFAFA;

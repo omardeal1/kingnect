@@ -1,8 +1,8 @@
-# KINGNECT by King Designs
+# QAIROSS by QAIROSS
 
-> Todos los links de tu negocio en un Kinec profesional con QR, lista para compartir e imprimir en tarjetas, carpas, banderas, flyers, stickers, menús y publicidad.
+> Todos los links de tu negocio en un QAIROSS profesional con QR, lista para compartir e imprimir en tarjetas, carpas, banderas, flyers, stickers, menús y publicidad.
 
-**Dominio:** [links.kingnect.app](https://links.kingnect.app)
+**Dominio:** [links.qaiross.app](https://links.qaiross.app)
 
 ---
 
@@ -35,7 +35,7 @@
 ```bash
 # 1. Clonar el repositorio
 git clone [repo-url]
-cd kingnect
+cd qaiross
 
 # 2. Instalar dependencias
 npm install
@@ -64,7 +64,7 @@ La aplicación estará disponible en `http://localhost:3000`
 
 | Campo | Valor |
 |-------|-------|
-| Email | `admin@kingnect.app` |
+| Email | `admin@qaiross.app` |
 | Contraseña | `Admin123!` |
 
 ⚠️ **Cambia la contraseña inmediatamente** después del primer login en el panel de admin.
@@ -75,8 +75,8 @@ La aplicación estará disponible en `http://localhost:3000`
 
 ```env
 # ─── Aplicación ───
-NEXT_PUBLIC_APP_NAME=Kingnect
-NEXT_PUBLIC_APP_URL=https://links.kingnect.app
+NEXT_PUBLIC_APP_NAME=QAIROSS
+NEXT_PUBLIC_APP_URL=https://links.qaiross.app
 
 # ─── Base de datos ───
 DATABASE_URL="file:./dev.db"
@@ -86,7 +86,7 @@ SUPABASE_SERVICE_ROLE_KEY=...
 
 # ─── Autenticación ───
 NEXTAUTH_SECRET=tu-secreto-super-seguro-aqui
-NEXTAUTH_URL=https://links.kingnect.app
+NEXTAUTH_URL=https://links.qaiross.app
 
 # ─── Stripe ───
 STRIPE_SECRET_KEY=sk_live_...
@@ -105,8 +105,8 @@ GOOGLE_MAPS_API_KEY=...
 ```bash
 git init
 git add .
-git commit -m "Initial commit - KINGNECT"
-git remote add origin https://github.com/tu-usuario/kingnect.git
+git commit -m "Initial commit - QAIROSS"
+git remote add origin https://github.com/tu-usuario/qaiross.git
 git push -u origin main
 ```
 
@@ -131,7 +131,7 @@ Click en "Deploy". Vercel detecta Next.js automáticamente y construye el proyec
    - **Nombre:** `links`
    - **Valor:** `cname.vercel-dns.com`
 3. En Vercel → Settings → Domains
-4. Agregar: `links.kingnect.app`
+4. Agregar: `links.qaiross.app`
 5. Verificar y esperar SSL automático (1-24 horas)
 
 ---
@@ -139,7 +139,7 @@ Click en "Deploy". Vercel detecta Next.js automáticamente y construye el proyec
 ## 📁 Estructura del Proyecto
 
 ```
-kingnect/
+qaiross/
 ├── prisma/
 │   ├── schema.prisma          # Esquema completo de la base de datos
 │   └── seed.ts                # Datos iniciales (planes, admin)
@@ -153,7 +153,7 @@ kingnect/
 ├── src/
 │   ├── app/
 │   │   ├── page.tsx                           # Landing page
-│   │   ├── [slug]/page.tsx                    # Kinec pública
+│   │   ├── [slug]/page.tsx                    # QAIROSS pública
 │   │   ├── (auth)/
 │   │   │   ├── login/page.tsx                 # Iniciar sesión
 │   │   │   ├── register/page.tsx              # Registro
@@ -163,19 +163,19 @@ kingnect/
 │   │   │       ├── page.tsx                   # Panel cliente
 │   │   │       ├── billing/page.tsx           # Facturación
 │   │   │       ├── orders/page.tsx            # Pedidos
-│   │   │       └── sites/[id]/edit/page.tsx   # Editor Kinec
+│   │   │       └── sites/[id]/edit/page.tsx   # Editor QAIROSS
 │   │   ├── (admin)/
 │   │   │   └── admin/
 │   │   │       ├── page.tsx                   # Dashboard admin
 │   │   │       ├── clients/page.tsx           # Clientes
 │   │   │       ├── pipeline/page.tsx          # CRM Kanban
-│   │   │       ├── sites/page.tsx             # Kinecs
+│   │   │       ├── sites/page.tsx             # QAIROSS
 │   │   │       ├── orders/page.tsx            # Pedidos globales
 │   │   │       ├── plans/page.tsx             # Planes y precios
 │   │   │       └── platform-editor/page.tsx   # CMS sin código
 │   │   └── api/
 │   │       ├── auth/                          # Autenticación
-│   │       ├── sites/[id]/                    # CRUD Kinec + sub-recursos
+│   │       ├── sites/[id]/                    # CRUD QAIROSS + sub-recursos
 │   │       ├── admin/                         # APIs del admin
 │   │       ├── stripe/                        # Pagos Stripe
 │   │       ├── orders/                        # Pedidos
@@ -188,7 +188,7 @@ kingnect/
 │   │   ├── landing/          # Componentes de la landing
 │   │   ├── dashboard/        # Componentes del dashboard
 │   │   ├── editor/           # 12 tabs del editor
-│   │   ├── minisite/         # Componentes del Kinec público
+│   │   ├── minisite/         # Componentes del QAIROSS público
 │   │   ├── admin/            # Componentes del panel admin
 │   │   └── providers/        # ThemeProvider, QueryProvider
 │   ├── lib/
@@ -212,8 +212,8 @@ kingnect/
 
 | Rol | Acceso | Descripción |
 |-----|--------|-------------|
-| **Super Admin** | `/admin` | Control total de la plataforma (King Designs) |
-| **Cliente** | `/dashboard` | Gestión de su propio Kinec |
+| **Super Admin** | `/admin` | Control total de la plataforma (QAIROSS) |
+| **Cliente** | `/dashboard` | Gestión de su propio QAIROSS |
 
 ---
 
@@ -221,9 +221,9 @@ kingnect/
 
 | Plan | Precio | Incluye |
 |------|--------|---------|
-| **Trial** | Gratis (1 mes) | 1 Kinec · QR PNG · Catálogo básico · Marca Kingnect |
-| **Básico** | $9.99/mes | 1 Kinec · QR PNG · Redes · WhatsApp · Ubicación · Galería |
-| **Pro** | $24.99/mes | 1 Kinec · QR PNG+SVG · Catálogo completo · Pedidos WhatsApp · Estadísticas · Sin marca |
+| **Trial** | Gratis (1 mes) | 1 QAIROSS · QR PNG · Catálogo básico · Marca QAIROSS |
+| **Básico** | $9.99/mes | 1 QAIROSS · QR PNG · Redes · WhatsApp · Ubicación · Galería |
+| **Pro** | $24.99/mes | 1 QAIROSS · QR PNG+SVG · Catálogo completo · Pedidos WhatsApp · Estadísticas · Sin marca |
 | **Premium** | $49.99/mes | Todo · Pedidos internos · Múltiples ubicaciones · Dominio personalizado · Analíticas avanzadas |
 
 Los planes son editables desde `/admin/plans`.
@@ -250,7 +250,7 @@ Los planes son editables desde `/admin/plans`.
 - Instalable como app desde el navegador
 - Funciona offline con página de fallback
 
-### Cada Kinec
+### Cada QAIROSS
 - Cada negocio puede instalarse como app independiente
 - Manifest dinámico con nombre y logo del negocio
 - Funciona offline mostrando datos en caché
@@ -274,7 +274,7 @@ open http://localhost:3000/register
 
 # 5. Login como admin
 open http://localhost:3000/login
-# Email: admin@kingnect.app
+# Email: admin@qaiross.app
 # Password: Admin123!
 
 # 6. Acceder al panel admin
@@ -286,11 +286,11 @@ open http://localhost:3000/admin
 ## 📝 Notas de Deploy a Producción
 
 1. **Supabase:** Ejecutar `/database/schema.sql` en el SQL Editor de Supabase para crear las tablas con RLS
-2. **Stripe:** Configurar webhook apuntando a `https://links.kingnect.app/api/stripe/webhook` con los eventos: `checkout.session.completed`, `invoice.payment_failed`, `customer.subscription.deleted`, `customer.subscription.updated`, `invoice.paid`
+2. **Stripe:** Configurar webhook apuntando a `https://links.qaiross.app/api/stripe/webhook` con los eventos: `checkout.session.completed`, `invoice.payment_failed`, `customer.subscription.deleted`, `customer.subscription.updated`, `invoice.paid`
 3. **Imágenes:** Configurar Supabase Storage bucket para uploads (reemplazar el upload local)
 4. **Email:** Configurar proveedor de email para recuperación de contraseña
 5. **SSL:** Vercel provee SSL automáticamente
 
 ---
 
-**Kingnect by King Designs** — *Simple por fuera. Poderoso por dentro.*
+**QAIROSS by QAIROSS** — *Simple por fuera. Poderoso por dentro.*

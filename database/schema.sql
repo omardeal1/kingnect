@@ -1,5 +1,5 @@
 -- ============================================
--- KINGNECT — Esquema SQL de Referencia
+-- QAIROSS — Esquema SQL de Referencia
 -- Compatible con Supabase / PostgreSQL
 -- ============================================
 -- Este archivo es solo documentación.

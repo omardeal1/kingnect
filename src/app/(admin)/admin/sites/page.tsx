@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
+import { useTranslations } from "@/i18n/provider"
 import {
   Search,
   Globe,
@@ -77,6 +78,15 @@ export default function AdminSitesPage() {
   const [newSlug, setNewSlug] = useState("")
   const [clients, setClients] = useState<ClientOption[]>([])
   const [createForm, setCreateForm] = useState({ clientId: "", slug: "", businessName: "" })
+  const { t } = useTranslations("admin")
+
+  const siteFilters = [
+    { value: "all", label: t("sites.all"), icon: Globe },
+    { value: "active", label: t("sites.activePlural"), icon: CheckCircle2 },
+    { value: "inactive", label: t("sites.inactivePlural"), icon: XCircle },
+    { value: "published", label: t("sites.publishedPlural"), icon: Eye },
+    { value: "draft", label: t("sites.draftPlural"), icon: FileEdit },
+  ]
 
   const fetchSites = async () => {
     setLoading(true)
@@ -87,7 +97,7 @@ export default function AdminSitesPage() {
       const data = await res.json()
       setSites(data.sites ?? [])
     } catch {
-      toast.error("Error al cargar Kinecs")
+      toast.error(t("sites.errors.loadFailed"))
     } finally {
       setLoading(false)
     }
@@ -122,11 +132,11 @@ export default function AdminSitesPage() {
         body: JSON.stringify({ siteId, isActive: !currentActive }),
       })
       if (res.ok) {
-        toast.success(currentActive ? "Kinec desactivada" : "Kinec activada")
+        toast.success(currentActive ? t("sites.toastSuccess.deactivated") : t("sites.toastSuccess.activated"))
         fetchSites()
       }
     } catch {
-      toast.error("Error al actualizar")
+      toast.error(t("sites.errors.updateFailed"))
     }
   }
 
@@ -138,11 +148,11 @@ export default function AdminSitesPage() {
         body: JSON.stringify({ siteId, isPublished: true }),
       })
       if (res.ok) {
-        toast.success("Kinec publicada")
+        toast.success(t("sites.toastSuccess.published"))
         fetchSites()
       }
     } catch {
-      toast.error("Error al publicar")
+      toast.error(t("sites.errors.publishFailed"))
     }
   }
 
@@ -156,20 +166,20 @@ export default function AdminSitesPage() {
       })
       const data = await res.json()
       if (res.ok) {
-        toast.success("Slug actualizado")
+        toast.success(t("sites.toastSuccess.slugUpdated"))
         setSlugEditOpen(false)
         fetchSites()
       } else {
-        toast.error(data.error ?? "Error al cambiar slug")
+        toast.error(data.error ?? t("sites.errors.slugUpdateFailed"))
       }
     } catch {
-      toast.error("Error al cambiar slug")
+      toast.error(t("sites.errors.slugUpdateFailed"))
     }
   }
 
   const createSite = async () => {
     if (!createForm.clientId || !createForm.slug || !createForm.businessName) {
-      toast.error("Completa todos los campos")
+      toast.error(t("sites.errors.completeFields"))
       return
     }
     try {
@@ -180,15 +190,15 @@ export default function AdminSitesPage() {
       })
       const data = await res.json()
       if (res.ok) {
-        toast.success("Kinec creada")
+        toast.success(t("sites.toastSuccess.created"))
         setCreateOpen(false)
         setCreateForm({ clientId: "", slug: "", businessName: "" })
         fetchSites()
       } else {
-        toast.error(data.error ?? "Error al crear Kinec")
+        toast.error(data.error ?? t("sites.errors.createFailed"))
       }
     } catch {
-      toast.error("Error al crear Kinec")
+      toast.error(t("sites.errors.createFailed"))
     }
   }
 
@@ -213,9 +223,9 @@ export default function AdminSitesPage() {
   })
 
   const statusBadge = (site: SiteData) => {
-    if (!site.isActive) return <Badge variant="destructive">Inactiva</Badge>
-    if (!site.isPublished) return <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20">Borrador</Badge>
-    return <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">Activa</Badge>
+    if (!site.isActive) return <Badge variant="destructive">{t("sites.inactive")}</Badge>
+    if (!site.isPublished) return <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20">{t("sites.draft")}</Badge>
+    return <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">{t("sites.active")}</Badge>
   }
 
   return (
@@ -223,14 +233,14 @@ export default function AdminSitesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Kinecs</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">{t("sites.title")}</h1>
           <p className="text-muted-foreground mt-1">
-            Administra todas las Kinecs de la plataforma
+            {t("sites.subtitle")}
           </p>
         </div>
         <Button className="gold-gradient text-black font-semibold" onClick={() => setCreateOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
-          Nuevo Kinec
+          {t("sites.newQaiross")}
         </Button>
       </div>
 
@@ -241,20 +251,14 @@ export default function AdminSitesPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar por negocio, slug, cliente..."
+                placeholder={t("sites.searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
               />
             </div>
             <div className="flex gap-2">
-              {[
-                { value: "all", label: "Todas", icon: Globe },
-                { value: "active", label: "Activas", icon: CheckCircle2 },
-                { value: "inactive", label: "Inactivas", icon: XCircle },
-                { value: "published", label: "Publicadas", icon: Eye },
-                { value: "draft", label: "Borrador", icon: FileEdit },
-              ].map((f) => (
+              {siteFilters.map((f) => (
                 <Button
                   key={f.value}
                   variant={filter === f.value ? "default" : "outline"}
@@ -279,18 +283,18 @@ export default function AdminSitesPage() {
             </div>
           ) : filteredSites.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
-              No se encontraron Kinecs
+              {t("sites.noSites")}
             </div>
           ) : (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Negocio</TableHead>
-                    <TableHead>Slug</TableHead>
-                    <TableHead>Cliente</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
+                    <TableHead>{t("sites.businessName")}</TableHead>
+                    <TableHead>{t("sites.slug")}</TableHead>
+                    <TableHead>{t("sites.client")}</TableHead>
+                    <TableHead>{t("sites.status")}</TableHead>
+                    <TableHead className="text-right">{t("sites.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -315,7 +319,7 @@ export default function AdminSitesPage() {
                             size="icon"
                             className="h-8 w-8"
                             asChild
-                            title="Editar"
+                            title={t("sites.edit")}
                           >
                             <a href={`/dashboard/sites/${site.id}/edit`}>
                               <Edit className="w-4 h-4" />
@@ -326,7 +330,7 @@ export default function AdminSitesPage() {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => toggleActive(site.id, site.isActive)}
-                            title={site.isActive ? "Desactivar" : "Activar"}
+                            title={site.isActive ? t("sites.inactive") : t("sites.active")}
                           >
                             {site.isActive ? (
                               <EyeOff className="w-4 h-4" />
@@ -339,7 +343,7 @@ export default function AdminSitesPage() {
                             size="icon"
                             className="h-8 w-8"
                             asChild
-                            title="Ver pública"
+                            title={t("sites.viewPublic")}
                           >
                             <a href={`/${site.slug}`} target="_blank" rel="noopener noreferrer">
                               <ExternalLink className="w-4 h-4" />
@@ -350,7 +354,7 @@ export default function AdminSitesPage() {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => downloadQR(site.slug)}
-                            title="Descargar QR"
+                            title={t("sites.downloadQr")}
                           >
                             <QrCode className="w-4 h-4" />
                           </Button>
@@ -363,7 +367,7 @@ export default function AdminSitesPage() {
                               setNewSlug(site.slug)
                               setSlugEditOpen(true)
                             }}
-                            title="Cambiar slug"
+                            title={t("sites.changeSlug")}
                           >
                             <Link2 className="w-4 h-4" />
                           </Button>
@@ -374,7 +378,7 @@ export default function AdminSitesPage() {
                               className="h-8 text-xs"
                               onClick={() => publishSite(site.id)}
                             >
-                              Publicar
+                              {t("sites.publish")}
                             </Button>
                           )}
                         </div>
@@ -392,11 +396,11 @@ export default function AdminSitesPage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Crear Nuevo Kinec</DialogTitle>
+            <DialogTitle>{t("sites.createTitle")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label>Cliente</Label>
+              <Label>{t("sites.client")}</Label>
               <Select
                 value={createForm.clientId}
                 onValueChange={(v) =>
@@ -408,7 +412,7 @@ export default function AdminSitesPage() {
                 }
               >
                 <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Seleccionar cliente" />
+                  <SelectValue placeholder={t("sites.selectClient")} />
                 </SelectTrigger>
                 <SelectContent>
                   {clients.map((c) => (
@@ -420,7 +424,7 @@ export default function AdminSitesPage() {
               </Select>
             </div>
             <div>
-              <Label>Slug (URL)</Label>
+              <Label>{t("sites.slugLabel")}</Label>
               <Input
                 placeholder="mi-negocio"
                 value={createForm.slug}
@@ -431,16 +435,16 @@ export default function AdminSitesPage() {
               />
             </div>
             <div>
-              <Label>Nombre del negocio</Label>
+              <Label>{t("sites.businessNameLabel")}</Label>
               <Input
-                placeholder="Nombre del negocio"
+                placeholder={t("sites.businessNameLabel")}
                 value={createForm.businessName}
                 onChange={(e) => setCreateForm({ ...createForm, businessName: e.target.value })}
                 className="mt-1"
               />
             </div>
             <Button className="w-full gold-gradient text-black font-semibold" onClick={createSite}>
-              Crear Kinec
+              {t("sites.createQaiross")}
             </Button>
           </div>
         </DialogContent>
@@ -450,14 +454,14 @@ export default function AdminSitesPage() {
       <Dialog open={slugEditOpen} onOpenChange={setSlugEditOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Cambiar Slug</DialogTitle>
+            <DialogTitle>{t("sites.changeSlugTitle")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Kinec: <strong>{selectedSite?.businessName}</strong>
+              {t("sites.qairossLabel")}: <strong>{selectedSite?.businessName}</strong>
             </p>
             <div>
-              <Label>Nuevo slug</Label>
+              <Label>{t("sites.newSlug")}</Label>
               <Input
                 value={newSlug}
                 onChange={(e) =>
@@ -467,7 +471,7 @@ export default function AdminSitesPage() {
               />
             </div>
             <Button className="w-full" onClick={changeSlug}>
-              Guardar
+              {t("sites.save")}
             </Button>
           </div>
         </DialogContent>

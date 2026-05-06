@@ -19,6 +19,12 @@ import {
   Eye,
   Smartphone,
   X,
+  MousePointerClick,
+  Settings2,
+  GitBranch,
+  CalendarDays,
+  Heart,
+  UserPlus,
 } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -40,12 +46,21 @@ import { TabServicios } from "./tab-servicios"
 import { TabTestimonios } from "./tab-testimonios"
 import { TabLinks } from "./tab-links"
 import { TabSeo } from "./tab-seo"
+import { TabBotones } from "./tab-botones"
+import { TabModifiers } from "./tab-modifiers"
+import { TabBranches } from "./tab-branches"
+import { TabReservations } from "./tab-reservations"
+import { TabLoyalty } from "./tab-loyalty"
+import { TabRegistration } from "./tab-registration"
+import { TabEmployees } from "./tab-employees"
 
 const TAB_ITEMS: { value: EditorTab; label: string; icon: React.ElementType }[] = [
   { value: "info", label: "Datos", icon: FileText },
   { value: "appearance", label: "Diseño", icon: Palette },
   { value: "social", label: "Redes", icon: Share2 },
   { value: "contact", label: "Contacto", icon: Phone },
+  { value: "buttons", label: "Botones", icon: MousePointerClick },
+  { value: "modifiers", label: "Modificadores", icon: Settings2 },
   { value: "location", label: "Ubicaciones", icon: MapPin },
   { value: "slides", label: "Carrusel", icon: ImageIcon },
   { value: "menu", label: "Menú", icon: UtensilsCrossed },
@@ -54,6 +69,11 @@ const TAB_ITEMS: { value: EditorTab; label: string; icon: React.ElementType }[] 
   { value: "testimonials", label: "Testimonios", icon: MessageSquareQuote },
   { value: "links", label: "Links", icon: Link2 },
   { value: "seo", label: "SEO", icon: Search },
+  { value: "branches", label: "Sucursales", icon: GitBranch },
+  { value: "reservations", label: "Reservas", icon: CalendarDays },
+  { value: "loyalty", label: "Lealtad", icon: Heart },
+  { value: "registration", label: "Registro", icon: UserPlus },
+  { value: "employees", label: "Empleados", icon: Users },
 ]
 
 interface EditorLayoutProps {
@@ -115,6 +135,7 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
           themeMode: site.themeMode,
           isPublished: false,
           showKingBrand: site.showKingBrand,
+          buttonStyle: site.buttonStyle,
           metaTitle: site.metaTitle,
           metaDescription: site.metaDescription,
         }),
@@ -153,13 +174,14 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
           isPublished: true,
           isActive: true,
           showKingBrand: site.showKingBrand,
+          buttonStyle: site.buttonStyle,
           metaTitle: site.metaTitle,
           metaDescription: site.metaDescription,
         }),
       })
       if (!res.ok) throw new Error("Error al publicar")
       setHasUnsavedChanges(false)
-      toast.success("¡Kinec publicado exitosamente!")
+      toast.success("¡QAIROSS publicado exitosamente!")
     } catch {
       toast.error("Error al publicar el sitio")
     } finally {
@@ -202,7 +224,7 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
       {/* Top bar */}
       <div className="flex items-center gap-4">
         <div className="min-w-0">
-          <h1 className="text-lg font-bold truncate">Editar Kinec</h1>
+          <h1 className="text-lg font-bold truncate">Editar QAIROSS</h1>
           <p className="text-xs text-muted-foreground truncate">
             {site.businessName} · /{site.slug}
           </p>
@@ -263,6 +285,9 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
                   <TabsContent value="contact" className="mt-0">
                     <TabContacto siteId={siteId} />
                   </TabsContent>
+                  <TabsContent value="buttons" className="mt-0">
+                    <TabBotones />
+                  </TabsContent>
                   <TabsContent value="location" className="mt-0">
                     <TabUbicaciones siteId={siteId} />
                   </TabsContent>
@@ -286,6 +311,24 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
                   </TabsContent>
                   <TabsContent value="seo" className="mt-0">
                     <TabSeo />
+                  </TabsContent>
+                  <TabsContent value="modifiers" className="mt-0">
+                    <TabModifiers siteId={siteId} />
+                  </TabsContent>
+                  <TabsContent value="branches" className="mt-0">
+                    <TabBranches siteId={siteId} />
+                  </TabsContent>
+                  <TabsContent value="reservations" className="mt-0">
+                    <TabReservations siteId={siteId} />
+                  </TabsContent>
+                  <TabsContent value="loyalty" className="mt-0">
+                    <TabLoyalty siteId={siteId} />
+                  </TabsContent>
+                  <TabsContent value="registration" className="mt-0">
+                    <TabRegistration siteId={siteId} />
+                  </TabsContent>
+                  <TabsContent value="employees" className="mt-0">
+                    <TabEmployees siteId={siteId} />
                   </TabsContent>
                 </motion.div>
               </AnimatePresence>

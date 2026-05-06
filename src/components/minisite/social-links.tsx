@@ -12,6 +12,7 @@ import {
   MessageCircle,
 } from "lucide-react"
 import { trackLinkClick } from "@/lib/analytics"
+import { ButtonRenderer, type ButtonStyleType } from "./button-styles/button-renderer"
 
 interface SocialLinkData {
   id: string
@@ -26,6 +27,7 @@ interface SocialLinksProps {
   accentColor: string
   textColor: string
   siteId: string
+  buttonStyle?: string
 }
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -44,10 +46,12 @@ const ICON_MAP: Record<string, React.ElementType> = {
   custom: ExternalLink,
 }
 
-export function SocialLinks({ links, accentColor, textColor, siteId }: SocialLinksProps) {
+export function SocialLinks({ links, accentColor, textColor, siteId, buttonStyle = "cylinder_pill" }: SocialLinksProps) {
   const enabledLinks = links.filter((l) => l.enabled)
 
   if (enabledLinks.length === 0) return null
+
+  const style = buttonStyle as ButtonStyleType
 
   return (
     <motion.section
@@ -57,33 +61,31 @@ export function SocialLinks({ links, accentColor, textColor, siteId }: SocialLin
       transition={{ duration: 0.4 }}
       className="px-4 py-4"
     >
-      <div className="flex items-center justify-center gap-4 flex-wrap">
+      <div className="flex flex-col gap-3">
         {enabledLinks.map((link, idx) => {
           const Icon = ICON_MAP[link.type] || Globe
+          const label = link.label || link.type
+
           return (
-            <motion.a
+            <motion.div
               key={link.id}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              initial={{ opacity: 0, scale: 0.5 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: idx * 0.05 }}
-              whileHover={{ scale: 1.2, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-11 h-11 rounded-full flex items-center justify-center transition-colors shadow-sm"
-              style={{
-                backgroundColor: `${accentColor}20`,
-                color: accentColor,
-              }}
-              aria-label={link.label || link.type}
-              onClick={() => {
-                trackLinkClick(siteId, link.type, link.url)
-              }}
             >
-              <Icon className="w-5 h-5" />
-            </motion.a>
+              <ButtonRenderer
+                style={style}
+                icon={<Icon className="w-5 h-5 flex-shrink-0" />}
+                label={label}
+                href={link.url}
+                accentColor={accentColor}
+                textColor={textColor}
+                onClick={() => {
+                  trackLinkClick(siteId, link.type, link.url)
+                }}
+              />
+            </motion.div>
           )
         })}
       </div>

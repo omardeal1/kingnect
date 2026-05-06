@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
+import { useTranslations } from "@/i18n/provider"
 import {
   ChevronLeft,
   ChevronRight,
@@ -44,19 +45,7 @@ interface PipelineClient {
   miniSites: Array<{ id: string; slug: string; businessName: string }>
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
-  lead: { label: "Nuevo Lead", color: "text-gray-600", bgColor: "bg-gray-100 dark:bg-gray-800" },
-  contacted: { label: "Contactado", color: "text-blue-600", bgColor: "bg-blue-50 dark:bg-blue-900/20" },
-  in_design: { label: "En Diseño", color: "text-purple-600", bgColor: "bg-purple-50 dark:bg-purple-900/20" },
-  in_review: { label: "En Revisión", color: "text-amber-600", bgColor: "bg-amber-50 dark:bg-amber-900/20" },
-  approved: { label: "Aprobado", color: "text-teal-600", bgColor: "bg-teal-50 dark:bg-teal-900/20" },
-  published: { label: "Publicado", color: "text-cyan-600", bgColor: "bg-cyan-50 dark:bg-cyan-900/20" },
-  active: { label: "Activo", color: "text-emerald-600", bgColor: "bg-emerald-50 dark:bg-emerald-900/20" },
-  blocked: { label: "Bloqueado", color: "text-red-600", bgColor: "bg-red-50 dark:bg-red-900/20" },
-  cancelled: { label: "Cancelado", color: "text-gray-500", bgColor: "bg-gray-50 dark:bg-gray-800/50" },
-}
-
-const PIPELINE_ORDER = [
+const STATUS_ORDER = [
   "lead",
   "contacted",
   "in_design",
@@ -68,12 +57,25 @@ const PIPELINE_ORDER = [
   "cancelled",
 ]
 
+const STATUS_COLORS: Record<string, { color: string; bgColor: string }> = {
+  lead: { color: "text-gray-600", bgColor: "bg-gray-100 dark:bg-gray-800" },
+  contacted: { color: "text-blue-600", bgColor: "bg-blue-50 dark:bg-blue-900/20" },
+  in_design: { color: "text-purple-600", bgColor: "bg-purple-50 dark:bg-purple-900/20" },
+  in_review: { color: "text-amber-600", bgColor: "bg-amber-50 dark:bg-amber-900/20" },
+  approved: { color: "text-teal-600", bgColor: "bg-teal-50 dark:bg-teal-900/20" },
+  published: { color: "text-cyan-600", bgColor: "bg-cyan-50 dark:bg-cyan-900/20" },
+  active: { color: "text-emerald-600", bgColor: "bg-emerald-50 dark:bg-emerald-900/20" },
+  blocked: { color: "text-red-600", bgColor: "bg-red-50 dark:bg-red-900/20" },
+  cancelled: { color: "text-gray-500", bgColor: "bg-gray-50 dark:bg-gray-800/50" },
+}
+
 export default function AdminPipelinePage() {
   const [pipeline, setPipeline] = useState<Record<string, PipelineClient[]>>({})
   const [loading, setLoading] = useState(true)
   const [selectedClient, setSelectedClient] = useState<PipelineClient | null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
   const [moveStatus, setMoveStatus] = useState("")
+  const { t } = useTranslations("admin")
 
   const fetchPipeline = async () => {
     setLoading(true)
@@ -82,7 +84,7 @@ export default function AdminPipelinePage() {
       const data = await res.json()
       setPipeline(data.pipeline ?? {})
     } catch {
-      toast.error("Error al cargar pipeline")
+      toast.error(t("pipeline.errors.loadFailed"))
     } finally {
       setLoading(false)
     }
@@ -100,25 +102,25 @@ export default function AdminPipelinePage() {
         body: JSON.stringify({ clientId, pipelineStatus: newStatus }),
       })
       if (res.ok) {
-        toast.success(`Cliente movido a ${STATUS_CONFIG[newStatus]?.label ?? newStatus}`)
+        toast.success(t("pipeline.toastSuccess.moved", { status: t(`pipeline.statuses.${newStatus}`) }))
         fetchPipeline()
         setDetailOpen(false)
       }
     } catch {
-      toast.error("Error al mover cliente")
+      toast.error(t("pipeline.errors.moveFailed"))
     }
   }
 
   const getNextStatus = (currentStatus: string): string | null => {
-    const idx = PIPELINE_ORDER.indexOf(currentStatus)
-    if (idx < 0 || idx >= PIPELINE_ORDER.length - 1) return null
-    return PIPELINE_ORDER[idx + 1]
+    const idx = STATUS_ORDER.indexOf(currentStatus)
+    if (idx < 0 || idx >= STATUS_ORDER.length - 1) return null
+    return STATUS_ORDER[idx + 1]
   }
 
   const getPrevStatus = (currentStatus: string): string | null => {
-    const idx = PIPELINE_ORDER.indexOf(currentStatus)
+    const idx = STATUS_ORDER.indexOf(currentStatus)
     if (idx <= 0) return null
-    return PIPELINE_ORDER[idx - 1]
+    return STATUS_ORDER[idx - 1]
   }
 
   const daysInColumn = (createdAt: string) => {
@@ -144,26 +146,26 @@ export default function AdminPipelinePage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Pipeline CRM</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">{t("pipeline.title")}</h1>
         <p className="text-muted-foreground mt-1">
-          Gestiona el flujo de clientes desde lead hasta activo
+          {t("pipeline.subtitle")}
         </p>
       </div>
 
       {/* Kanban Columns */}
       <div className="overflow-x-auto pb-4">
         <div className="flex gap-4 min-w-max">
-          {PIPELINE_ORDER.map((status) => {
-            const config = STATUS_CONFIG[status]
+          {STATUS_ORDER.map((status) => {
+            const colors = STATUS_COLORS[status] ?? STATUS_COLORS.lead
             const clients = pipeline[status] ?? []
 
             return (
               <div key={status} className="w-72 flex-shrink-0">
                 {/* Column header */}
-                <div className={`rounded-t-lg px-3 py-2 ${config.bgColor}`}>
+                <div className={`rounded-t-lg px-3 py-2 ${colors.bgColor}`}>
                   <div className="flex items-center justify-between">
-                    <h3 className={`text-sm font-semibold ${config.color}`}>
-                      {config.label}
+                    <h3 className={`text-sm font-semibold ${colors.color}`}>
+                      {t(`pipeline.statuses.${status}`)}
                     </h3>
                     <Badge variant="secondary" className="text-xs">
                       {clients.length}
@@ -195,9 +197,9 @@ export default function AdminPipelinePage() {
                               </p>
                               <Badge
                                 variant="outline"
-                                className={`text-[10px] ml-2 flex-shrink-0 ${config.color}`}
+                                className={`text-[10px] ml-2 flex-shrink-0 ${colors.color}`}
                               >
-                                {config.label}
+                                {t(`pipeline.statuses.${status}`)}
                               </Badge>
                             </div>
 
@@ -215,7 +217,7 @@ export default function AdminPipelinePage() {
                             )}
 
                             <p className="text-[10px] text-muted-foreground mt-1">
-                              {daysInColumn(client.createdAt)} días
+                              {daysInColumn(client.createdAt)} {t("pipeline.days")}
                             </p>
 
                             {/* Move buttons */}
@@ -270,36 +272,36 @@ export default function AdminPipelinePage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <p className="text-xs text-muted-foreground">Contacto</p>
+                  <p className="text-xs text-muted-foreground">{t("pipeline.contact")}</p>
                   <p className="text-sm">{selectedClient.contactName ?? "—"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Teléfono</p>
+                  <p className="text-xs text-muted-foreground">{t("pipeline.phone")}</p>
                   <p className="text-sm">{selectedClient.phone ?? "—"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Email</p>
+                  <p className="text-xs text-muted-foreground">{t("pipeline.email")}</p>
                   <p className="text-sm">{selectedClient.owner.email ?? "—"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Plan</p>
+                  <p className="text-xs text-muted-foreground">{t("pipeline.plan")}</p>
                   <p className="text-sm">
-                    {selectedClient.subscription?.plan?.name ?? "Sin plan"}
+                    {selectedClient.subscription?.plan?.name ?? t("pipeline.noPlan")}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-end gap-2">
                 <div className="flex-1">
-                  <label className="text-xs text-muted-foreground">Mover a</label>
+                  <label className="text-xs text-muted-foreground">{t("pipeline.moveTo")}</label>
                   <Select value={moveStatus} onValueChange={setMoveStatus}>
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {PIPELINE_ORDER.map((s) => (
+                      {STATUS_ORDER.map((s) => (
                         <SelectItem key={s} value={s}>
-                          {STATUS_CONFIG[s]?.label ?? s}
+                          {t(`pipeline.statuses.${s}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -311,7 +313,7 @@ export default function AdminPipelinePage() {
                   disabled={moveStatus === selectedClient.pipelineStatus}
                 >
                   <ArrowRight className="w-4 h-4 mr-1" />
-                  Mover
+                  {t("pipeline.move")}
                 </Button>
               </div>
             </div>

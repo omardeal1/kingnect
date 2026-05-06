@@ -1,4 +1,4 @@
-// ─── KINGNECT — Bloquear Cliente (Admin) ───────────────────────────────────────
+// ─── QAIROSS — Bloquear Cliente (Admin) ───────────────────────────────────────
 // Permite al super_admin bloquear manualmente un cliente
 
 import { NextResponse } from "next/server"

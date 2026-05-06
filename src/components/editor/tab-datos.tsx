@@ -274,7 +274,7 @@ export function TabDatos({ siteId }: TabDatosProps) {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="space-y-2">
-            <Label htmlFor="slug">URL de tu Kinec</Label>
+            <Label htmlFor="slug">URL de tu QAIROSS</Label>
             <div className="flex items-center gap-0">
               <span className="inline-flex items-center rounded-l-md border border-r-0 border-input bg-muted px-3 h-9 text-sm text-muted-foreground">
                 {APP_URL.replace("https://", "")}/
@@ -317,8 +317,8 @@ export function TabDatos({ siteId }: TabDatosProps) {
               <Label>Publicado</Label>
               <p className="text-xs text-muted-foreground">
                 {site.isPublished
-                  ? "Tu Kinec es visible públicamente"
-                  : "Tu Kinec está en modo borrador"}
+                  ? "Tu QAIROSS es visible públicamente"
+                  : "Tu QAIROSS está en modo borrador"}
               </p>
             </div>
             <Switch
@@ -331,10 +331,10 @@ export function TabDatos({ siteId }: TabDatosProps) {
             <div className="space-y-0.5">
               <Label className="flex items-center gap-1.5">
                 <Crown className="size-3.5 text-[#D4A849]" />
-                Mostrar &quot;Hecho por Kingnect&quot;
+                Mostrar &quot;Hecho por QAIROSS&quot;
               </Label>
               <p className="text-xs text-muted-foreground">
-                Muestra la marca Kingnect en tu Kinec
+                Muestra la marca QAIROSS en tu QAIROSS
               </p>
             </div>
             <Switch

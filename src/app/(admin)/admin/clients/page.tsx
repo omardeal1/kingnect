@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import { useTranslations } from "@/i18n/provider"
 import {
   Search,
   Filter,
@@ -67,27 +68,6 @@ interface ClientData {
   miniSites: Array<{ id: string; slug: string; businessName: string; isActive: boolean }>
 }
 
-const statusFilters = [
-  { value: "all", label: "Todos" },
-  { value: "active", label: "Activo" },
-  { value: "blocked", label: "Bloqueado" },
-  { value: "trial", label: "En Trial" },
-]
-
-const statusBadgeMap: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  active: { label: "Activo", variant: "default" },
-  blocked: { label: "Bloqueado", variant: "destructive" },
-  cancelled: { label: "Cancelado", variant: "secondary" },
-}
-
-const subscriptionBadgeMap: Record<string, { label: string; className: string }> = {
-  active: { label: "Activa", className: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
-  trial: { label: "Trial", className: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
-  inactive: { label: "Inactiva", className: "bg-gray-500/10 text-gray-600 border-gray-500/20" },
-  past_due: { label: "Vencida", className: "bg-red-500/10 text-red-600 border-red-500/20" },
-  cancelled: { label: "Cancelada", className: "bg-gray-500/10 text-gray-600 border-gray-500/20" },
-}
-
 export default function AdminClientsPage() {
   const [clients, setClients] = useState<ClientData[]>([])
   const [loading, setLoading] = useState(true)
@@ -100,6 +80,28 @@ export default function AdminClientsPage() {
   const [plans, setPlans] = useState<Array<{ id: string; name: string; slug: string; price: number }>>([])
   const [page, setPage] = useState(0)
   const pageSize = 20
+  const { t } = useTranslations("admin")
+
+  const statusFilters = [
+    { value: "all", label: t("clients.statusFilters.all") },
+    { value: "active", label: t("clients.statusFilters.active") },
+    { value: "blocked", label: t("clients.statusFilters.blocked") },
+    { value: "trial", label: t("clients.statusFilters.trial") },
+  ]
+
+  const statusBadgeMap: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+    active: { label: t("clients.statusFilters.active"), variant: "default" },
+    blocked: { label: t("clients.statusFilters.blocked"), variant: "destructive" },
+    cancelled: { label: "Cancelado", variant: "secondary" },
+  }
+
+  const subscriptionBadgeMap: Record<string, { label: string; className: string }> = {
+    active: { label: t("clients.statusFilters.active"), className: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
+    trial: { label: t("clients.statusFilters.trial"), className: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
+    inactive: { label: "Inactiva", className: "bg-gray-500/10 text-gray-600 border-gray-500/20" },
+    past_due: { label: "Vencida", className: "bg-red-500/10 text-red-600 border-red-500/20" },
+    cancelled: { label: "Cancelada", className: "bg-gray-500/10 text-gray-600 border-gray-500/20" },
+  }
 
   const fetchClients = async () => {
     setLoading(true)
@@ -111,7 +113,7 @@ export default function AdminClientsPage() {
       const data = await res.json()
       setClients(data.clients ?? [])
     } catch {
-      toast.error("Error al cargar clientes")
+      toast.error(t("clients.errors.loadFailed"))
     } finally {
       setLoading(false)
     }
@@ -147,14 +149,14 @@ export default function AdminClientsPage() {
         body: JSON.stringify({ clientId, accountStatus }),
       })
       if (res.ok) {
-        toast.success(`Cliente ${accountStatus === "blocked" ? "bloqueado" : "reactivado"}`)
+        toast.success(t("clients.toastSuccess.blocked", { status: accountStatus === "blocked" ? t("clients.statusFilters.blocked").toLowerCase() : t("clients.statusFilters.active").toLowerCase() }))
         fetchClients()
         if (selectedClient?.id === clientId) {
           setSelectedClient({ ...selectedClient, accountStatus })
         }
       }
     } catch {
-      toast.error("Error al actualizar cliente")
+      toast.error(t("clients.errors.updateFailed"))
     }
   }
 
@@ -162,7 +164,7 @@ export default function AdminClientsPage() {
     try {
       const sub = clients.find((c) => c.id === clientId)?.subscription
       if (!sub) {
-        toast.error("Cliente sin suscripción")
+        toast.error(t("clients.errors.noSubscription"))
         return
       }
       const res = await fetch(`/api/admin/plans`, {
@@ -171,11 +173,11 @@ export default function AdminClientsPage() {
         body: JSON.stringify({ subscriptionId: sub.id, planId }),
       })
       if (res.ok) {
-        toast.success("Plan actualizado")
+        toast.success(t("clients.errors.planUpdated"))
         fetchClients()
       }
     } catch {
-      toast.error("Error al cambiar plan")
+      toast.error(t("clients.errors.changePlanFailed"))
     }
   }
 
@@ -188,12 +190,12 @@ export default function AdminClientsPage() {
         body: JSON.stringify({ clientId: selectedClient.id, note: newNote }),
       })
       if (res.ok) {
-        toast.success("Nota agregada")
+        toast.success(t("clients.toastSuccess.noteAdded"))
         setNewNote("")
         fetchClients()
       }
     } catch {
-      toast.error("Error al agregar nota")
+      toast.error(t("clients.errors.addNoteFailed"))
     }
   }
 
@@ -205,11 +207,11 @@ export default function AdminClientsPage() {
         body: JSON.stringify({ clientId, accountStatus: "active" }),
       })
       if (res.ok) {
-        toast.success("Trial activado")
+        toast.success(t("clients.toastSuccess.trialActivated"))
         fetchClients()
       }
     } catch {
-      toast.error("Error al activar trial")
+      toast.error(t("clients.errors.activateTrialFailed"))
     }
   }
 
@@ -229,9 +231,9 @@ export default function AdminClientsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Clientes</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">{t("clients.title")}</h1>
         <p className="text-muted-foreground mt-1">
-          Gestiona todos los clientes de la plataforma
+          {t("clients.subtitle")}
         </p>
       </div>
 
@@ -242,7 +244,7 @@ export default function AdminClientsPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar por nombre, contacto, email..."
+                placeholder={t("clients.search")}
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(0) }}
                 className="pl-9"
@@ -274,7 +276,7 @@ export default function AdminClientsPage() {
                     .finally(() => setLoading(false))
                 }}
               >
-                Por vencer
+                {t("clients.expiration")}
               </Button>
             </div>
           </div>
@@ -290,7 +292,7 @@ export default function AdminClientsPage() {
             </div>
           ) : clients.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
-              No se encontraron clientes
+              {t("clients.noClients")}
             </div>
           ) : (
             <>
@@ -298,13 +300,13 @@ export default function AdminClientsPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Negocio</TableHead>
-                      <TableHead>Contacto</TableHead>
-                      <TableHead>Plan</TableHead>
-                      <TableHead>Vencimiento</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Kinec</TableHead>
-                      <TableHead className="text-right">Acciones</TableHead>
+                      <TableHead>{t("clients.businessName")}</TableHead>
+                      <TableHead>{t("clients.contactName")}</TableHead>
+                      <TableHead>{t("clients.plan")}</TableHead>
+                      <TableHead>{t("clients.expiration")}</TableHead>
+                      <TableHead>{t("clients.status")}</TableHead>
+                      <TableHead>{t("clients.qaiross")}</TableHead>
+                      <TableHead className="text-right">{t("clients.actions")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -326,7 +328,7 @@ export default function AdminClientsPage() {
                           </TableCell>
                           <TableCell>
                             <Badge variant="outline" className="text-xs">
-                              {client.subscription?.plan?.name ?? "Sin plan"}
+                              {client.subscription?.plan?.name ?? t("clients.noPlan")}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-sm">
@@ -366,7 +368,7 @@ export default function AdminClientsPage() {
                                 size="icon"
                                 className="h-8 w-8"
                                 onClick={() => openDetail(client)}
-                                title="Ver detalle"
+                                title={t("clients.viewDetail")}
                               >
                                 <Eye className="w-4 h-4" />
                               </Button>
@@ -376,7 +378,7 @@ export default function AdminClientsPage() {
                                   size="icon"
                                   className="h-8 w-8 text-destructive"
                                   onClick={() => updateClientStatus(client.id, "blocked")}
-                                  title="Bloquear"
+                                  title={t("clients.block")}
                                 >
                                   <Ban className="w-4 h-4" />
                                 </Button>
@@ -386,7 +388,7 @@ export default function AdminClientsPage() {
                                   size="icon"
                                   className="h-8 w-8 text-emerald-600"
                                   onClick={() => updateClientStatus(client.id, "active")}
-                                  title="Reactivar"
+                                  title={t("clients.reactivate")}
                                 >
                                   <CheckCircle2 className="w-4 h-4" />
                                 </Button>
@@ -403,7 +405,7 @@ export default function AdminClientsPage() {
               {totalPages > 1 && (
                 <div className="flex items-center justify-between px-4 py-3 border-t">
                   <p className="text-sm text-muted-foreground">
-                    {clients.length} clientes · Página {page + 1} de {totalPages}
+                    {t("clients.clientsCount", { count: clients.length })} · {t("clients.page", { current: page + 1, total: totalPages })}
                   </p>
                   <div className="flex gap-1">
                     <Button
@@ -451,37 +453,37 @@ export default function AdminClientsPage() {
               {/* Basic Info */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs text-muted-foreground">Negocio</p>
+                  <p className="text-xs text-muted-foreground">{t("clients.businessName")}</p>
                   <p className="text-sm font-medium">{selectedClient.businessName}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Contacto</p>
+                  <p className="text-xs text-muted-foreground">{t("clients.contactName")}</p>
                   <p className="text-sm font-medium">{selectedClient.contactName ?? "—"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Email</p>
+                  <p className="text-xs text-muted-foreground">{t("clients.email")}</p>
                   <p className="text-sm font-medium">{selectedClient.email ?? selectedClient.owner.email ?? "—"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Teléfono</p>
+                  <p className="text-xs text-muted-foreground">{t("clients.phone")}</p>
                   <p className="text-sm font-medium">{selectedClient.phone ?? "—"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">WhatsApp</p>
+                  <p className="text-xs text-muted-foreground">{t("clients.whatsapp")}</p>
                   <p className="text-sm font-medium">{selectedClient.whatsapp ?? "—"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Pipeline</p>
+                  <p className="text-xs text-muted-foreground">{t("clients.pipeline")}</p>
                   <p className="text-sm font-medium capitalize">{selectedClient.pipelineStatus}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Registrado</p>
+                  <p className="text-xs text-muted-foreground">{t("clients.registered")}</p>
                   <p className="text-sm font-medium">
                     {new Date(selectedClient.createdAt).toLocaleDateString("es")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Kinec</p>
+                  <p className="text-xs text-muted-foreground">{t("clients.qaiross")}</p>
                   {selectedClient.miniSites[0] ? (
                     <a
                       href={`/${selectedClient.miniSites[0].slug}`}
@@ -502,17 +504,17 @@ export default function AdminClientsPage() {
 
               {/* Subscription */}
               <div>
-                <h3 className="text-sm font-semibold mb-3">Suscripción</h3>
+                <h3 className="text-sm font-semibold mb-3">{t("clients.subscription")}</h3>
                 {selectedClient.subscription ? (
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-xs text-muted-foreground">Plan actual</p>
+                      <p className="text-xs text-muted-foreground">{t("clients.currentPlanLabel")}</p>
                       <p className="text-sm font-medium">
                         {selectedClient.subscription.plan.name} — ${selectedClient.subscription.plan.price}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground">Estado</p>
+                      <p className="text-xs text-muted-foreground">{t("clients.subscriptionStatus")}</p>
                       <Badge
                         variant="outline"
                         className={subscriptionBadgeMap[selectedClient.subscription.status]?.className ?? ""}
@@ -522,7 +524,7 @@ export default function AdminClientsPage() {
                     </div>
                     {selectedClient.subscription.trialStart && (
                       <div>
-                        <p className="text-xs text-muted-foreground">Trial inicio</p>
+                        <p className="text-xs text-muted-foreground">{t("clients.trialStart")}</p>
                         <p className="text-sm">
                           {new Date(selectedClient.subscription.trialStart).toLocaleDateString("es")}
                         </p>
@@ -530,7 +532,7 @@ export default function AdminClientsPage() {
                     )}
                     {selectedClient.subscription.trialEnd && (
                       <div>
-                        <p className="text-xs text-muted-foreground">Trial fin</p>
+                        <p className="text-xs text-muted-foreground">{t("clients.trialEnd")}</p>
                         <p className="text-sm">
                           {new Date(selectedClient.subscription.trialEnd).toLocaleDateString("es")}
                         </p>
@@ -538,7 +540,7 @@ export default function AdminClientsPage() {
                     )}
                     {selectedClient.subscription.currentPeriodEnd && (
                       <div>
-                        <p className="text-xs text-muted-foreground">Período fin</p>
+                        <p className="text-xs text-muted-foreground">{t("clients.periodEnd")}</p>
                         <p className="text-sm">
                           {new Date(selectedClient.subscription.currentPeriodEnd).toLocaleDateString("es")}
                         </p>
@@ -546,7 +548,7 @@ export default function AdminClientsPage() {
                     )}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">Sin suscripción</p>
+                  <p className="text-sm text-muted-foreground">{t("clients.noSubscription")}</p>
                 )}
               </div>
 
@@ -554,7 +556,7 @@ export default function AdminClientsPage() {
 
               {/* Quick Actions */}
               <div>
-                <h3 className="text-sm font-semibold mb-3">Acciones rápidas</h3>
+                <h3 className="text-sm font-semibold mb-3">{t("clients.quickActions")}</h3>
                 <div className="flex flex-wrap gap-2">
                   {selectedClient.accountStatus === "active" ? (
                     <Button
@@ -563,7 +565,7 @@ export default function AdminClientsPage() {
                       onClick={() => updateClientStatus(selectedClient.id, "blocked")}
                     >
                       <Ban className="w-4 h-4 mr-1" />
-                      Bloquear
+                      {t("clients.block")}
                     </Button>
                   ) : (
                     <Button
@@ -573,7 +575,7 @@ export default function AdminClientsPage() {
                       className="bg-emerald-600 hover:bg-emerald-700"
                     >
                       <CheckCircle2 className="w-4 h-4 mr-1" />
-                      Reactivar
+                      {t("clients.reactivate")}
                     </Button>
                   )}
                   {selectedClient.subscription?.status === "trial" && (
@@ -582,7 +584,7 @@ export default function AdminClientsPage() {
                       size="sm"
                       onClick={() => activateTrial(selectedClient.id)}
                     >
-                      Activar Trial
+                      {t("clients.activateTrial")}
                     </Button>
                   )}
                 </div>
@@ -590,10 +592,10 @@ export default function AdminClientsPage() {
                 {/* Change Plan */}
                 <div className="mt-3 flex items-end gap-2">
                   <div className="flex-1">
-                    <label className="text-xs text-muted-foreground">Cambiar plan</label>
+                    <label className="text-xs text-muted-foreground">{t("clients.changePlan")}</label>
                     <Select value={selectedPlanId} onValueChange={setSelectedPlanId}>
                       <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Seleccionar plan" />
+                        <SelectValue placeholder={t("clients.selectPlan")} />
                       </SelectTrigger>
                       <SelectContent>
                         {plans.map((plan) => (
@@ -609,7 +611,7 @@ export default function AdminClientsPage() {
                     onClick={() => changePlan(selectedClient.id, selectedPlanId)}
                     disabled={!selectedPlanId}
                   >
-                    Cambiar
+                    {t("clients.changePlan")}
                   </Button>
                 </div>
               </div>
@@ -618,7 +620,7 @@ export default function AdminClientsPage() {
 
               {/* Notes */}
               <div>
-                <h3 className="text-sm font-semibold mb-3">Notas internas</h3>
+                <h3 className="text-sm font-semibold mb-3">{t("clients.internalNotes")}</h3>
                 <div className="space-y-2 mb-3 max-h-40 overflow-y-auto">
                   {parsedNotes(selectedClient.notes).map((n: { text: string; addedBy: string; addedAt: string }, i: number) => (
                     <div key={i} className="p-2 bg-accent rounded-lg">
@@ -629,12 +631,12 @@ export default function AdminClientsPage() {
                     </div>
                   ))}
                   {parsedNotes(selectedClient.notes).length === 0 && (
-                    <p className="text-sm text-muted-foreground">Sin notas</p>
+                    <p className="text-sm text-muted-foreground">{t("clients.noNotes")}</p>
                   )}
                 </div>
                 <div className="flex gap-2">
                   <Textarea
-                    placeholder="Agregar nota..."
+                    placeholder={t("clients.addNote")}
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
                     className="min-h-[60px]"

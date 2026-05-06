@@ -1,9 +1,9 @@
-// KINGNECT — Service Worker para PWA
+// QAIROSS — Service Worker para PWA
 // Estrategia: cache-first para assets estáticos, network-first para API
 // Soporta instalación de mini webs individuales como PWA
 
-const CACHE_NAME = 'kingnect-v2';
-const MINI_WEB_CACHE = 'kingnect-mini-web-v1';
+const CACHE_NAME = 'qaiross-v2';
+const MINI_WEB_CACHE = 'qaiross-mini-web-v1';
 
 // Assets estáticos a pre-cachear durante la instalación
 const STATIC_ASSETS = [

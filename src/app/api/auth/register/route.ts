@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     // Hash password
     const passwordHash = await hashPassword(password)
 
-    // Create user with client, subscription, and Kinec in a transaction
+    // Create user with client, subscription, and QAIROSS in a transaction
     const user = await db.$transaction(async (tx) => {
       // 1. Create user with role "client"
       const newUser = await tx.user.create({
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      // 5. Create default Kinec with slug derived from businessName
+      // 5. Create default QAIROSS with slug derived from businessName
       const slug = await generateUniqueSlug(businessName)
 
       // We need to check uniqueness within the transaction as well
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
           clientId: client.id,
           slug: finalSlug,
           businessName,
-          description: `Kinec de ${businessName}`,
+          description: `QAIROSS de ${businessName}`,
           accentColor: "#D4A849",
           isActive: true,
           isPublished: false,

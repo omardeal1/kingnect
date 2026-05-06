@@ -1,12 +1,16 @@
 "use client"
 
 import React, { createContext, useContext, useReducer, useCallback } from "react"
+import type { SelectedModifier } from "@/lib/modifier-types"
+import { calculateModifierCost } from "@/lib/modifier-types"
 
 export interface CartItem {
   menuItemId: string
+  cartItemId: string
   name: string
   price: number
   quantity: number
+  modifiers: SelectedModifier[]
 }
 
 interface CartState {
@@ -16,22 +20,34 @@ interface CartState {
 
 type CartAction =
   | { type: "ADD_ITEM"; payload: CartItem }
-  | { type: "REMOVE_ITEM"; payload: { menuItemId: string } }
-  | { type: "UPDATE_QUANTITY"; payload: { menuItemId: string; quantity: number } }
+  | { type: "REMOVE_ITEM"; payload: { cartItemId: string } }
+  | { type: "UPDATE_QUANTITY"; payload: { cartItemId: string; quantity: number } }
   | { type: "CLEAR_CART" }
   | { type: "SET_OPEN"; payload: boolean }
+
+// Generate a unique cart item ID based on menuItemId and modifier selections
+export function generateCartItemId(
+  menuItemId: string,
+  modifiers: SelectedModifier[]
+): string {
+  const modifierKey = modifiers
+    .map((m) => m.optionId)
+    .sort()
+    .join("-")
+  return `${menuItemId}|${modifierKey}`
+}
 
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case "ADD_ITEM": {
       const existing = state.items.find(
-        (i) => i.menuItemId === action.payload.menuItemId
+        (i) => i.cartItemId === action.payload.cartItemId
       )
       if (existing) {
         return {
           ...state,
           items: state.items.map((i) =>
-            i.menuItemId === action.payload.menuItemId
+            i.cartItemId === action.payload.cartItemId
               ? { ...i, quantity: i.quantity + action.payload.quantity }
               : i
           ),
@@ -42,19 +58,19 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     case "REMOVE_ITEM":
       return {
         ...state,
-        items: state.items.filter((i) => i.menuItemId !== action.payload.menuItemId),
+        items: state.items.filter((i) => i.cartItemId !== action.payload.cartItemId),
       }
     case "UPDATE_QUANTITY": {
       if (action.payload.quantity <= 0) {
         return {
           ...state,
-          items: state.items.filter((i) => i.menuItemId !== action.payload.menuItemId),
+          items: state.items.filter((i) => i.cartItemId !== action.payload.cartItemId),
         }
       }
       return {
         ...state,
         items: state.items.map((i) =>
-          i.menuItemId === action.payload.menuItemId
+          i.cartItemId === action.payload.cartItemId
             ? { ...i, quantity: action.payload.quantity }
             : i
         ),
@@ -73,8 +89,8 @@ interface CartContextType {
   items: CartItem[]
   isOpen: boolean
   addItem: (item: CartItem) => void
-  removeItem: (menuItemId: string) => void
-  updateQuantity: (menuItemId: string, quantity: number) => void
+  removeItem: (cartItemId: string) => void
+  updateQuantity: (cartItemId: string, quantity: number) => void
   clearCart: () => void
   setOpen: (open: boolean) => void
   total: number
@@ -94,12 +110,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: "SET_OPEN", payload: true })
   }, [])
 
-  const removeItem = useCallback((menuItemId: string) => {
-    dispatch({ type: "REMOVE_ITEM", payload: { menuItemId } })
+  const removeItem = useCallback((cartItemId: string) => {
+    dispatch({ type: "REMOVE_ITEM", payload: { cartItemId } })
   }, [])
 
-  const updateQuantity = useCallback((menuItemId: string, quantity: number) => {
-    dispatch({ type: "UPDATE_QUANTITY", payload: { menuItemId, quantity } })
+  const updateQuantity = useCallback((cartItemId: string, quantity: number) => {
+    dispatch({ type: "UPDATE_QUANTITY", payload: { cartItemId, quantity } })
   }, [])
 
   const clearCart = useCallback(() => {
@@ -110,7 +126,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: "SET_OPEN", payload: open })
   }, [])
 
-  const total = state.items.reduce((sum, i) => sum + i.price * i.quantity, 0)
+  const total = state.items.reduce((sum, i) => {
+    const modifierCost = calculateModifierCost(i.modifiers)
+    return sum + (i.price + modifierCost) * i.quantity
+  }, 0)
   const itemCount = state.items.reduce((sum, i) => sum + i.quantity, 0)
 
   return (

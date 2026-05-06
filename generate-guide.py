@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate Kingnect Production Setup Guide PDF"""
+"""Generate QAIROSS Production Setup Guide PDF"""
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import inch, cm
@@ -31,7 +31,7 @@ TEXT_PRIMARY  = colors.HexColor('#23221f')
 TEXT_MUTED    = colors.HexColor('#837f77')
 BG_SURFACE   = colors.HexColor('#e7e5e1')
 BG_PAGE      = colors.HexColor('#f1f0ef')
-KINGNECT_GOLD = colors.HexColor('#D4A849')
+QAIROSS_GOLD = colors.HexColor('#D4A849')
 
 # ── Page setup ──
 PAGE_W, PAGE_H = A4
@@ -136,7 +136,7 @@ def make_table(headers, rows, col_widths=None):
     return t
 
 # ── Build document ──
-output_path = '/home/z/my-project/download/Kingnect-Guia-Produccion.pdf'
+output_path = '/home/z/my-project/download/QAIROSS-Guia-Produccion.pdf'
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
 doc = SimpleDocTemplate(
@@ -144,8 +144,8 @@ doc = SimpleDocTemplate(
     pagesize=A4,
     leftMargin=LEFT_M, rightMargin=RIGHT_M,
     topMargin=TOP_M, bottomMargin=BOT_M,
-    title='Kingnect - Guia de Configuracion para Produccion',
-    author='King Designs',
+    title='QAIROSS - Guia de Configuracion para Produccion',
+    author='QAIROSS',
     creator='Z.ai'
 )
 
@@ -155,7 +155,7 @@ story = []
 # COVER / TITLE
 # ─────────────────────────────────────────────────────────
 story.append(Spacer(1, 80))
-story.append(Paragraph('<b>KINGNECT</b>', ParagraphStyle(
+story.append(Paragraph('<b>QAIROSS</b>', ParagraphStyle(
     'CoverTitle', fontName='Carlito', fontSize=36, leading=44,
     textColor=ACCENT, alignment=TA_CENTER
 )))
@@ -165,7 +165,7 @@ story.append(Paragraph('Guia de Configuracion para Produccion', ParagraphStyle(
     textColor=TEXT_PRIMARY, alignment=TA_CENTER
 )))
 story.append(Spacer(1, 24))
-story.append(Paragraph('by King Designs', ParagraphStyle(
+story.append(Paragraph('by QAIROSS', ParagraphStyle(
     'CoverMeta', fontName='Carlito', fontSize=12, leading=16,
     textColor=TEXT_MUTED, alignment=TA_CENTER
 )))
@@ -188,7 +188,7 @@ story.append(line_table)
 story.append(Spacer(1, 30))
 story.append(Paragraph(
     'Esta guia te acompana paso a paso para configurar todos los servicios necesarios '
-    'para llevar tu plataforma Kingnect a produccion. Cada seccion incluye instrucciones '
+    'para llevar tu plataforma QAIROSS a produccion. Cada seccion incluye instrucciones '
     'detalladas, comandos exactos y verificaciones para asegurar que todo funcione correctamente.',
     ParagraphStyle('CoverDesc', fontName='Carlito', fontSize=11, leading=18,
                    textColor=TEXT_MUTED, alignment=TA_CENTER)
@@ -208,7 +208,7 @@ toc_items = [
     ('3', 'Configurar Email con Resend'),
     ('4', 'Migrar Uploads a Supabase Storage'),
     ('5', 'Iconos PWA'),
-    ('6', 'Conectar Dominio links.kingnect.app'),
+    ('6', 'Conectar Dominio links.qaiross.app'),
     ('7', 'Analytics Reales'),
     ('8', 'Dashboard con Datos Reales'),
     ('9', 'Testing E2E con Playwright'),
@@ -242,8 +242,8 @@ story.append(Spacer(1, 10))
 story.append(make_table(
     ['Rol', 'Email', 'Contrasena', 'Acceso'],
     [
-        ['Super Admin', 'admin@kingnect.app', 'Admin123!', '/admin'],
-        ['Cliente Demo', 'demo@kingnect.app', 'Demo123!', '/dashboard'],
+        ['Super Admin', 'admin@qaiross.app', 'Admin123!', '/admin'],
+        ['Cliente Demo', 'demo@qaiross.app', 'Demo123!', '/dashboard'],
     ],
     [1, 2, 1.2, 1]
 ))
@@ -254,7 +254,7 @@ story.append(Spacer(1, 10))
 story.append(p(
     'Para crear un nuevo usuario de prueba, puedes usar el formulario de registro en '
     '/register. Al registrarte se crea automaticamente un usuario con rol de cliente, '
-    'un registro de negocio, una suscripcion Trial de 30 dias y un Kinec vacio listo para editar.'
+    'un registro de negocio, una suscripcion Trial de 30 dias y un QAIROSS vacio listo para editar.'
 ))
 
 # ─────────────────────────────────────────────────────────
@@ -264,7 +264,7 @@ story.append(Spacer(1, 18))
 story.append(h1('2. Configurar Stripe (Pagos)'))
 story.append(Spacer(1, 6))
 story.append(p(
-    'Stripe maneja todos los pagos de suscripcion de Kingnect. El codigo ya esta implementado '
+    'Stripe maneja todos los pagos de suscripcion de QAIROSS. El codigo ya esta implementado '
     'con soporte completo para checkout, portal de cliente, webhooks y gestion de suscripciones. '
     'Solo necesitas configurar las claves reales y los webhooks para que funcione en produccion.'
 ))
@@ -292,7 +292,7 @@ story.append(p(
 story.append(Spacer(1, 4))
 story.append(bullet('Ve a Developers &gt; Webhooks en el dashboard de Stripe'))
 story.append(bullet('Haz clic en "Add endpoint"'))
-story.append(bullet('URL del endpoint: <b>https://links.kingnect.app/api/stripe/webhook</b>'))
+story.append(bullet('URL del endpoint: <b>https://links.qaiross.app/api/stripe/webhook</b>'))
 story.append(bullet('Eventos a escuchar:'))
 indent_bullet_style = ParagraphStyle(
     'KingIndentBullet', fontName='Carlito', fontSize=10.5, leading=18,
@@ -312,7 +312,7 @@ story.append(p(
 
 story.append(h2('2.3 Crear Productos y Precios en Stripe'))
 story.append(p(
-    'El codigo de Kingnect crea automaticamente productos y precios en Stripe la primera vez '
+    'El codigo de QAIROSS crea automaticamente productos y precios en Stripe la primera vez '
     'que un cliente intenta suscribirse a un plan (via la funcion getOrCreatePrice). Sin embargo, '
     'puedes crearlos manualmente en el dashboard de Stripe para tener mas control sobre los '
     'nombres, descripciones y metadatos. Los planes configurados en la base de datos son:'
@@ -322,16 +322,16 @@ story.append(Spacer(1, 6))
 story.append(make_table(
     ['Plan', 'Precio/mes', 'Stripe Product Name'],
     [
-        ['Trial', '$0.00', 'Kingnect Trial'],
-        ['Basico', '$9.99', 'Kingnect Basico'],
-        ['Pro', '$24.99', 'Kingnect Pro'],
-        ['Premium', '$49.99', 'Kingnect Premium'],
+        ['Trial', '$0.00', 'QAIROSS Trial'],
+        ['Basico', '$9.99', 'QAIROSS Basico'],
+        ['Pro', '$24.99', 'QAIROSS Pro'],
+        ['Premium', '$49.99', 'QAIROSS Premium'],
     ],
     [1, 1, 2]
 ))
 
 story.append(h2('2.4 Verificacion'))
-story.append(bullet('Ejecuta <b>curl https://links.kingnect.app/api/health</b> y verifica que stripe diga "configured"'))
+story.append(bullet('Ejecuta <b>curl https://links.qaiross.app/api/health</b> y verifica que stripe diga "configured"'))
 story.append(bullet('Haz una prueba de checkout con una tarjeta de prueba de Stripe (4242 4242 4242 4242)'))
 story.append(bullet('Verifica que el webhook llega correctamente revisando el dashboard de Stripe'))
 
@@ -342,7 +342,7 @@ story.append(Spacer(1, 18))
 story.append(h1('3. Configurar Email con Resend'))
 story.append(Spacer(1, 6))
 story.append(p(
-    'Kingnect usa <b>Resend</b> como proveedor de email transaccional. Resend es moderno, '
+    'QAIROSS usa <b>Resend</b> como proveedor de email transaccional. Resend es moderno, '
     'rapido, con una API limpia y un generoso tier gratuito (100 emails/dia). Se encarga de '
     'enviar correos de recuperacion de contrasena, bienvenida y notificaciones. Si Resend no '
     'esta configurado, los emails se loguean en consola (modo desarrollo).'
@@ -350,13 +350,13 @@ story.append(p(
 
 story.append(h2('3.1 Crear Cuenta en Resend'))
 story.append(bullet('Ve a <b>https://resend.com</b> y crea una cuenta gratuita'))
-story.append(bullet('Verifica tu dominio (recomendado: kingnect.app) en Domain Settings'))
+story.append(bullet('Verifica tu dominio (recomendado: qaiross.app) en Domain Settings'))
 story.append(bullet('Genera una API Key en API Keys &gt; Create API Key'))
 story.append(bullet('Copia la API Key y actualiza tu .env:'))
 story.append(Spacer(1, 4))
 story.append(code(
     'RESEND_API_KEY=re_xxxxxxxxxxxx<br/>'
-    'EMAIL_FROM=no-reply@kingnect.app'
+    'EMAIL_FROM=no-reply@qaiross.app'
 ))
 
 story.append(h2('3.2 Verificar Dominio en Resend'))
@@ -368,7 +368,7 @@ story.append(p(
 ))
 story.append(Spacer(1, 4))
 story.append(bullet('En Resend, ve a Domains &gt; Add Domain'))
-story.append(bullet('Ingresa kingnect.app'))
+story.append(bullet('Ingresa qaiross.app'))
 story.append(bullet('Agrega los registros DNS que Resend te muestra en tu proveedor DNS'))
 story.append(bullet('Espera la verificacion (puede tardar hasta 48 horas)'))
 
@@ -380,7 +380,7 @@ story.append(bullet('<b>Recuperacion de contrasena:</b> Se envia cuando un usuar
 story.append(bullet('<b>Bienvenida:</b> Se envia automaticamente cuando un nuevo usuario se registra. Incluye un enlace al dashboard.'))
 story.append(Spacer(1, 4))
 story.append(p(
-    'Ambos correos usan plantillas HTML profesionales con el branding de Kingnect (color dorado #D4A849) '
+    'Ambos correos usan plantillas HTML profesionales con el branding de QAIROSS (color dorado #D4A849) '
     'y son responsive para verse bien en moviles.'
 ))
 
@@ -468,7 +468,7 @@ story.append(make_table(
 
 story.append(Spacer(1, 6))
 story.append(p(
-    'Si necesitas actualizar el icono (por ejemplo, si cambias el logo de Kingnect), simplemente '
+    'Si necesitas actualizar el icono (por ejemplo, si cambias el logo de QAIROSS), simplemente '
     'reemplaza el archivo icon-source.png en public/icons/ y ejecuta el script de redimensionamiento '
     'que usa la libreria sharp para generar todos los tamanos automaticamente.'
 ))
@@ -477,17 +477,17 @@ story.append(p(
 # 6. DOMINIO
 # ─────────────────────────────────────────────────────────
 story.append(Spacer(1, 18))
-story.append(h1('6. Conectar Dominio links.kingnect.app'))
+story.append(h1('6. Conectar Dominio links.qaiross.app'))
 story.append(Spacer(1, 6))
 story.append(p(
-    'Para que tu plataforma sea accesible en links.kingnect.app, necesitas configurar '
+    'Para que tu plataforma sea accesible en links.qaiross.app, necesitas configurar '
     'los registros DNS y conectar el dominio en Vercel. Este proceso tiene dos partes: '
     'la configuracion DNS en tu proveedor de dominios y la configuracion en Vercel.'
 ))
 
 story.append(h2('6.1 Configuracion DNS'))
 story.append(p(
-    'En tu proveedor DNS (donde compraste kingnect.app), agrega los siguientes registros:'
+    'En tu proveedor DNS (donde compraste qaiross.app), agrega los siguientes registros:'
 ))
 story.append(Spacer(1, 6))
 story.append(make_table(
@@ -507,7 +507,7 @@ story.append(p(
 story.append(h2('6.2 Configurar en Vercel'))
 story.append(bullet('Ve a tu proyecto en <b>https://vercel.com</b>'))
 story.append(bullet('Settings &gt; Domains &gt; Add'))
-story.append(bullet('Ingresa <b>links.kingnect.app</b>'))
+story.append(bullet('Ingresa <b>links.qaiross.app</b>'))
 story.append(bullet('Vercel verificara el registro DNS (puede tardar hasta 48 horas)'))
 story.append(bullet('Una vez verificado, Vercel emitira automaticamente un certificado SSL'))
 
@@ -518,15 +518,15 @@ story.append(p(
 ))
 story.append(Spacer(1, 4))
 story.append(code(
-    'NEXT_PUBLIC_APP_URL=https://links.kingnect.app<br/>'
-    'NEXTAUTH_URL=https://links.kingnect.app'
+    'NEXT_PUBLIC_APP_URL=https://links.qaiross.app<br/>'
+    'NEXTAUTH_URL=https://links.qaiross.app'
 ))
 
 story.append(h2('6.4 Verificacion'))
-story.append(bullet('Visita https://links.kingnect.app y verifica que carga la landing page'))
+story.append(bullet('Visita https://links.qaiross.app y verifica que carga la landing page'))
 story.append(bullet('Verifica que el certificado SSL es valido (candado verde en el navegador)'))
 story.append(bullet('Prueba el login y la navegacion completa del sitio'))
-story.append(bullet('Verifica que los Kinecs publicos cargan en https://links.kingnect.app/tu-slug'))
+story.append(bullet('Verifica que los QAIROSS publicos cargan en https://links.qaiross.app/tu-slug'))
 
 # ─────────────────────────────────────────────────────────
 # 7. ANALYTICS
@@ -536,7 +536,7 @@ story.append(h1('7. Analytics Reales'))
 story.append(Spacer(1, 6))
 story.append(p(
     'El sistema de analytics ya esta implementado y funcionando. Cada vez que un visitante '
-    've un Kinec, hace clic en WhatsApp, sigue un link de redes sociales o hace un pedido, '
+    've un QAIROSS, hace clic en WhatsApp, sigue un link de redes sociales o hace un pedido, '
     'se registra un evento en la base de datos. El dashboard del cliente muestra estas '
     'estadisticas en tiempo real usando TanStack Query para obtener los datos del API.'
 ))
@@ -546,7 +546,7 @@ story.append(Spacer(1, 6))
 story.append(make_table(
     ['Evento', 'Descripcion', 'Donde se Rastrea'],
     [
-        ['view', 'Vista de pagina del Kinec', 'Server-side en /[slug]'],
+        ['view', 'Vista de pagina del QAIROSS', 'Server-side en /[slug]'],
         ['click_whatsapp', 'Clic en boton WhatsApp', 'Client-side en minisite'],
         ['click_link', 'Clic en redes/links/custom', 'Client-side en minisite'],
         ['order_created', 'Pedido creado', 'Server-side en /api/orders'],
@@ -672,7 +672,7 @@ story.append(code(
     'NEXT_PUBLIC_SENTRY_DSN=https://xxxxx@sentry.io/xxxxx<br/>'
     'SENTRY_AUTH_TOKEN=sntryu_xxxxx<br/>'
     'SENTRY_ORG=tu-org<br/>'
-    'SENTRY_PROJECT=kingnect'
+    'SENTRY_PROJECT=qaiross'
 ))
 
 story.append(Spacer(1, 6))
@@ -691,7 +691,7 @@ story.append(p(
     'individual de cada servicio: base de datos, Stripe, email y almacenamiento.'
 ))
 story.append(Spacer(1, 4))
-story.append(bullet('Configura un monitor de uptime que haga GET a https://links.kingnect.app/api/health cada 5 minutos'))
+story.append(bullet('Configura un monitor de uptime que haga GET a https://links.qaiross.app/api/health cada 5 minutos'))
 story.append(bullet('Configura una alerta cuando el endpoint devuelva un status diferente a 200'))
 story.append(bullet('El endpoint devuelve 503 si la base de datos no responde'))
 
@@ -721,10 +721,10 @@ story.append(make_table(
     ['Variable', 'Descripcion', 'Ejemplo'],
     [
         ['DATABASE_URL', 'URL de conexion a BD', 'postgresql://user:pass@host/db'],
-        ['NEXT_PUBLIC_APP_NAME', 'Nombre de la app', 'Kingnect'],
-        ['NEXT_PUBLIC_APP_URL', 'URL publica de la app', 'https://links.kingnect.app'],
+        ['NEXT_PUBLIC_APP_NAME', 'Nombre de la app', 'QAIROSS'],
+        ['NEXT_PUBLIC_APP_URL', 'URL publica de la app', 'https://links.qaiross.app'],
         ['NEXTAUTH_SECRET', 'Secreto para JWT', 'Usa: openssl rand -base64 32'],
-        ['NEXTAUTH_URL', 'URL callback NextAuth', 'https://links.kingnect.app'],
+        ['NEXTAUTH_URL', 'URL callback NextAuth', 'https://links.qaiross.app'],
         ['STRIPE_SECRET_KEY', 'Clave privada Stripe', 'sk_live_...'],
         ['STRIPE_WEBHOOK_SECRET', 'Secreto webhooks Stripe', 'whsec_...'],
         ['NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY', 'Clave publica Stripe', 'pk_live_...'],
@@ -733,7 +733,7 @@ story.append(make_table(
         ['SUPABASE_SERVICE_ROLE_KEY', 'Service role key Supabase', 'eyJhbG...'],
         ['NEXT_PUBLIC_SUPABASE_ANON_KEY', 'Anon key Supabase', 'eyJhbG...'],
         ['RESEND_API_KEY', 'API key Resend', 're_xxx...'],
-        ['EMAIL_FROM', 'Email remitente', 'no-reply@kingnect.app'],
+        ['EMAIL_FROM', 'Email remitente', 'no-reply@qaiross.app'],
         ['NEXT_PUBLIC_SENTRY_DSN', 'DSN de Sentry', 'https://xxx@sentry.io/xxx'],
     ],
     [2.5, 2, 1.8]
@@ -754,7 +754,7 @@ story.append(Spacer(1, 18))
 story.append(h1('12. Checklist de Despliegue'))
 story.append(Spacer(1, 6))
 story.append(p(
-    'Usa esta lista de verificacion antes y despues de desplegar Kingnect en produccion. '
+    'Usa esta lista de verificacion antes y despues de desplegar QAIROSS en produccion. '
     'Cada item es critico para asegurar que la plataforma funciona correctamente y de forma segura.'
 ))
 
@@ -818,8 +818,8 @@ checklist_items = [
     ('Post-Deploy', [
         'Ejecutar tests E2E contra produccion',
         'Probar flujo completo de registro',
-        'Probar flujo completo de edicion de Kinec',
-        'Probar pagina publica de un Kinec',
+        'Probar flujo completo de edicion de QAIROSS',
+        'Probar pagina publica de un QAIROSS',
         'Probar generacion y descarga de QR',
         'Verificar responsividad en movil',
     ]),

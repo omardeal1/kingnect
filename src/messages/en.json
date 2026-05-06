@@ -1,0 +1,1830 @@
+{
+  "common": {
+    "appName": "QAIROSS",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "or": "or",
+    "and": "and",
+    "of": "of",
+    "noResults": "No results found",
+    "required": "Required",
+    "optional": "Optional",
+    "active": "Active",
+    "inactive": "Inactive",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "on": "On",
+    "off": "Off",
+    "all": "All",
+    "none": "None",
+    "viewMore": "View more",
+    "viewLess": "View less",
+    "copyLink": "Copy link",
+    "copied": "Copied!",
+    "share": "Share",
+    "download": "Download",
+    "upload": "Upload",
+    "language": "Language",
+    "switchLanguage": "Switch language",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode"
+  },
+  "landing": {
+    "navbar": {
+      "benefits": "Benefits",
+      "howItWorks": "How it works",
+      "pricing": "Pricing",
+      "faq": "FAQ",
+      "changeTheme": "Change theme",
+      "login": "Log in",
+      "createMyQaiross": "Create my QAIROSS",
+      "menu": "Menu"
+    },
+    "hero": {
+      "badge": "Your digital business starts here",
+      "title1": "Your business in a",
+      "titleHighlight": "professional QAIROSS",
+      "title2": "with QR",
+      "description": "All the links, contacts and services of your business in a single page. Generate your QR, print it on cards, tents or banners, and get more customers.",
+      "cta": "Create my QAIROSS",
+      "secondaryCta": "See demo",
+      "stats": "No credit card · Ready in 5 minutes · Free trial",
+      "mockup": {
+        "businessName": "My Business",
+        "handle": "@mybusiness",
+        "whatsapp": "WhatsApp",
+        "location": "Location",
+        "instagram": "Instagram",
+        "services": "Services",
+        "service1": "Service 1",
+        "service2": "Service 2"
+      }
+    },
+    "benefits": {
+      "badge": "Benefits",
+      "title": "Everything your business needs",
+      "subtitle": "A complete solution to take your business to the digital world",
+      "items": {
+        "links": {
+          "title": "All your links in one place",
+          "description": "Bring together your social media, WhatsApp, location and website in a single QAIROSS. Your customers find everything instantly."
+        },
+        "qr": {
+          "title": "QR ready to print",
+          "description": "Generate your QR code in PNG and SVG. Download it and use it on any printed material without losing quality."
+        },
+        "print": {
+          "title": "For cards, tents and banners",
+          "description": "Print your QR on business cards, advertising tents, banners and flyers. Your QAIROSS always accessible."
+        },
+        "noCode": {
+          "title": "No coding required",
+          "description": "You don't need technical knowledge. From the dashboard you edit everything visually and intuitively in minutes."
+        },
+        "dashboard": {
+          "title": "Edit from your dashboard",
+          "description": "Change texts, photos, colors and buttons whenever you want. Changes are reflected instantly on your QAIROSS."
+        },
+        "local": {
+          "title": "For local businesses",
+          "description": "Designed especially for local businesses that want a digital presence without complications or high costs."
+        },
+        "whatsapp": {
+          "title": "More contacts via WhatsApp",
+          "description": "A direct WhatsApp button on your QAIROSS. Your customers contact you with a single tap from their phone."
+        },
+        "catalog": {
+          "title": "Show services and products",
+          "description": "Add your product or service catalog with prices, photos and descriptions. Everything organized and professional."
+        }
+      }
+    },
+    "howItWorks": {
+      "badge": "Step by step",
+      "title": "How does it work?",
+      "subtitle": "In just 7 steps your QAIROSS will be ready to receive customers",
+      "steps": {
+        "register": {
+          "title": "Sign up",
+          "description": "Create your free account in less than a minute."
+        },
+        "logo": {
+          "title": "Upload your logo and data",
+          "description": "Add your logo, name, description and brand colors."
+        },
+        "networks": {
+          "title": "Activate your networks and buttons",
+          "description": "Connect WhatsApp, Instagram, Facebook and more with one click."
+        },
+        "products": {
+          "title": "Add products or menu",
+          "description": "Upload your catalog with photos, prices and descriptions."
+        },
+        "publish": {
+          "title": "Publish your QAIROSS",
+          "description": "One click and your QAIROSS is online for the whole world."
+        },
+        "downloadQr": {
+          "title": "Download your QR",
+          "description": "Get your QR code in PNG and SVG for printing."
+        },
+        "print": {
+          "title": "Print it on cards, tents or banners",
+          "description": "Use your QR on any printed material and get customers."
+        }
+      }
+    },
+    "pricing": {
+      "badge": "Pricing",
+      "title": "Plans and pricing",
+      "subtitle": "Choose the perfect plan for your business. Start for free.",
+      "popular": "Most popular",
+      "perMonth": "/month",
+      "startFree": "Start for free",
+      "choosePlan": "Choose plan"
+    },
+    "cta": {
+      "title": "Ready to create your QAIROSS?",
+      "subtitle": "Join hundreds of businesses already using QAIROSS for digital presence. Start for free today.",
+      "button": "Create my QAIROSS",
+      "stats": "No credit card · Set up in 5 minutes · Support in English"
+    },
+    "testimonials": {
+      "badge": "Testimonials",
+      "title": "What our customers say",
+      "subtitle": "Real businesses already using QAIROSS to grow",
+      "items": {
+        "maria": {
+          "name": "María García",
+          "business": "La Casa Restaurant",
+          "quote": "Since I put the QR on the tables, my customers check the menu from their phone. WhatsApp orders have doubled!"
+        },
+        "carlos": {
+          "name": "Carlos López",
+          "business": "Elite Barbershop",
+          "quote": "My QAIROSS looks incredible. Customers find me through the QR on my cards and book appointments directly via WhatsApp."
+        },
+        "ana": {
+          "name": "Ana Martínez",
+          "business": "Sonrisa Dental Clinic",
+          "quote": "Professional and easy to use. My patients can see my services and book from their phone. The dashboard is very intuitive."
+        },
+        "roberto": {
+          "name": "Roberto Sánchez",
+          "business": "El Sabor Food Truck",
+          "quote": "I share my real-time location and the daily menu from my QAIROSS. My followers always know where I am!"
+        },
+        "laura": {
+          "name": "Laura Torres",
+          "business": "Elegant Boutique",
+          "quote": "I didn't have a digital presence before. Now my customers see my new products and write to me on WhatsApp to buy."
+        },
+        "diego": {
+          "name": "Diego Ramírez",
+          "business": "DR Auto Repair Shop",
+          "quote": "My customers see the list of services and prices. It saves me a lot of time answering the same questions over and over."
+        }
+      }
+    },
+    "faq": {
+      "badge": "FAQ",
+      "title": "Frequently asked questions",
+      "subtitle": "Answers to the most common questions about QAIROSS",
+      "items": {
+        "whatIs": {
+          "question": "What is a QAIROSS?",
+          "answer": "A QAIROSS is a mobile-optimized web page that brings together all your business information in one place: social media, WhatsApp, location, services, products and more. It's accessed via a QR code or a direct link."
+        },
+        "noCode": {
+          "question": "Do I need to know how to code to create my QAIROSS?",
+          "answer": "Not at all. QAIROSS is designed so anyone can create their QAIROSS without technical knowledge. Everything is edited from a visual and intuitive dashboard. Just upload your logo, add your data and publish."
+        },
+        "howQr": {
+          "question": "How does the QR code work?",
+          "answer": "When you publish your QAIROSS, it automatically generates a unique QR code. You can download it in PNG or SVG (depending on your plan) and print it on cards, tents, banners, flyers or any advertising material."
+        },
+        "editAfter": {
+          "question": "Can I edit my QAIROSS after publishing?",
+          "answer": "Yes, you can edit your QAIROSS at any time from your admin dashboard. Change texts, photos, colors, buttons and services. Changes are reflected instantly for your customers."
+        },
+        "orders": {
+          "question": "How do my customers place orders?",
+          "answer": "There are two ways: on the Pro plan, your customers build their order and when they confirm, WhatsApp opens with the details. On the Premium plan, orders arrive at your internal panel where you can manage statuses and notify your customers."
+        },
+        "printQr": {
+          "question": "What can I print the QR code on?",
+          "answer": "You can print your QR on business cards, advertising tents, banners, flyers, stickers, menus, tables, displays and any printed material. The SVG format guarantees quality at any size."
+        },
+        "planDifference": {
+          "question": "What's the difference between plans?",
+          "answer": "The Trial plan is free for 1 month with basic features. The Basic plan includes social media and gallery. The Pro plan adds a full catalog, WhatsApp orders and statistics. The Premium plan includes everything plus internal orders, custom domain and priority support."
+        },
+        "cancel": {
+          "question": "Can I cancel my subscription at any time?",
+          "answer": "Yes, you can cancel your subscription whenever you want without penalty. Your QAIROSS will remain active until the end of the paid period. There are no lock-in contracts or hidden charges."
+        }
+      }
+    },
+    "orders": {
+      "badge": "Orders",
+      "title": "Receive orders directly",
+      "subtitle": "Two ways to receive orders depending on your business needs",
+      "whatsapp": {
+        "title": "WhatsApp orders",
+        "description": "Your customers build their order from your QAIROSS and when they confirm, WhatsApp opens with the full details. You receive the message and manage everything from your phone.",
+        "noConfig": "No extra configuration",
+        "directWhatsapp": "Goes directly to your WhatsApp",
+        "includedPro": "Included in Pro plan"
+      },
+      "panel": {
+        "title": "Internal order panel",
+        "description": "Orders arrive directly to your QAIROSS panel. Manage statuses, notify your customers and keep a complete record of all received orders.",
+        "adminPanel": "Admin panel",
+        "statesAndNotifications": "Statuses and notifications",
+        "includedPremium": "Included in Premium plan"
+      }
+    },
+    "businessExamples": {
+      "badge": "For everyone",
+      "title": "For all types of businesses",
+      "subtitle": "Whatever your business, QAIROSS adapts to your needs",
+      "categories": {
+        "restaurant": {
+          "name": "Restaurant",
+          "description": "Digital menu with photos and prices. QR on tables to view the menu instantly."
+        },
+        "barbershop": {
+          "name": "Barbershop",
+          "description": "Show your cuts, book appointments via WhatsApp and share your location."
+        },
+        "clinic": {
+          "name": "Clinic",
+          "description": "List of services, schedules and direct appointment button. Professional and reliable."
+        },
+        "foodTruck": {
+          "name": "Food truck",
+          "description": "Real-time location, daily menu and WhatsApp orders."
+        },
+        "workshop": {
+          "name": "Workshop",
+          "description": "Service catalog, reference prices and direct WhatsApp contact."
+        },
+        "store": {
+          "name": "Store",
+          "description": "Product showcase, categories and order button. Your online store in minutes."
+        },
+        "agency": {
+          "name": "Agency",
+          "description": "Service portfolio, success stories and integrated contact methods."
+        },
+        "church": {
+          "name": "Church",
+          "description": "Service schedules, location, social media and events all in one place."
+        }
+      }
+    },
+    "footer": {
+      "home": "Home",
+      "pricing": "Pricing",
+      "login": "Log in",
+      "register": "Register",
+      "termsAndConditions": "Terms and conditions",
+      "privacyPolicy": "Privacy policy",
+      "copyright": "© {year} QAIROSS. All rights reserved."
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in to your QAIROSS account",
+      "subtitle": "Access your dashboard to manage your business",
+      "email": "Email",
+      "password": "Password",
+      "forgotPassword": "Forgot your password?",
+      "loginButton": "Sign in",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Sign up here",
+      "orContinueWith": "Or continue with",
+      "google": "Google",
+      "facebook": "Facebook",
+      "createAccount": "Create account",
+      "emailPlaceholder": "your@email.com",
+      "loggingIn": "Signing in...",
+      "errors": {
+        "required": "Required field",
+        "emailRequired": "Enter your email",
+        "passwordRequired": "Enter your password",
+        "invalidPassword": "Invalid password",
+        "passwordTooShort": "Password must be at least 6 characters",
+        "loginFailed": "Login failed",
+        "invalidCredentials": "Invalid email or password",
+        "connectionError": "Connection error",
+        "connectionErrorDesc": "Could not connect to the server. Please try again."
+      },
+      "success": {
+        "welcome": "Welcome!",
+        "loggedIn": "You've logged in successfully"
+      }
+    },
+    "register": {
+      "title": "Register your business on QAIROSS",
+      "subtitle": "Create your free account and start digitizing your business",
+      "businessName": "Business name",
+      "contactName": "Your name",
+      "email": "Email",
+      "phone": "Phone (optional)",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "termsAgree": "I agree to the {termsOfService} and {privacyPolicy}",
+      "termsOfService": "Terms of Service",
+      "privacyPolicy": "Privacy Policy",
+      "registerButton": "Create account",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Sign in",
+      "name": "Name",
+      "emailPlaceholder": "your@email.com",
+      "namePlaceholder": "Your full name",
+      "passwordPlaceholder": "Minimum 6 characters",
+      "businessNamePlaceholder": "E.g.: El Sabor Restaurant",
+      "creating": "Creating account...",
+      "errors": {
+        "nameTooShort": "Name must be at least 2 characters",
+        "invalidEmail": "Enter a valid email",
+        "passwordTooShort": "Password must be at least 6 characters",
+        "businessNameTooShort": "Business name must be at least 2 characters",
+        "registerFailed": "Registration failed",
+        "registerFailedDesc": "Could not create the account",
+        "connectionError": "Connection error",
+        "connectionErrorDesc": "Could not connect to the server. Please try again."
+      },
+      "success": {
+        "accountCreated": "Account created!",
+        "accountCreatedDesc": "Your account has been created successfully. You can now sign in."
+      }
+    },
+    "forgotPassword": {
+      "title": "Recover password",
+      "subtitle": "We'll send you a link to reset your password",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "sendButton": "Send recovery link",
+      "backToLogin": "Back to sign in",
+      "emailSent": "Link sent to your email",
+      "emailSentDesc": "Check your inbox and follow the instructions.",
+      "sending": "Sending...",
+      "successTitle": "Email sent",
+      "successDesc": "If an account exists with {email}, you'll receive a link to reset your password.",
+      "errors": {
+        "required": "Required field",
+        "emailRequired": "Enter your email",
+        "requestFailed": "Error",
+        "requestFailedDesc": "Could not process the request.",
+        "connectionError": "Connection error",
+        "connectionErrorDesc": "Could not connect to the server. Please try again."
+      },
+      "toastSuccess": {
+        "title": "Email sent",
+        "desc": "If the email exists, you'll receive a recovery link."
+      }
+    },
+    "resetPassword": {
+      "title": "New password",
+      "subtitle": "Enter your new password",
+      "subtitleFull": "Enter your new password to restore access to your account",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat your password",
+      "passwordPlaceholder": "Minimum 6 characters",
+      "resetButton": "Reset password",
+      "resetting": "Resetting...",
+      "success": "Password updated",
+      "successDesc": "Your password has been changed successfully. You can now sign in.",
+      "successTitle": "Password updated",
+      "successTitleDesc": "Your password has been changed successfully",
+      "allDone": "All done!",
+      "allDoneDesc": "Your password has been updated. You'll be redirected to sign in.",
+      "goToLogin": "Go to sign in",
+      "invalidLink": "Invalid link",
+      "invalidLinkDesc": "Recovery token not found",
+      "tokenNotFound": "Token not found",
+      "tokenNotFoundDesc": "The recovery link is invalid or incomplete. Request a new link to reset your password.",
+      "requestNewLink": "Request new link",
+      "errors": {
+        "tokenRequired": "Token required",
+        "tokenRequiredDesc": "Recovery token not found in URL.",
+        "passwordTooShort": "Password too short",
+        "passwordTooShortDesc": "Password must be at least 6 characters.",
+        "passwordMismatch": "Passwords don't match",
+        "passwordMismatchDesc": "Make sure you enter the same password in both fields.",
+        "resetFailed": "Error",
+        "resetFailedDesc": "Could not reset password.",
+        "connectionError": "Connection error",
+        "connectionErrorDesc": "Could not connect to the server. Please try again."
+      },
+      "toastSuccess": {
+        "title": "Password updated!",
+        "desc": "You can now sign in with your new password."
+      }
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "myQaiross": "My QAIROSS",
+      "orders": "Orders",
+      "billing": "Billing",
+      "settings": "Settings",
+      "openMenu": "Open menu",
+      "closeSession": "Sign out",
+      "changeTheme": "Change theme",
+      "plan": "Plan",
+      "accountPaused": "Your account is paused. Update your payment to continue.",
+      "reactivateNow": "Reactivate now",
+      "customers": "Customers"
+    },
+    "welcome": "Welcome, {name}!",
+    "welcomeSubtitle": "Manage your QAIROSS and orders from here",
+    "manageQaiross": "Manage your QAIROSS and orders from here",
+    "perMonth": "/month",
+    "planStatus": {
+      "title": "Plan status",
+      "currentPlan": "Current plan",
+      "daysRemaining": "days remaining",
+      "upgradePlan": "Upgrade plan",
+      "periodEnd": "Period end",
+      "trial": "Trial period"
+    },
+    "qairossCard": {
+      "title": "My QAIROSS",
+      "url": "Your URL",
+      "viewQaiross": "View QAIROSS",
+      "editQaiross": "Edit"
+    },
+    "qrCard": {
+      "title": "QR Code",
+      "downloadPNG": "Download PNG",
+      "downloadSVG": "Download SVG",
+      "shareQR": "Share QR"
+    },
+    "statsCard": {
+      "title": "Statistics",
+      "last30Days": "Last 30 days",
+      "totalViews": "Total views",
+      "visits": "Visits",
+      "whatsappClicks": "WhatsApp clicks",
+      "clicksWhatsapp": "WhatsApp Clicks",
+      "totalOrders": "Total orders",
+      "orders": "Orders"
+    },
+    "recentOrders": {
+      "title": "Recent orders",
+      "viewAll": "View all orders",
+      "noOrders": "No orders yet",
+      "noOrdersDesc": "Orders will appear here when your customers place an order."
+    },
+    "blocked": {
+      "title": "Account blocked",
+      "message": "Your account has been blocked. Contact support for more information.",
+      "reactivate": "Reactivate now"
+    },
+    "orders": {
+      "title": "Orders",
+      "subtitle": "Manage orders from your QAIROSS",
+      "new": "New",
+      "confirmed": "Confirmed",
+      "preparing": "In progress",
+      "ready": "Ready",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "noOrders": "No orders yet",
+      "customerName": "Customer",
+      "customerPhone": "Phone",
+      "date": "Date",
+      "total": "Total",
+      "status": "Status",
+      "details": "Details",
+      "updateStatus": "Update status",
+      "searchPlaceholder": "Search by customer name...",
+      "filterStatus": "Filter status",
+      "allStatuses": "All statuses",
+      "changeStatus": "Change status",
+      "whatsapp": "WhatsApp",
+      "updatedTo": "Order updated to: {status}",
+      "updateError": "Error updating order",
+      "loadError": "Error loading orders",
+      "noOrdersDesc": "When your customers place orders from your QAIROSS, they will appear here for you to manage.",
+      "deliveryType": {
+        "delivery": "Delivery",
+        "pickup": "Pickup"
+      }
+    },
+    "billing": {
+      "title": "Billing",
+      "subtitle": "Manage your subscription and payments",
+      "currentPlan": "Current plan",
+      "currentSubscription": "Your current subscription",
+      "nextPayment": "Next payment",
+      "paymentMethod": "Payment method",
+      "manageSubscription": "Manage subscription",
+      "changePlan": "Change plan",
+      "cancelSubscription": "Cancel subscription",
+      "invoiceHistory": "Payment history",
+      "noInvoices": "No payments recorded",
+      "noInvoicesDesc": "Your payments will appear here once they're processed",
+      "active": "Active",
+      "expires": "Expires on {date}",
+      "perMonth": "/month",
+      "perYear": "/year",
+      "upgradePlan": "Upgrade plan",
+      "choosePlan": "Choose your plan",
+      "choosePlanDesc": "Change plans at any time",
+      "currentPlanBadge": "Current plan",
+      "popular": "Popular",
+      "startFree": "Start for free",
+      "accountPaused": "Your account is paused",
+      "accountPausedDesc": "Update your payment method to reactivate your subscription",
+      "reactivateNow": "Reactivate now",
+      "loadError": "Error loading plans",
+      "idRequired": "Could not identify your account",
+      "stripeNotConfigured": "Online payments are not available at this time. Contact support.",
+      "portalError": "Error opening payment portal",
+      "connectionError": "Connection error. Please try again.",
+      "trialFree": "The Trial plan is free and is assigned automatically.",
+      "planNotFound": "Plan not found. Try reloading the page.",
+      "checkoutError": "Error starting payment process",
+      "copyLinkSuccess": "Link copied to clipboard",
+      "copyLinkError": "Could not copy link",
+      "qrPngDownloaded": "QR PNG downloaded",
+      "scanToView": "Scan to view your QAIROSS"
+    }
+  },
+  "admin": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "clients": "Clients",
+      "pipeline": "Pipeline",
+      "qaiross": "QAIROSS",
+      "orders": "Orders",
+      "plans": "Plans",
+      "platformEditor": "Platform editor",
+      "landingEditor": "Landing editor",
+      "branding": "Branding",
+      "employees": "Employees",
+      "settings": "Settings",
+      "closeSession": "Sign out",
+      "darkMode": "Dark mode",
+      "lightMode": "Light mode",
+      "navMenu": "Navigation menu",
+      "adminPanel": "Admin Panel",
+      "branches": "Branches",
+      "reservations": "Reservations",
+      "loyalty": "Loyalty",
+      "customers": "Customers"
+    },
+    "title": "Super Admin",
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "subtitle": "QAIROSS Overview",
+      "newQaiross": "New QAIROSS",
+      "errorLoading": "Error loading statistics",
+      "lastActivity": "Recent Activity",
+      "qairossSummary": "QAIROSS Summary",
+      "publishedActive": "Published and Active",
+      "deactivated": "Deactivated",
+      "draft": "Draft",
+      "activePercentage": "{percentage}% of QAIROSS active",
+      "noQaiross": "No QAIROSS",
+      "sites": {
+        "active": "QAIROSS Active",
+        "inactive": "QAIROSS Inactive",
+        "draft": "QAIROSS Draft"
+      },
+      "clients": {
+        "newThisMonth": "New Clients (Month)",
+        "active": "Active Clients",
+        "blocked": "Blocked Clients",
+        "trial": "In Trial"
+      },
+      "revenue": {
+        "mrr": "Estimated MRR"
+      },
+      "orders": {
+        "today": "Orders Today",
+        "thisMonth": "Orders This Month"
+      },
+      "recentActivity": "Recent activity",
+      "noActivity": "No recent activity"
+    },
+    "clients": {
+      "title": "Clients",
+      "subtitle": "Manage all platform clients",
+      "addClient": "Add client",
+      "businessName": "Business",
+      "contactName": "Contact",
+      "email": "Email",
+      "phone": "Phone",
+      "plan": "Plan",
+      "status": "Status",
+      "actions": "Actions",
+      "block": "Block",
+      "reactivate": "Reactivate",
+      "view": "View",
+      "search": "Search by name, contact, email...",
+      "confirmBlock": "Block this client?",
+      "confirmReactivate": "Reactivate this client?",
+      "noClients": "No clients found",
+      "expiration": "Expiring soon",
+      "qaiross": "QAIROSS",
+      "page": "Page {current} of {total}",
+      "clientsCount": "{count} clients",
+      "noPlan": "No plan",
+      "viewDetail": "View details",
+      "pipeline": "Pipeline",
+      "registered": "Registered",
+      "subscription": "Subscription",
+      "currentPlanLabel": "Current plan",
+      "subscriptionStatus": "Status",
+      "trialStart": "Trial start",
+      "trialEnd": "Trial end",
+      "periodEnd": "Period end",
+      "noSubscription": "No subscription",
+      "quickActions": "Quick actions",
+      "activateTrial": "Activate Trial",
+      "changePlan": "Change plan",
+      "selectPlan": "Select plan",
+      "internalNotes": "Internal notes",
+      "noNotes": "No notes",
+      "addNote": "Add note...",
+      "whatsapp": "WhatsApp",
+      "errors": {
+        "loadFailed": "Error loading clients",
+        "updateFailed": "Error updating client",
+        "changePlanFailed": "Error changing plan",
+        "addNoteFailed": "Error adding note",
+        "activateTrialFailed": "Error activating trial",
+        "noSubscription": "Client has no subscription",
+        "planUpdated": "Plan updated"
+      },
+      "toastSuccess": {
+        "blocked": "Client {status}",
+        "reactivated": "Client {status}",
+        "noteAdded": "Note added",
+        "trialActivated": "Trial activated"
+      },
+      "statusFilters": {
+        "all": "All",
+        "active": "Active",
+        "blocked": "Blocked",
+        "trial": "In Trial"
+      }
+    },
+    "sites": {
+      "title": "QAIROSS",
+      "subtitle": "Manage all platform QAIROSS",
+      "newQaiross": "New QAIROSS",
+      "businessName": "Business",
+      "slug": "Slug",
+      "client": "Client",
+      "status": "Status",
+      "actions": "Actions",
+      "published": "Published",
+      "draft": "Draft",
+      "active": "Active",
+      "inactive": "Inactive",
+      "all": "All",
+      "activePlural": "Active",
+      "inactivePlural": "Inactive",
+      "publishedPlural": "Published",
+      "draftPlural": "Draft",
+      "view": "View",
+      "viewPublic": "View public",
+      "edit": "Edit",
+      "publish": "Publish",
+      "downloadQr": "Download QR",
+      "changeSlug": "Change slug",
+      "searchPlaceholder": "Search by business, slug, client...",
+      "noSites": "No QAIROSS found",
+      "createTitle": "Create New QAIROSS",
+      "createQaiross": "Create QAIROSS",
+      "selectClient": "Select client",
+      "slugLabel": "Slug (URL)",
+      "businessNameLabel": "Business name",
+      "changeSlugTitle": "Change Slug",
+      "qairossLabel": "QAIROSS",
+      "newSlug": "New slug",
+      "save": "Save",
+      "errors": {
+        "loadFailed": "Error loading QAIROSS",
+        "updateFailed": "Error updating",
+        "publishFailed": "Error publishing",
+        "slugUpdateFailed": "Error changing slug",
+        "createFailed": "Error creating QAIROSS",
+        "completeFields": "Complete all fields"
+      },
+      "toastSuccess": {
+        "deactivated": "QAIROSS deactivated",
+        "activated": "QAIROSS activated",
+        "published": "QAIROSS published",
+        "slugUpdated": "Slug updated",
+        "created": "QAIROSS created"
+      }
+    },
+    "orders": {
+      "title": "Orders",
+      "subtitle": "All platform orders",
+      "exportCsv": "Export CSV",
+      "business": "Business",
+      "customer": "Customer",
+      "platformClient": "Platform client",
+      "orderCustomer": "Order customer",
+      "total": "Total",
+      "status": "Status",
+      "date": "Date",
+      "actions": "Actions",
+      "phone": "Phone",
+      "deliveryType": "Delivery type",
+      "notes": "Notes",
+      "items": "Items",
+      "changeStatus": "Change status",
+      "update": "Update",
+      "searchPlaceholder": "Search by business...",
+      "statusFilter": "Status",
+      "allStatuses": "All",
+      "noOrders": "No orders found",
+      "orderNumber": "Order #{id}",
+      "errors": {
+        "loadFailed": "Error loading orders",
+        "updateFailed": "Error updating status"
+      },
+      "toastSuccess": {
+        "statusUpdated": "Status updated",
+        "csvDownloaded": "CSV downloaded"
+      },
+      "statusLabels": {
+        "new": "New",
+        "confirmed": "Confirmed",
+        "preparing": "Preparing",
+        "ready": "Ready",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled"
+      }
+    },
+    "plans": {
+      "title": "Plans",
+      "subtitle": "Manage subscription plans",
+      "newPlan": "New Plan",
+      "createPlan": "Create New Plan",
+      "editPlan": "Edit Plan",
+      "createButton": "Create Plan",
+      "saveChanges": "Save Changes",
+      "planName": "Name",
+      "price": "Price",
+      "interval": "Interval",
+      "currency": "Currency",
+      "billingCycle": "Billing cycle",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "trialDays": "Trial days",
+      "sortOrder": "Order",
+      "features": "Features (JSON)",
+      "limits": "Limits (JSON)",
+      "active": "Active",
+      "subscriptions": "subscriptions",
+      "trialDaysLabel": "days trial",
+      "perMonth": "/month",
+      "perYear": "/year",
+      "deleteConfirm": "Delete plan?",
+      "deleteConfirmDesc": "This action cannot be undone. Only plans without active subscriptions can be deleted.",
+      "errors": {
+        "loadFailed": "Error loading plans",
+        "saveFailed": "Error saving plan",
+        "deleteFailed": "Error deleting plan"
+      },
+      "toastSuccess": {
+        "created": "Plan created",
+        "updated": "Plan updated",
+        "deleted": "Plan deleted"
+      }
+    },
+    "pipeline": {
+      "title": "Pipeline CRM",
+      "subtitle": "Manage the client flow from lead to active",
+      "contact": "Contact",
+      "phone": "Phone",
+      "email": "Email",
+      "plan": "Plan",
+      "moveTo": "Move to",
+      "move": "Move",
+      "days": "days",
+      "noPlan": "No plan",
+      "errors": {
+        "loadFailed": "Error loading pipeline",
+        "moveFailed": "Error moving client"
+      },
+      "toastSuccess": {
+        "moved": "Client moved to {status}"
+      },
+      "statuses": {
+        "lead": "New Lead",
+        "contacted": "Contacted",
+        "in_design": "In Design",
+        "in_review": "In Review",
+        "approved": "Approved",
+        "published": "Published",
+        "active": "Active",
+        "blocked": "Blocked",
+        "cancelled": "Cancelled",
+        "demo": "Demo",
+        "churned": "Inactive"
+      },
+      "businessName": "Business name",
+      "contactName": "Contact",
+      "notes": "Notes",
+      "status": "Status",
+      "addClient": "Add client",
+      "daysAgo": "{days} days ago",
+      "errorUpdate": "Error updating status"
+    },
+    "landingEditor": {
+      "title": "Landing Page Editor",
+      "subtitle": "Edit the main page content without touching code",
+      "preview": "Preview",
+      "fullPreview": "Full preview",
+      "closePreview": "Close preview",
+      "publish": "Publish",
+      "saveDraft": "Save draft",
+      "unsavedChanges": "Unsaved changes",
+      "activeSections": "active sections",
+      "noActiveSections": "No active sections",
+      "selectSection": "Select a section to edit",
+      "resetDefaults": "Reset",
+      "resetTitle": "Reset to defaults?",
+      "resetDescription": "This will replace all current content with default values. Any unsaved changes will be lost.",
+      "resetSuccess": "Defaults restored",
+      "active": "Active",
+      "inactive": "Inactive",
+      "cancel": "Cancel",
+      "confirmReset": "Reset",
+      "sections": {
+        "hero": "Hero Section",
+        "benefits": "Benefits",
+        "howItWorks": "How It Works",
+        "orders": "Orders",
+        "pricing": "Pricing",
+        "faq": "FAQ",
+        "testimonials": "Testimonials",
+        "cta": "Call to Action",
+        "footer": "Footer"
+      },
+      "imageUpload": "Upload image",
+      "uploading": "Uploading...",
+      "recommendedSize": "Recommended size: {width}x{height}px",
+      "editSection": "Edit section",
+      "changesSaved": "Draft saved",
+      "publishSuccess": "Changes published successfully",
+      "sectionTitle": "Section title",
+      "sectionSubtitle": "Section subtitle",
+      "heroBadge": "Badge / Top label",
+      "heroTitle1": "Title line 1",
+      "heroHighlight": "Highlighted text",
+      "heroTitle2": "Title line 2",
+      "heroDescription": "Main description",
+      "heroCta": "Primary button (CTA)",
+      "heroSecondaryCta": "Secondary button",
+      "heroStats": "Stats text",
+      "benefitItems": "Benefits list",
+      "benefit": "Benefit",
+      "addItem": "Add",
+      "itemTitle": "Title",
+      "itemDescription": "Description",
+      "stepItems": "Steps list",
+      "step": "Step",
+      "addStep": "Add step",
+      "stepTitle": "Step title",
+      "stepDescription": "Step description",
+      "orderFeature": "Order method",
+      "highlighted": "Highlighted",
+      "features": "Features",
+      "addFeature": "Add feature",
+      "pricingPopular": "Popular label",
+      "pricingPerMonth": "Per month text",
+      "pricingStartFree": "Free trial button",
+      "pricingChoosePlan": "Choose plan button",
+      "testimonialItems": "Testimonials list",
+      "testimonial": "Testimonial",
+      "addTestimonial": "Add testimonial",
+      "testimonialName": "Name",
+      "testimonialBusiness": "Business",
+      "testimonialQuote": "Testimonial / Quote",
+      "testimonialRating": "Rating",
+      "faqItems": "Questions list",
+      "addFaq": "Add question",
+      "question": "Question",
+      "questionPlaceholder": "Write the question...",
+      "answerPlaceholder": "Write the answer...",
+      "ctaTitle": "CTA Title",
+      "ctaSubtitle": "CTA Subtitle",
+      "ctaButton": "Button text",
+      "ctaStats": "Info text",
+      "footerDescription": "Footer description",
+      "footerCopyright": "Copyright text"
+    },
+    "branding": {
+      "title": "Branding Control",
+      "subtitle": "Manage 'Made by QAIROSS' visibility across all mini-sites",
+      "client": "Client",
+      "plan": "Plan",
+      "sites": "Sites",
+      "brandVisible": "Brand visible",
+      "clientControl": "Client controls",
+      "visible": "Visible",
+      "hidden": "Hidden",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "searchPlaceholder": "Search by name, contact, email...",
+      "noClients": "No clients found",
+      "clientsCount": "{count} clients",
+      "page": "Page {current} of {total}",
+      "showAll": "Show on all",
+      "hideAll": "Hide on all",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "confirmHide": "Hide brand for {name}?",
+      "confirmShow": "Show brand for {name}?",
+      "confirmHideDesc": "The 'Made by QAIROSS' text will be hidden on all mini-sites for this client.",
+      "confirmShowDesc": "The 'Made by QAIROSS' text will be visible on all mini-sites for this client.",
+      "confirmGrant": "Grant branding control to {name}?",
+      "confirmRevoke": "Revoke branding control from {name}?",
+      "confirmGrantDesc": "The client will be able to show or hide the 'Made by QAIROSS' brand from their dashboard.",
+      "confirmRevokeDesc": "The client will lose the ability to control branding. Only the super admin will be able to manage it.",
+      "bulkShowTitle": "Show brand on all sites?",
+      "bulkHideTitle": "Hide brand on all sites?",
+      "bulkShowDesc": "The 'Made by QAIROSS' text will be shown on all mini-sites on the platform.",
+      "bulkHideDesc": "The 'Made by QAIROSS' text will be hidden on all mini-sites on the platform.",
+      "visibleCount": "with visible brand",
+      "hiddenCount": "with hidden brand",
+      "totalClients": "total clients",
+      "errors": {
+        "loadFailed": "Error loading branding data",
+        "updateFailed": "Error updating branding",
+        "bulkFailed": "Error applying bulk action"
+      },
+      "toastSuccess": {
+        "brandShown": "Brand visible for {name}",
+        "brandHidden": "Brand hidden for {name}",
+        "controlGranted": "Branding control granted to {name}",
+        "controlRevoked": "Branding control revoked from {name}",
+        "bulkShow": "Brand visible on all sites",
+        "bulkHide": "Brand hidden on all sites"
+      }
+    },
+    "branches": {
+      "title": "Branches",
+      "subtitle": "Manage all branches across the platform",
+      "business": "Business",
+      "branch": "Branch",
+      "slug": "Slug",
+      "city": "City",
+      "state": "State",
+      "active": "Active",
+      "inactive": "Inactive",
+      "published": "Published",
+      "draft": "Draft",
+      "all": "All",
+      "search": "Search by business, branch...",
+      "noBranches": "No branches found",
+      "branchesCount": "{count} branches",
+      "page": "Page {current} of {total}",
+      "viewBranch": "View branch",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "whatsapp": "WhatsApp",
+      "website": "Website",
+      "description": "Description",
+      "details": "Details",
+      "createdAt": "Created",
+      "errors": {
+        "loadFailed": "Failed to load branches"
+      }
+    },
+    "reservations": {
+      "title": "Reservations",
+      "subtitle": "Manage all reservations across the platform",
+      "business": "Business",
+      "customer": "Customer",
+      "date": "Date",
+      "time": "Time",
+      "status": "Status",
+      "type": "Type",
+      "partySize": "Party size",
+      "actions": "Actions",
+      "approve": "Approve",
+      "cancel": "Cancel",
+      "complete": "Complete",
+      "noShow": "No show",
+      "search": "Search by business, customer...",
+      "allStatuses": "All",
+      "noReservations": "No reservations found",
+      "reservationsCount": "{count} reservations",
+      "page": "Page {current} of {total}",
+      "details": "Details",
+      "phone": "Phone",
+      "email": "Email",
+      "whatsapp": "WhatsApp",
+      "notes": "Notes",
+      "googleCalendar": "Google Calendar",
+      "statuses": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "cancelled": "Cancelled",
+        "completed": "Completed",
+        "no_show": "No show"
+      },
+      "types": {
+        "appointment": "Appointment",
+        "table": "Table",
+        "space": "Space",
+        "class": "Class",
+        "service": "Service",
+        "custom": "Custom"
+      },
+      "errors": {
+        "loadFailed": "Failed to load reservations",
+        "updateFailed": "Failed to update reservation"
+      },
+      "toastSuccess": {
+        "statusUpdated": "Status updated"
+      }
+    },
+    "customers": {
+      "title": "Business customers",
+      "subtitle": "All registered customers across the platform",
+      "customer": "Customer",
+      "phone": "Phone",
+      "email": "Email",
+      "business": "Business",
+      "method": "Registration method",
+      "visits": "Visits",
+      "purchases": "Purchases",
+      "loyalty": "Loyalty",
+      "profile": "Profile",
+      "registered": "Registered",
+      "search": "Search by business, customer...",
+      "filterProfile": "Filter profile",
+      "allProfiles": "All",
+      "completed": "Completed",
+      "incomplete": "Incomplete",
+      "noCustomers": "No customers found",
+      "customersCount": "{count} customers",
+      "page": "Page {current} of {total}",
+      "details": "Details",
+      "methods": {
+        "manual": "Manual",
+        "google": "Google",
+        "facebook": "Facebook"
+      },
+      "errors": {
+        "loadFailed": "Failed to load customers"
+      }
+    }
+  },
+  "editor": {
+    "title": "Editor",
+    "save": "Save changes",
+    "saving": "Saving...",
+    "saved": "Changes saved",
+    "preview": "Preview",
+    "tabs": {
+      "data": "Data",
+      "design": "Design",
+      "contact": "Contact",
+      "social": "Social Media",
+      "menu": "Menu",
+      "gallery": "Gallery",
+      "services": "Services",
+      "testimonials": "Testimonials",
+      "locations": "Locations",
+      "links": "Links",
+      "slides": "Slides",
+      "seo": "SEO",
+      "buttons": "Buttons",
+      "reservations": "Reservations",
+      "modifiers": "Customizations",
+      "branches": "Branches",
+      "loyalty": "Loyalty",
+      "customers": "Customers",
+      "registration": "Registration"
+    },
+    "data": {
+      "businessName": "Business name",
+      "tagline": "Tagline",
+      "description": "Description",
+      "logo": "Logo",
+      "favicon": "Favicon",
+      "url": "Your QAIROSS URL",
+      "urlHint": "Your QAIROSS is visible at:",
+      "urlDraft": "Your QAIROSS is in draft mode",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "qairossBrand": "Made by QAIROSS",
+      "qairossBrandDesc": "QAIROSS brand on your QAIROSS"
+    },
+    "design": {
+      "background": "Background",
+      "backgroundColor": "Background color",
+      "backgroundGradient": "Background gradient",
+      "backgroundImage": "Background image",
+      "cardColor": "Card color",
+      "textColor": "Text color",
+      "accentColor": "Accent color",
+      "themeMode": "Theme mode",
+      "presets": "Presets",
+      "custom": "Custom"
+    },
+    "buttons": {
+      "title": "Button Styles",
+      "subtitle": "Choose the style package for your QAIROSS buttons",
+      "packages": {
+        "cylinder_pill": "Cylinder Pill",
+        "cylinder_pill_desc": "Fully rounded borders with solid background and shadow",
+        "square_soft": "Square Soft",
+        "square_soft_desc": "Slightly rounded borders, modern and clean style",
+        "icon_only": "Icon Only",
+        "icon_only_desc": "Circular button showing only the icon",
+        "glassmorphism": "Glassmorphism",
+        "glassmorphism_desc": "Crystal/blur effect background with semi-transparent border",
+        "outline_elegant": "Outline Elegant",
+        "outline_elegant_desc": "No background, just border with animated hover"
+      },
+      "preview": "Preview",
+      "save": "Save style"
+    },
+    "modifiers": {
+      "title": "Product Customizations",
+      "subtitle": "Configure customizable options for your products (sizes, extras, etc.)",
+      "addGroup": "Add group",
+      "addOption": "Add option",
+      "noGroups": "No customization groups",
+      "noGroupsDesc": "Add groups to let customers customize their orders",
+      "noOptions": "No options in this group",
+      "groupName": "Group name",
+      "groupNamePlaceholder": "Eg: Size, Extras, Sauce...",
+      "selectionType": "Selection type",
+      "single": "Single selection",
+      "multiple": "Multiple selection",
+      "quantity": "With quantity",
+      "required": "Required",
+      "active": "Active",
+      "optionName": "Option name",
+      "optionNamePlaceholder": "Eg: Large, Extra cheese...",
+      "hasExtraCost": "Has extra cost",
+      "extraCost": "Extra cost",
+      "scope": "Scope",
+      "global": "Global (all products)",
+      "specificProduct": "Specific product",
+      "assignToProduct": "Assign to product",
+      "templates": "Templates",
+      "templatesDesc": "Reusable groups you can duplicate",
+      "noTemplates": "No templates",
+      "duplicate": "Duplicate",
+      "duplicateAs": "Duplicate as",
+      "use": "Use",
+      "groupsCount": "{count} group(s)",
+      "optionsCount": "{count} option(s)",
+      "totalStats": "{groups} groups, {options} options",
+      "groupCreated": "Group created",
+      "groupUpdated": "Group updated",
+      "groupDeleted": "Group deleted",
+      "optionCreated": "Option created",
+      "optionUpdated": "Option updated",
+      "optionDeleted": "Option deleted",
+      "duplicateSuccess": "Group duplicated",
+      "errorRequired": "Select a required option: {groups}",
+      "productLimitReached": "Product limit reached",
+      "categoryLimitReached": "Category limit reached"
+    }
+  },
+  "employees": {
+    "title": "Team",
+    "addEmployee": "Add employee",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "roles": {
+      "designer": "Designer",
+      "seller": "Seller",
+      "manager": "Manager",
+      "supervisor": "Supervisor",
+      "secretary": "Secretary",
+      "support": "Support",
+      "custom": "Custom"
+    },
+    "permissions": "Permissions",
+    "permissionModules": {
+      "clients": "Clients",
+      "billing": "Billing",
+      "support": "Support",
+      "settings": "Settings",
+      "orders": "Orders",
+      "sites": "Sites",
+      "plans": "Plans",
+      "employees": "Employees",
+      "analytics": "Analytics"
+    },
+    "permissionActions": {
+      "view": "View only",
+      "edit": "Edit",
+      "create": "Create",
+      "delete": "Delete",
+      "move": "Move/reassign"
+    },
+    "accessExpires": "Access expires",
+    "noExpiry": "No expiry",
+    "active": "Active",
+    "inactive": "Inactive",
+    "lastLogin": "Last login",
+    "inviteSent": "Invitation sent",
+    "resendInvite": "Resend invitation"
+  },
+  "images": {
+    "recommendedSize": "Recommended size: {width}x{height}px",
+    "upload": "Upload image",
+    "replace": "Replace image",
+    "remove": "Remove image",
+    "crop": "Crop",
+    "filters": "Filters",
+    "adjustments": "Adjustments",
+    "brightness": "Brightness",
+    "contrast": "Contrast",
+    "filterNormal": "Normal",
+    "filterWarm": "Warm",
+    "filterCool": "Cool",
+    "filterBW": "Black & White",
+    "overlay": "Dark overlay",
+    "gradient": "Gradient",
+    "processing": "Processing image...",
+    "preview": "Preview",
+    "apply": "Apply"
+  },
+  "minisite": {
+    "header": {
+      "viewMenu": "View menu",
+      "darkMode": "Dark mode",
+      "toggleTheme": "Toggle theme"
+    },
+    "menu": {
+      "title": "Menu",
+      "categories": "Categories",
+      "all": "All",
+      "addToCart": "Add to order",
+      "added": "Added",
+      "outOfStock": "Out of stock",
+      "new": "New",
+      "popular": "Popular",
+      "search": "Search menu...",
+      "noResults": "No products found",
+      "specialInstructions": "Special instructions",
+      "specialInstructionsPlaceholder": "E.g: No onions, well cooked...",
+      "addToOrder": "Add to order",
+      "customizable": "Customizable",
+      "customize": "Customize"
+    },
+    "cart": {
+      "title": "Your order",
+      "empty": "Your order is empty",
+      "emptyDesc": "Add products from the menu",
+      "total": "Total",
+      "checkout": "Confirm order",
+      "sendWhatsApp": "Send via WhatsApp",
+      "remove": "Remove",
+      "quantity": "Quantity",
+      "item": "Item",
+      "items": "Items",
+      "each": "each",
+      "itemCount": "{count} item in your order",
+      "itemCountPlural": "{count} items in your order",
+      "itemsCount": "{count} products in your order",
+      "placeOrder": "Place order"
+    },
+    "orders": {
+      "title": "Place order",
+      "name": "Your name",
+      "phone": "Your phone",
+      "deliveryType": "Delivery type",
+      "pickup": "Pickup",
+      "delivery": "Delivery",
+      "address": "Delivery address",
+      "notes": "Additional notes",
+      "notesPlaceholder": "Special instructions for your order...",
+      "submit": "Submit order",
+      "submitWhatsApp": "Send via WhatsApp",
+      "success": "Order sent!",
+      "successDesc": "We'll contact you soon to confirm your order.",
+      "backToCart": "Back to cart",
+      "phoneLabel": "Phone / WhatsApp",
+      "addressPlaceholder": "Street, number, neighborhood...",
+      "notesOptional": "Notes (optional)",
+      "orderSummary": "Order summary",
+      "processing": "Processing...",
+      "confirmOrder": "Confirm order",
+      "errorCreate": "Error creating order",
+      "errorRetry": "Error creating the order. Please try again.",
+      "whatsappGreeting": "Hello, I'd like to place an order:",
+      "whatsappTotal": "Total:",
+      "whatsappName": "Name",
+      "whatsappPhone": "Phone",
+      "whatsappDelivery": "Delivery",
+      "whatsappPickup": "Pickup",
+      "whatsappDeliveryLabel": "Delivery",
+      "whatsappAddress": "Address",
+      "whatsappNotes": "Notes",
+      "namePlaceholder": "Your name",
+      "sendWhatsApp": "Send via WhatsApp",
+      "createError": "Error creating order",
+      "createErrorRetry": "Error creating the order. Please try again."
+    },
+    "gallery": {
+      "title": "Gallery",
+      "close": "Close"
+    },
+    "services": {
+      "title": "Services",
+      "startingAt": "From {price}",
+      "learnMore": "Learn more"
+    },
+    "testimonials": {
+      "title": "What our customers say",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "locations": {
+      "title": "Locations",
+      "hours": "Hours",
+      "getDirections": "Get directions",
+      "viewMap": "View on map"
+    },
+    "footer": {
+      "madeWith": "Made by QAIROSS",
+      "madeBy": "Made by "
+    },
+    "blocked": {
+      "title": "Page unavailable",
+      "message": "This page is temporarily unavailable.",
+      "contactAdmin": "Contact the business or administrator.",
+      "contact": "Contact the business or administrator."
+    },
+    "qr": {
+      "title": "Scan the QR",
+      "subtitle": "Share your QAIROSS",
+      "scanToVisit": "Scan to visit",
+      "copyLink": "Copy link",
+      "linkCopied": "Link copied to clipboard",
+      "copyError": "Could not copy link",
+      "email": "Email",
+      "visitMessage": "Visit our page:",
+      "emailSubject": "Check out this page",
+      "tapToScan": "Tap to register QR scan",
+      "copied": "Link copied to clipboard",
+      "shareText": "Visit our page: ",
+      "scanTitle": "Tap to register QR scan"
+    },
+    "slides": {
+      "previous": "Previous",
+      "next": "Next",
+      "goToSlide": "Go to slide {index}"
+    },
+    "whatsapp": {
+      "contact": "Contact via WhatsApp"
+    },
+    "toasts": {
+      "linkCopied": "Link copied to clipboard",
+      "linkCopyError": "Could not copy link"
+    },
+    "modifiers": {
+      "title": "Customize your product",
+      "required": "Required",
+      "optional": "Optional",
+      "selectOne": "Select an option",
+      "selectMultiple": "Select as many as you want",
+      "quantity": "Quantity",
+      "totalPrice": "Total price",
+      "addToOrder": "Add to order",
+      "specialInstructions": "Special instructions",
+      "specialInstructionsPlaceholder": "Additional notes for the business owner..."
+    },
+    "reservations": {
+      "title": "Reservations",
+      "bookNow": "Book now",
+      "selectDate": "Select date",
+      "selectTime": "Select time",
+      "selectSlot": "Select time slot",
+      "yourName": "Your name",
+      "yourEmail": "Your email",
+      "yourPhone": "Your phone",
+      "hasWhatsApp": "This number has WhatsApp",
+      "partySize": "Party size",
+      "notes": "Notes",
+      "confirmReservation": "Confirm reservation",
+      "reservationConfirmed": "Reservation confirmed!",
+      "reservationConfirmedDesc": "You'll receive a confirmation email.",
+      "noSlots": "No time slots available for this date",
+      "slotsRemaining": "{count} spots remaining"
+    },
+    "loyalty": {
+      "title": "Loyalty Card",
+      "register": "Register",
+      "login": "I already have an account",
+      "progress": "{current} of {target} {unit}",
+      "visits": "visits",
+      "purchases": "purchases",
+      "rewardReady": "You have a reward!",
+      "rewardReadyDesc": "Redeem your reward on your next visit",
+      "redeem": "Redeem",
+      "redeemed": "Reward redeemed!",
+      "history": "History",
+      "registerTitle": "Almost there! Complete your profile",
+      "registerSubtitle": "It's quick and you can change it later",
+      "registerNow": "Continue",
+      "skipForNow": "Not now",
+      "completeProfile": "Complete your profile and get benefits"
+    },
+    "branches": {
+      "title": "Branches",
+      "search": "Search branches...",
+      "filterByState": "Filter by state",
+      "filterByCity": "Filter by city",
+      "viewBranch": "View branch",
+      "allStates": "All states",
+      "allCities": "All cities"
+    }
+  },
+  "modifiers": {
+    "config": {
+      "title": "Product Customizations",
+      "enable": "Enable customizations",
+      "addGroup": "Add group",
+      "groupName": "Group name",
+      "selectionType": "Selection type",
+      "single": "Single option (radio)",
+      "multiple": "Multiple options (checkbox)",
+      "quantity": "Quantity (number)",
+      "required": "Required",
+      "optional": "Optional",
+      "addOption": "Add option",
+      "optionName": "Name",
+      "extraCost": "Extra cost",
+      "hasCost": "Has extra cost",
+      "templates": "Templates",
+      "templateRestaurant": "Restaurant",
+      "templateClothing": "Clothing",
+      "templateService": "Service",
+      "templateEmpty": "Empty"
+    }
+  },
+  "branches": {
+    "title": "Branches",
+    "subtitle": "Manage your business branches",
+    "noBranches": "No branches configured",
+    "addBranch": "Add branch",
+    "editBranch": "Edit branch",
+    "newBranch": "New branch",
+    "name": "Name",
+    "namePlaceholder": "Branch name",
+    "slug": "Slug (URL)",
+    "slugPlaceholder": "downtown-branch",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe this branch...",
+    "phone": "Phone",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "website": "Website",
+    "state": "State",
+    "city": "City",
+    "address": "Address",
+    "addressPlaceholder": "Street, number, city...",
+    "mapsUrl": "Google Maps",
+    "coverUrl": "Cover image",
+    "isActive": "Active",
+    "isPublished": "Published",
+    "viewBranch": "View branch",
+    "save": "Save",
+    "add": "Add",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this branch?",
+    "errors": {
+      "nameRequired": "Name is required",
+      "createFailed": "Failed to create branch",
+      "updateFailed": "Failed to update branch",
+      "deleteFailed": "Failed to delete branch"
+    },
+    "toastSuccess": {
+      "created": "Branch added",
+      "updated": "Branch updated",
+      "deleted": "Branch deleted"
+    }
+  },
+  "reservations": {
+    "title": "Reservations",
+    "configTitle": "Reservation settings",
+    "googleTitle": "Google Calendar",
+    "enabled": "Enable reservations",
+    "enabledDesc": "Allow customers to make reservations from your QAIROSS",
+    "type": "Reservation type",
+    "types": {
+      "appointment": "Appointment",
+      "table": "Table",
+      "space": "Space",
+      "class": "Class",
+      "service": "Service",
+      "custom": "Custom"
+    },
+    "customTypeLabel": "Custom label",
+    "customTypePlaceholder": "E.g. Padel court",
+    "slotDuration": "Slot duration",
+    "minutes": "minutes",
+    "maxCapacity": "Max capacity per slot",
+    "people": "people",
+    "minAdvance": "Min advance time",
+    "hours": "hours",
+    "maxAdvance": "Max advance time",
+    "days": "days",
+    "autoApprove": "Auto-approve",
+    "autoApproveDesc": "Reservations are automatically approved",
+    "confirmationMessage": "Confirmation message",
+    "confirmationPlaceholder": "Your reservation has been confirmed...",
+    "availableDays": "Available days",
+    "daysOfWeek": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
+    },
+    "timeSlots": "Available time slots",
+    "addTimeSlot": "Add time slot",
+    "start": "Start",
+    "end": "End",
+    "removeSlot": "Remove slot",
+    "google": {
+      "connected": "Connected to Google Calendar",
+      "disconnected": "Not connected",
+      "connect": "Connect Google Calendar",
+      "disconnect": "Disconnect",
+      "calendarId": "Calendar",
+      "connectDesc": "Automatically sync reservations with Google Calendar",
+      "connecting": "Connecting..."
+    },
+    "booking": {
+      "title": "Make a reservation",
+      "selectDate": "Select a date",
+      "selectTime": "Select a time slot",
+      "selectPartySize": "Party size",
+      "yourName": "Your name",
+      "yourEmail": "Your email (optional)",
+      "yourPhone": "Your phone (optional)",
+      "notifyWhatsapp": "Notify via WhatsApp",
+      "notes": "Notes (optional)",
+      "notesPlaceholder": "Any special request...",
+      "submit": "Book now",
+      "submitting": "Booking...",
+      "available": "Available",
+      "full": "Full",
+      "spotsLeft": "{count} spots left",
+      "partySizeRequired": "Select party size",
+      "nameRequired": "Name is required",
+      "timeRequired": "Select a time slot",
+      "dateRequired": "Select a date",
+      "errors": {
+        "createFailed": "Failed to create reservation",
+        "configNotFound": "Configuration not found"
+      },
+      "toastSuccess": {
+        "reserved": "Reservation created successfully"
+      }
+    },
+    "errors": {
+      "saveFailed": "Failed to save configuration",
+      "loadFailed": "Failed to load configuration"
+    }
+  },
+  "loyalty": {
+    "title": "Loyalty Program",
+    "subtitle": "Reward your loyal customers",
+    "config": {
+      "title": "Settings",
+      "enabled": "Enable loyalty program",
+      "enabledDesc": "Your customers earn points with every visit or purchase",
+      "accumulationType": "Accumulation type",
+      "types": {
+        "visits": "By visits",
+        "amount": "By amount",
+        "both": "Visits and amount"
+      },
+      "targetValue": "Target for reward",
+      "targetVisits": "visits",
+      "targetAmount": "amount",
+      "rewardType": "Reward type",
+      "rewardTypes": {
+        "discount": "Discount",
+        "freeProduct": "Free product",
+        "custom": "Custom"
+      },
+      "rewardValue": "Reward value",
+      "rewardLabel": "Reward name",
+      "welcomeGift": "Welcome gift",
+      "welcomeGiftEnabled": "Enable welcome gift",
+      "welcomeGiftDesc": "New customers receive a reward when they register",
+      "welcomeGiftDescription": "Gift description"
+    },
+    "customers": {
+      "title": "Registered Customers",
+      "count": "{count} registered customers",
+      "manage": "Manage customers",
+      "viewAll": "View customer management"
+    },
+    "public": {
+      "title": "Earn points with every visit",
+      "subtitle": "Accumulate and redeem for exclusive rewards",
+      "register": "Register to earn points",
+      "viewPortal": "View my progress",
+      "welcomeGift": "Welcome gift",
+      "progress": "Your progress",
+      "of": "of {target}",
+      "rewardsEarned": "Rewards earned",
+      "redeem": "Redeem"
+    },
+    "portal": {
+      "identify": {
+        "title": "My Loyalty Program",
+        "phonePlaceholder": "Your phone number",
+        "search": "Find my account",
+        "searching": "Searching...",
+        "notFound": "No account found with that number",
+        "register": "Register",
+        "registerTitle": "Create loyalty account"
+      },
+      "dashboard": {
+        "hello": "Hello, {name}!",
+        "yourCode": "Your check-in code",
+        "stats": "Statistics",
+        "visits": "Visits",
+        "purchases": "Purchases",
+        "total": "Total spent",
+        "progress": "Progress to reward",
+        "rewards": "Rewards",
+        "available": "Available",
+        "redeemed": "Redeemed",
+        "redeem": "Redeem reward",
+        "redeemSuccess": "Reward redeemed successfully",
+        "redeemConfirm": "Redeem this reward?",
+        "history": "Activity history",
+        "noHistory": "No recent activity",
+        "logout": "Log out",
+        "types": {
+          "visit": "Visit",
+          "purchase": "Purchase",
+          "check_in": "Check-in",
+          "reward_earned": "Reward earned",
+          "reward_redeemed": "Reward redeemed",
+          "manual_adjustment": "Manual adjustment"
+        }
+      },
+      "errors": {
+        "loadFailed": "Failed to load data",
+        "redeemFailed": "Failed to redeem reward",
+        "registerFailed": "Failed to register"
+      }
+    },
+    "errors": {
+      "saveFailed": "Failed to save configuration",
+      "loadFailed": "Failed to load configuration"
+    }
+  },
+  "registration": {
+    "title": "Registration Fields",
+    "subtitle": "Configure what information you request from customers",
+    "alwaysRequired": "Always required fields",
+    "optionalFields": "Optional fields",
+    "save": "Save changes",
+    "saving": "Saving...",
+    "saved": "Changes saved",
+    "fields": {
+      "first_name": {
+        "label": "First name",
+        "required": true
+      },
+      "last_name": {
+        "label": "Last name"
+      },
+      "email": {
+        "label": "Email"
+      },
+      "phone": {
+        "label": "Phone",
+        "required": true
+      },
+      "whatsapp": {
+        "label": "Has WhatsApp"
+      },
+      "birthday": {
+        "label": "Birthday"
+      },
+      "gender": {
+        "label": "Gender"
+      },
+      "city": {
+        "label": "City"
+      },
+      "postal_code": {
+        "label": "Postal code"
+      }
+    },
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Prefer not to say"
+    },
+    "customLabel": "Custom label",
+    "helperMessage": "Helper message",
+    "public": {
+      "title": "Register",
+      "subtitle": "Create your account for exclusive benefits",
+      "submit": "Register",
+      "submitting": "Registering...",
+      "success": "Registration successful",
+      "successDesc": "Your check-in code is:",
+      "alreadyExists": "You already have a registered account",
+      "errors": {
+        "phoneRequired": "Phone is required",
+        "nameRequired": "Name is required",
+        "registerFailed": "Failed to register"
+      }
+    },
+    "errors": {
+      "saveFailed": "Failed to save fields"
+    }
+  },
+  "editorMenuAi": {
+    "generateTitle": "Generate menu with AI",
+    "generateDesc": "Create a complete menu with categories, descriptions and prices in seconds",
+    "generateBtn": "Generate menu",
+    "regenerate": "Regenerate",
+    "acceptAll": "Accept all",
+    "costNote": "Each generation costs approx. $0.01-0.03 USD via OpenAI API.",
+    "loading": "AI is creating your menu...",
+    "businessType": "Business type",
+    "city": "City",
+    "style": "Desired style",
+    "successApplied": "Generated menu applied successfully",
+    "improveDesc": "Improve description with AI",
+    "improvingDesc": "Improving description...",
+    "suggestPrice": "Suggest price with AI",
+    "suggestingPrice": "Consulting AI...",
+    "applyPrice": "Apply",
+    "close": "Close",
+    "suggestBadge": "Suggest badge with AI",
+    "badgeSuggested": "Badge suggested",
+    "noBadgeSuggestion": "AI does not suggest a badge for this product"
+  },
+  "editorMenu": {
+    "template": "Menu template",
+    "darkElegant": "Dark Elegant",
+    "freshModern": "Fresh Modern",
+    "warmCasual": "Warm Casual",
+    "templateUpdated": "Menu template updated",
+    "featuredSlides": "Featured menu photos",
+    "addPhoto": "Add",
+    "photoAdded": "Featured photo added",
+    "photoRemoved": "Photo removed",
+    "maxPhotos": "Maximum 5 featured photos allowed",
+    "badge": "Badge",
+    "badgeNone": "None",
+    "badgeNuevo": "New",
+    "badgePopular": "Popular",
+    "badgeRecomendado": "Recommended",
+    "newCategory": "New category",
+    "newProduct": "New product",
+    "categoryAdded": "Category added",
+    "categoryDeleted": "Category deleted",
+    "productAdded": "Product added",
+    "productDeleted": "Product deleted",
+    "descImproved": "Description improved with AI",
+    "priceSuggested": "Suggested price applied"
+  }
+}

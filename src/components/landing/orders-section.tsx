@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { MessageCircle, ClipboardList } from "lucide-react"
+import { useTranslations } from "@/i18n/provider"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -21,6 +22,8 @@ const cardVariants = {
 }
 
 export function OrdersSection() {
+  const { t } = useTranslations("landing.orders")
+
   return (
     <section className="bg-muted/40 py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -32,13 +35,13 @@ export function OrdersSection() {
           transition={{ duration: 0.5 }}
         >
           <span className="mb-3 inline-block rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-sm font-medium text-gold">
-            Pedidos
+            {t("badge")}
           </span>
           <h2 className="mt-4 text-3xl font-bold text-foreground sm:text-4xl">
-            Recibe pedidos directamente
+            {t("title")}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Dos formas de recibir pedidos según las necesidades de tu negocio
+            {t("subtitle")}
           </p>
         </motion.div>
 
@@ -60,31 +63,29 @@ export function OrdersSection() {
                 <MessageCircle className="size-7 text-green-600" />
               </div>
               <h3 className="mt-6 text-xl font-semibold text-foreground">
-                Pedidos por WhatsApp
+                {t("whatsapp.title")}
               </h3>
               <p className="mt-3 text-muted-foreground leading-relaxed">
-                Tus clientes arman su pedido desde tu Kinec y al confirmar
-                se abre WhatsApp con el detalle completo. Tú recibes el
-                mensaje y gestionas todo desde tu celular.
+                {t("whatsapp.description")}
               </p>
               <ul className="mt-5 space-y-2">
                 <li className="flex items-center gap-2 text-sm text-foreground">
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500/10 text-[10px] text-green-600">
                     ✓
                   </span>
-                  Sin configuración extra
+                  {t("whatsapp.noConfig")}
                 </li>
                 <li className="flex items-center gap-2 text-sm text-foreground">
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500/10 text-[10px] text-green-600">
                     ✓
                   </span>
-                  Llega directo a tu WhatsApp
+                  {t("whatsapp.directWhatsapp")}
                 </li>
                 <li className="flex items-center gap-2 text-sm text-foreground">
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500/10 text-[10px] text-green-600">
                     ✓
                   </span>
-                  Incluido en plan Pro
+                  {t("whatsapp.includedPro")}
                 </li>
               </ul>
             </div>
@@ -101,31 +102,29 @@ export function OrdersSection() {
                 <ClipboardList className="size-7 text-gold" />
               </div>
               <h3 className="mt-6 text-xl font-semibold text-foreground">
-                Panel interno de pedidos
+                {t("panel.title")}
               </h3>
               <p className="mt-3 text-muted-foreground leading-relaxed">
-                Los pedidos llegan directo a tu panel de Kingnect. Gestiona
-                estados, notifica a tus clientes y lleva un registro completo
-                de todas las órdenes recibidas.
+                {t("panel.description")}
               </p>
               <ul className="mt-5 space-y-2">
                 <li className="flex items-center gap-2 text-sm text-foreground">
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gold/10 text-[10px] text-gold">
                     ✓
                   </span>
-                  Panel de administración
+                  {t("panel.adminPanel")}
                 </li>
                 <li className="flex items-center gap-2 text-sm text-foreground">
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gold/10 text-[10px] text-gold">
                     ✓
                   </span>
-                  Estados y notificaciones
+                  {t("panel.statesAndNotifications")}
                 </li>
                 <li className="flex items-center gap-2 text-sm text-foreground">
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gold/10 text-[10px] text-gold">
                     ✓
                   </span>
-                  Incluido en plan Premium
+                  {t("panel.includedPremium")}
                 </li>
               </ul>
             </div>

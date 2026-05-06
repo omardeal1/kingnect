@@ -34,6 +34,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
 import { ORDER_STATUSES } from "@/lib/constants"
 import { useDashboardStore } from "@/lib/dashboard-store"
+import { useTranslations, useLocale } from "@/i18n/provider"
 
 interface OrderItem {
   id: string
@@ -78,6 +79,8 @@ const item = {
 }
 
 export default function OrdersPage() {
+  const { t } = useTranslations("dashboard")
+  const { locale } = useLocale()
   const [statusFilter, setStatusFilter] = React.useState<string>("all")
   const [searchQuery, setSearchQuery] = React.useState("")
   const siteId = useDashboardStore((s) => s.data.siteId)
@@ -88,7 +91,7 @@ export default function OrdersPage() {
     queryKey: ["orders", siteId],
     queryFn: async () => {
       const res = await fetch(`/api/orders?siteId=${siteId}`)
-      if (!res.ok) throw new Error("Error al cargar pedidos")
+      if (!res.ok) throw new Error("Error")
       return res.json()
     },
     enabled: !!siteId,
@@ -106,17 +109,17 @@ export default function OrdersPage() {
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
-        throw new Error(data.error || "Error al actualizar pedido")
+        throw new Error(data.error || "Error")
       }
       return res.json()
     },
     onSuccess: (_data, variables) => {
       const statusInfo = getStatusInfo(variables.status)
-      toast.success(`Pedido actualizado a: ${statusInfo.label}`)
+      toast.success(t("orders.updatedTo", { status: statusInfo.label }))
       queryClient.invalidateQueries({ queryKey: ["orders", siteId] })
     },
     onError: (error) => {
-      toast.error(error.message || "Error al actualizar pedido")
+      toast.error(error.message || t("orders.updateError"))
     },
   })
 
@@ -125,7 +128,7 @@ export default function OrdersPage() {
   }
 
   const formatDate = (date: string | Date) => {
-    return new Intl.DateTimeFormat("es-MX", {
+    return new Intl.DateTimeFormat(locale === "es" ? "es-MX" : "en-US", {
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -168,9 +171,9 @@ export default function OrdersPage() {
             <ShoppingCart className="size-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-xl font-bold">Pedidos</h1>
+            <h1 className="text-xl font-bold">{t("orders.title")}</h1>
             <p className="text-sm text-muted-foreground">
-              Gestiona los pedidos de tu Kinec
+              {t("orders.subtitle")}
             </p>
           </div>
         </div>
@@ -184,7 +187,7 @@ export default function OrdersPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                 <Input
-                  placeholder="Buscar por nombre del cliente..."
+                  placeholder={t("orders.searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-9"
@@ -193,10 +196,10 @@ export default function OrdersPage() {
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-full sm:w-48">
                   <SlidersHorizontal className="size-4 mr-2" />
-                  <SelectValue placeholder="Filtrar estado" />
+                  <SelectValue placeholder={t("orders.filterStatus")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos los estados</SelectItem>
+                  <SelectItem value="all">{t("orders.allStatuses")}</SelectItem>
                   {ORDER_STATUSES.map((status) => (
                     <SelectItem key={status.value} value={status.value}>
                       {status.label}
@@ -280,8 +283,8 @@ export default function OrdersPage() {
                               <p className="text-xs text-muted-foreground">
                                 {formatDate(order.createdAt)} ·{" "}
                                 {order.deliveryType === "delivery"
-                                  ? "Domicilio"
-                                  : "Recoger"}
+                                  ? t("orders.deliveryType.delivery")
+                                  : t("orders.deliveryType.pickup")}
                               </p>
                             </div>
                           </div>
@@ -314,7 +317,7 @@ export default function OrdersPage() {
                           ))}
                           <Separator className="my-2" />
                           <div className="flex items-center justify-between text-sm font-semibold">
-                            <span>Total</span>
+                            <span>{t("orders.total")}</span>
                             <span>${order.total.toFixed(2)}</span>
                           </div>
                         </div>
@@ -340,7 +343,7 @@ export default function OrdersPage() {
                                   {updateStatusMutation.isPending ? (
                                     <Loader2 className="size-3 animate-spin" />
                                   ) : null}
-                                  Cambiar estado
+                                  {t("orders.changeStatus")}
                                   <ChevronDown className="size-3" />
                                 </Button>
                               </DropdownMenuTrigger>
@@ -403,10 +406,9 @@ export default function OrdersPage() {
                 <div className="flex size-16 items-center justify-center rounded-2xl bg-muted/50 mb-4">
                   <Package className="size-8 text-muted-foreground/40" />
                 </div>
-                <h3 className="font-semibold mb-1">Aún no tienes pedidos</h3>
+                <h3 className="font-semibold mb-1">{t("orders.noOrders")}</h3>
                 <p className="text-sm text-muted-foreground max-w-sm">
-                  Cuando tus clientes hagan pedidos desde tu Kinec,
-                  aparecerán aquí para que puedas gestionarlos.
+                  {t("orders.noOrdersDesc")}
                 </p>
               </div>
             </CardContent>

@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
     return { title: "Página no encontrada" }
   }
 
-  const title = site.metaTitle || `${site.businessName} — Kinec`
+  const title = site.metaTitle || `${site.businessName} — QAIROSS`
   const description = site.metaDescription || site.tagline || `Visita ${site.businessName}`
 
   return {
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
     openGraph: {
       title,
       description,
-      url: `https://links.kingnect.app/${slug}`,
+      url: `https://links.qaiross.app/${slug}`,
       siteName: site.businessName,
       type: "website",
       ...(site.logoUrl && { images: [{ url: site.logoUrl, alt: site.businessName }] }),
@@ -100,6 +100,26 @@ export default async function SlugPage({ params }: SlugPageProps) {
         orderBy: { sortOrder: "asc" },
       },
       customLinks: {
+        orderBy: { sortOrder: "asc" },
+      },
+      modifierGroups: {
+        orderBy: { sortOrder: "asc" },
+        include: {
+          options: {
+            orderBy: { sortOrder: "asc" },
+          },
+        },
+      },
+      branches: {
+        where: { isActive: true, isPublished: true },
+        orderBy: { name: "asc" },
+      },
+      reservationConfig: true,
+      loyaltyConfig: true,
+      registrationFieldConfigs: {
+        orderBy: { sortOrder: "asc" },
+      },
+      menuFeaturedSlides: {
         orderBy: { sortOrder: "asc" },
       },
     },
@@ -178,6 +198,47 @@ export default async function SlugPage({ params }: SlugPageProps) {
       ...l,
       createdAt: l.createdAt.toISOString(),
       updatedAt: l.updatedAt.toISOString(),
+    })),
+    modifierGroups: site.modifierGroups.map((g) => ({
+      ...g,
+      createdAt: g.createdAt.toISOString(),
+      updatedAt: g.updatedAt.toISOString(),
+      options: g.options.map((o) => ({
+        ...o,
+        createdAt: o.createdAt.toISOString(),
+        updatedAt: o.updatedAt.toISOString(),
+      })),
+    })),
+    branches: site.branches.map((b) => ({
+      ...b,
+      createdAt: b.createdAt.toISOString(),
+      updatedAt: b.updatedAt.toISOString(),
+    })),
+    reservationConfig: site.reservationConfig
+      ? {
+          ...site.reservationConfig,
+          createdAt: site.reservationConfig.createdAt.toISOString(),
+          updatedAt: site.reservationConfig.updatedAt.toISOString(),
+          availableDays: JSON.parse(site.reservationConfig.availableDays || "[]"),
+          timeSlots: JSON.parse(site.reservationConfig.timeSlots || "[]"),
+        }
+      : null,
+    loyaltyConfig: site.loyaltyConfig
+      ? {
+          ...site.loyaltyConfig,
+          createdAt: site.loyaltyConfig.createdAt.toISOString(),
+          updatedAt: site.loyaltyConfig.updatedAt.toISOString(),
+        }
+      : null,
+    registrationFields: site.registrationFieldConfigs.map((f) => ({
+      ...f,
+      createdAt: f.createdAt.toISOString(),
+      updatedAt: f.updatedAt.toISOString(),
+    })),
+    menuFeaturedSlides: (site.menuFeaturedSlides ?? []).map((s) => ({
+      ...s,
+      createdAt: s.createdAt.toISOString(),
+      updatedAt: s.updatedAt.toISOString(),
     })),
   }
 

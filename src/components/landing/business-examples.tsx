@@ -12,63 +12,13 @@ import {
   Church,
   type LucideIcon,
 } from "lucide-react"
+import { useTranslations } from "@/i18n/provider"
 
 interface BusinessCategory {
   icon: LucideIcon
-  name: string
-  description: string
+  nameKey: string
+  descriptionKey: string
 }
-
-const CATEGORIES: BusinessCategory[] = [
-  {
-    icon: UtensilsCrossed,
-    name: "Restaurante",
-    description:
-      "Menú digital con fotos y precios. QR en las mesas para ver la carta al instante.",
-  },
-  {
-    icon: Scissors,
-    name: "Barbería",
-    description:
-      "Muestra tus cortes, agenda citas por WhatsApp y comparte tu ubicación.",
-  },
-  {
-    icon: Stethoscope,
-    name: "Clínica",
-    description:
-      "Lista de servicios, horarios y botón de cita directa. Profesional y confiable.",
-  },
-  {
-    icon: Truck,
-    name: "Food truck",
-    description:
-      "Ubicación en tiempo real, menú del día y pedidos por WhatsApp.",
-  },
-  {
-    icon: Wrench,
-    name: "Taller",
-    description:
-      "Catálogo de servicios, precios referenciales y contacto directo por WhatsApp.",
-  },
-  {
-    icon: ShoppingBag,
-    name: "Tienda",
-    description:
-      "Vitrina de productos, categorías y botón de pedido. Tu tienda online en minutos.",
-  },
-  {
-    icon: Megaphone,
-    name: "Agencia",
-    description:
-      "Portafolio de servicios, casos de éxito y formas de contacto integradas.",
-  },
-  {
-    icon: Church,
-    name: "Iglesia",
-    description:
-      "Horarios de servicios, ubicación, redes sociales y eventos en un solo lugar.",
-  },
-]
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -89,6 +39,51 @@ const cardVariants = {
 }
 
 export function BusinessExamples() {
+  const { t } = useTranslations("landing.businessExamples")
+
+  const CATEGORIES: BusinessCategory[] = [
+    {
+      icon: UtensilsCrossed,
+      nameKey: "categories.restaurant.name",
+      descriptionKey: "categories.restaurant.description",
+    },
+    {
+      icon: Scissors,
+      nameKey: "categories.barbershop.name",
+      descriptionKey: "categories.barbershop.description",
+    },
+    {
+      icon: Stethoscope,
+      nameKey: "categories.clinic.name",
+      descriptionKey: "categories.clinic.description",
+    },
+    {
+      icon: Truck,
+      nameKey: "categories.foodTruck.name",
+      descriptionKey: "categories.foodTruck.description",
+    },
+    {
+      icon: Wrench,
+      nameKey: "categories.workshop.name",
+      descriptionKey: "categories.workshop.description",
+    },
+    {
+      icon: ShoppingBag,
+      nameKey: "categories.store.name",
+      descriptionKey: "categories.store.description",
+    },
+    {
+      icon: Megaphone,
+      nameKey: "categories.agency.name",
+      descriptionKey: "categories.agency.description",
+    },
+    {
+      icon: Church,
+      nameKey: "categories.church.name",
+      descriptionKey: "categories.church.description",
+    },
+  ]
+
   return (
     <section className="py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -100,13 +95,13 @@ export function BusinessExamples() {
           transition={{ duration: 0.5 }}
         >
           <span className="mb-3 inline-block rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-sm font-medium text-gold">
-            Para todos
+            {t("badge")}
           </span>
           <h2 className="mt-4 text-3xl font-bold text-foreground sm:text-4xl">
-            Para todo tipo de negocios
+            {t("title")}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Sea cual sea tu negocio, Kingnect se adapta a tus necesidades
+            {t("subtitle")}
           </p>
         </motion.div>
 
@@ -119,7 +114,7 @@ export function BusinessExamples() {
         >
           {CATEGORIES.map((cat) => (
             <motion.div
-              key={cat.name}
+              key={cat.nameKey}
               variants={cardVariants}
               className="group cursor-pointer rounded-2xl border bg-card p-6 shadow-sm transition-all hover:shadow-md hover:border-gold/50"
             >
@@ -127,10 +122,10 @@ export function BusinessExamples() {
                 <cat.icon className="size-6 text-gold" />
               </div>
               <h3 className="mt-4 text-base font-semibold text-foreground">
-                {cat.name}
+                {t(cat.nameKey)}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {cat.description}
+                {t(cat.descriptionKey)}
               </p>
             </motion.div>
           ))}

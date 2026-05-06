@@ -1,4 +1,4 @@
-// ─── KINGNECT — Stripe Webhook Handler ─────────────────────────────────────────
+// ─── QAIROSS — Stripe Webhook Handler ─────────────────────────────────────────
 // Recibe y procesa todos los eventos de webhook de Stripe
 // IMPORTANTE: Usa req.text() para obtener el raw body (necesario para verificar firma)
 

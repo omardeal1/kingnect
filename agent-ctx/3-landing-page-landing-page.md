@@ -5,7 +5,7 @@
 
 ## Summary
 
-Created the complete KINGNECT landing page at `/src/app/page.tsx` with all 11 supporting components. The landing page is a premium white/gold (#D4A849) design, fully in Spanish, mobile-first and responsive, with Framer Motion animations.
+Created the complete QAIROSS landing page at `/src/app/page.tsx` with all 11 supporting components. The landing page is a premium white/gold (#D4A849) design, fully in Spanish, mobile-first and responsive, with Framer Motion animations.
 
 ## Files Created
 
@@ -47,7 +47,7 @@ Created the complete KINGNECT landing page at `/src/app/page.tsx` with all 11 su
 
 6. **`/src/components/landing/business-examples.tsx`** — Business examples:
    - 8 category cards: Restaurante, Barbería, Clínica, Food truck, Taller, Tienda, Agencia, Iglesia
-   - Each card: icon, name, description of Kingnect use case
+   - Each card: icon, name, description of QAIROSS use case
    - Hover effect with gold border transition
    - Scroll-triggered staggered animations
 
@@ -80,11 +80,11 @@ Created the complete KINGNECT landing page at `/src/app/page.tsx` with all 11 su
     - Gold gradient decorative background with blur elements
 
 12. **`/src/components/landing/footer.tsx`** — Footer (server component):
-    - "Kingnect by King Designs" logo
+    - "QAIROSS by QAIROSS" logo
     - Nav links: Inicio · Precios · Iniciar sesión · Registro
     - Social icons: Facebook, Instagram, Twitter
     - Legal links: Términos y condiciones · Política de privacidad
-    - Copyright "© 2024 King Designs. Todos los derechos reservados."
+    - Copyright "© 2024 QAIROSS. Todos los derechos reservados."
 
 ## Design System
 

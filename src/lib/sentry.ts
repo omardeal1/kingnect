@@ -1,4 +1,4 @@
-// ─── KINGNECT — Sentry Server Configuration ─────────────────────────────────────
+// ─── QAIROSS — Sentry Server Configuration ─────────────────────────────────────
 // Inicialización de Sentry para el servidor (solo si DSN está configurado)
 // ⚠️ Este archivo es SOLO para servidor — NO usar en el cliente
 

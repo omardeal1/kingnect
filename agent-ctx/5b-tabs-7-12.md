@@ -6,7 +6,7 @@
 
 ## Summary
 
-Created 6 tab components for the KINGNECT mini web editor (tabs 7–12). All components follow the established patterns: "use client", useEditorStore from @/lib/editor-store, shadcn/ui components, Lucide icons, sonner toast, all text in Spanish, optimistic UI with temp IDs.
+Created 6 tab components for the QAIROSS mini web editor (tabs 7–12). All components follow the established patterns: "use client", useEditorStore from @/lib/editor-store, shadcn/ui components, Lucide icons, sonner toast, all text in Spanish, optimistic UI with temp IDs.
 
 ## Files Created
 

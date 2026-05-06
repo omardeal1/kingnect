@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   LayoutDashboard,
   Users,
+  UserCog,
   Kanban,
   Globe,
   ShoppingCart,
@@ -18,8 +19,16 @@ import {
   Sun,
   LogOut,
   Crown,
+  FileEdit,
+  ShieldCheck,
+  GitBranch,
+  CalendarDays,
+  Heart,
+  UserPlus,
 } from "lucide-react"
 import { useTheme } from "next-themes"
+import { useTranslations } from "@/i18n/provider"
+import { LanguageToggle } from "@/components/ui/language-toggle"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
@@ -36,13 +45,19 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Badge } from "@/components/ui/badge"
 
 const navItems = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/clients", label: "Clientes", icon: Users },
-  { href: "/admin/pipeline", label: "Pipeline", icon: Kanban },
-  { href: "/admin/sites", label: "Kinecs", icon: Globe },
-  { href: "/admin/orders", label: "Pedidos", icon: ShoppingCart },
-  { href: "/admin/plans", label: "Planes", icon: CreditCard },
-  { href: "/admin/platform-editor", label: "Editor Plataforma", icon: Settings },
+  { href: "/admin", key: "nav.dashboard", icon: LayoutDashboard },
+  { href: "/admin/clients", key: "nav.clients", icon: Users },
+  { href: "/admin/pipeline", key: "nav.pipeline", icon: Kanban },
+  { href: "/admin/sites", key: "nav.qaiross", icon: Globe },
+  { href: "/admin/orders", key: "nav.orders", icon: ShoppingCart },
+  { href: "/admin/plans", key: "nav.plans", icon: CreditCard },
+  { href: "/admin/platform-editor", key: "nav.platformEditor", icon: Settings },
+  { href: "/admin/landing-editor", key: "nav.landingEditor", icon: FileEdit },
+  { href: "/admin/branding", key: "nav.branding", icon: ShieldCheck },
+  { href: "/admin/branches", key: "nav.branches", icon: GitBranch },
+  { href: "/admin/reservations", key: "nav.reservations", icon: CalendarDays },
+  { href: "/admin/customers", key: "nav.customers", icon: Users },
+  { href: "/admin/employees", key: "nav.employees", icon: UserCog },
 ]
 
 interface AdminShellProps {
@@ -65,6 +80,7 @@ function SidebarContent({
 }) {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
+  const { t } = useTranslations("admin")
 
   return (
     <div className="flex flex-col h-full">
@@ -79,8 +95,8 @@ function SidebarContent({
             animate={{ opacity: 1, x: 0 }}
             className="overflow-hidden"
           >
-            <h1 className="text-lg font-bold gold-gradient-text">KINGNECT</h1>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Admin Panel</p>
+            <h1 className="text-lg font-bold gold-gradient-text">QAIROSS</h1>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest">{t("nav.adminPanel")}</p>
           </motion.div>
         )}
       </div>
@@ -122,7 +138,7 @@ function SidebarContent({
                           animate={{ opacity: 1 }}
                           className="truncate"
                         >
-                          {item.label}
+                          {t(item.key)}
                         </motion.span>
                       )}
                       {isActive && !collapsed && (
@@ -135,7 +151,7 @@ function SidebarContent({
                   </TooltipTrigger>
                   {collapsed && (
                     <TooltipContent side="right">
-                      <p>{item.label}</p>
+                      <p>{t(item.key)}</p>
                     </TooltipContent>
                   )}
                 </Tooltip>
@@ -159,7 +175,7 @@ function SidebarContent({
           ) : (
             <Moon className="w-4 h-4 flex-shrink-0" />
           )}
-          {!collapsed && <span className="ml-3">{theme === "dark" ? "Modo claro" : "Modo oscuro"}</span>}
+          {!collapsed && <span className="ml-3">{theme === "dark" ? t("nav.lightMode") : t("nav.darkMode")}</span>}
         </Button>
 
         <Separator />
@@ -190,7 +206,7 @@ function SidebarContent({
             <DropdownMenuItem asChild>
               <Link href="/api/auth/signout">
                 <LogOut className="w-4 h-4 mr-2" />
-                Cerrar sesión
+                {t("nav.closeSession")}
               </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -203,6 +219,7 @@ function SidebarContent({
 export function AdminShell({ user, children }: AdminShellProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { t } = useTranslations("admin")
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -239,7 +256,7 @@ export function AdminShell({ user, children }: AdminShellProps) {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-72 p-0">
-              <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
+              <SheetTitle className="sr-only">{t("nav.navMenu")}</SheetTitle>
               <SidebarContent
                 collapsed={false}
                 user={user}
@@ -251,9 +268,10 @@ export function AdminShell({ user, children }: AdminShellProps) {
           <div className="flex-1" />
 
           <div className="flex items-center gap-2">
+            <LanguageToggle variant="minimal" />
             <Badge className="bg-primary/10 text-primary border-primary/20 text-xs">
               <Crown className="w-3 h-3 mr-1" />
-              Super Admin
+              {t("title")}
             </Badge>
           </div>
         </header>
@@ -277,4 +295,3 @@ export function AdminShell({ user, children }: AdminShellProps) {
     </div>
   )
 }
-

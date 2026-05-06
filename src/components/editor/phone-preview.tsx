@@ -5,13 +5,10 @@ import { useEditorStore } from "@/lib/editor-store"
 import { SOCIAL_TYPES, CONTACT_BUTTON_TYPES } from "@/lib/constants"
 import {
   Star,
-  MapPin,
-  MessageCircle,
-  Phone,
-  Mail,
   ExternalLink,
-  Globe,
 } from "lucide-react"
+import { ButtonRenderer } from "@/components/minisite/button-styles/button-renderer"
+import type { ButtonStyleType } from "@/components/minisite/button-styles/button-renderer"
 
 export function PhonePreview() {
   const site = useEditorStore((s) => s.site)
@@ -37,6 +34,8 @@ export function PhonePreview() {
   const enabledServices = site.services.filter((s) => s.enabled)
   const enabledTestimonials = site.testimonials.filter((t) => t.enabled)
   const enabledLinks = site.customLinks.filter((l) => l.enabled)
+
+  const buttonStyle = (site as Record<string, unknown>).buttonStyle as ButtonStyleType || "cylinder_pill"
 
   return (
     <div className="flex flex-col items-center">
@@ -74,19 +73,22 @@ export function PhonePreview() {
               )}
             </div>
 
-            {/* Contact buttons */}
+            {/* Contact buttons - using ButtonRenderer for live preview */}
             {enabledContacts.length > 0 && (
               <div className="space-y-1.5">
                 {enabledContacts.slice(0, 4).map((btn) => {
                   const btnType = CONTACT_BUTTON_TYPES.find((t) => t.value === btn.type)
+                  const label = btnType?.label || btn.label || btn.type
                   return (
-                    <div
+                    <ButtonRenderer
                       key={btn.id}
-                      className="rounded-lg py-2 px-3 text-center text-[10px] font-medium"
-                      style={{ backgroundColor: site.accentColor, color: "#fff" }}
-                    >
-                      {btnType?.label || btn.label || btn.type}
-                    </div>
+                      style={buttonStyle}
+                      icon={<ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />}
+                      label={label}
+                      accentColor={site.accentColor}
+                      textColor="#FFFFFF"
+                      className="!py-1.5 !px-3 !text-[10px] !gap-1.5 !rounded-lg"
+                    />
                   )
                 })}
               </div>
@@ -220,23 +222,32 @@ export function PhonePreview() {
               </div>
             )}
 
-            {/* Social links */}
+            {/* Social links - using ButtonRenderer for live preview */}
             {enabledSocials.length > 0 && (
-              <div className="flex justify-center gap-3 pt-1">
-                {enabledSocials.slice(0, 5).map((link) => {
+              <div className="space-y-1.5">
+                {enabledSocials.slice(0, 4).map((link) => {
                   const socialType = SOCIAL_TYPES.find((t) => t.value === link.type)
                   const Icon = socialType?.icon || ExternalLink
+                  const label = link.label || link.type
                   return (
-                    <Icon key={link.id} className="size-3.5 opacity-60" style={{ color: site.textColor }} />
+                    <ButtonRenderer
+                      key={link.id}
+                      style={buttonStyle}
+                      icon={<Icon className="w-3.5 h-3.5 flex-shrink-0" />}
+                      label={label}
+                      accentColor={site.accentColor}
+                      textColor={site.textColor}
+                      className="!py-1.5 !px-3 !text-[10px] !gap-1.5 !rounded-lg"
+                    />
                   )
                 })}
               </div>
             )}
 
-            {/* Kingnect branding */}
+            {/* QAIROSS branding */}
             {site.showKingBrand && (
               <p className="text-center text-[8px] opacity-30 pt-2" style={{ color: site.textColor }}>
-                Hecho por Kingnect
+                Hecho por QAIROSS
               </p>
             )}
           </div>

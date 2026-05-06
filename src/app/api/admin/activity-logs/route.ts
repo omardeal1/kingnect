@@ -1,4 +1,4 @@
-// ─── KINGNECT — Activity Logs API (Admin) ──────────────────────────────────────
+// ─── QAIROSS — Activity Logs API (Admin) ──────────────────────────────────────
 // Obtiene los registros de actividad recientes para el panel de admin
 // Soporta paginación y filtrado por tipo de acción
 

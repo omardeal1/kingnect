@@ -1,6 +1,7 @@
 "use client"
 
 import { Crown } from "lucide-react"
+import { useTranslations } from "@/i18n/provider"
 
 interface SiteFooterProps {
   showKingBrand?: boolean
@@ -8,6 +9,7 @@ interface SiteFooterProps {
 }
 
 export function SiteFooter({ showKingBrand, textColor }: SiteFooterProps) {
+  const { t } = useTranslations("minisite")
   if (!showKingBrand) return null
 
   return (
@@ -17,15 +19,15 @@ export function SiteFooter({ showKingBrand, textColor }: SiteFooterProps) {
     >
       <div className="flex items-center justify-center gap-1.5 text-xs">
         <Crown className="w-3.5 h-3.5" />
-        <span>Hecho por </span>
+        <span>{t("footer.madeWith")} </span>
         <a
-          href="https://kingnect.app"
+          href="https://qaiross.app"
           target="_blank"
           rel="noopener noreferrer"
           className="font-semibold hover:underline"
           style={{ color: textColor }}
         >
-          Kingnect
+          QAIROSS
         </a>
       </div>
     </footer>

@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { motion } from "framer-motion"
 import {
   MessageCircle,
@@ -14,6 +15,8 @@ import { CONTACT_BUTTON_TYPES } from "@/lib/constants"
 import { useCart } from "./cart-provider"
 import { toast } from "sonner"
 import { trackWhatsAppClick, trackLinkClick, trackEvent } from "@/lib/analytics"
+import { useTranslations } from "@/i18n/provider"
+import { ButtonRenderer, type ButtonStyleType } from "./button-styles/button-renderer"
 
 interface ContactButtonData {
   id: string
@@ -31,6 +34,7 @@ interface ContactButtonsProps {
   slug: string
   whatsappNumber?: string | null
   siteId: string
+  buttonStyle?: string
 }
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -49,6 +53,7 @@ function getButtonAction(
   value: string,
   slug: string,
   siteId: string,
+  t: (key: string, params?: Record<string, unknown>) => string,
   onOrder?: () => void,
   onCopy?: () => void
 ) {
@@ -87,9 +92,9 @@ function getButtonAction(
         } else {
           try {
             await navigator.clipboard.writeText(siteUrl)
-            toast.success("Link copiado al portapapeles")
+            toast.success(t("qr.copied"))
           } catch {
-            toast.error("No se pudo copiar el link")
+            toast.error(t("qr.copyError"))
           }
         }
       }
@@ -98,9 +103,9 @@ function getButtonAction(
         trackEvent(siteId, "click_link", { type: "copy_link" })
         try {
           await navigator.clipboard.writeText(siteUrl)
-          toast.success("Link copiado al portapapeles")
+          toast.success(t("qr.copied"))
         } catch {
-          toast.error("No se pudo copiar el link")
+          toast.error(t("qr.copyError"))
         }
       })
     case "order":
@@ -121,8 +126,10 @@ export function ContactButtons({
   slug,
   whatsappNumber,
   siteId,
+  buttonStyle = "cylinder_pill",
 }: ContactButtonsProps) {
   const { setOpen } = useCart()
+  const { t } = useTranslations("minisite")
   const enabledButtons = buttons.filter((b) => b.enabled)
 
   if (enabledButtons.length === 0) return null
@@ -132,11 +139,13 @@ export function ContactButtons({
     trackEvent(siteId, "click_link", { type: "copy_link" })
     try {
       await navigator.clipboard.writeText(siteUrl)
-      toast.success("Link copiado al portapapeles")
+      toast.success(t("qr.copied"))
     } catch {
-      toast.error("No se pudo copiar el link")
+      toast.error(t("qr.copyError"))
     }
   }
+
+  const style = buttonStyle as ButtonStyleType
 
   return (
     <motion.section
@@ -156,6 +165,7 @@ export function ContactButtons({
             btn.value,
             slug,
             siteId,
+            t,
             () => {
               trackEvent(siteId, "click_link", { type: "order" })
               setOpen(true)
@@ -164,22 +174,22 @@ export function ContactButtons({
           )
 
           return (
-            <motion.button
+            <motion.div
               key={btn.id}
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: idx * 0.05 }}
-              onClick={action}
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-xl font-medium text-sm transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm"
-              style={{
-                backgroundColor: accentColor,
-                color: "#FFFFFF",
-              }}
             >
-              <Icon className="w-5 h-5 flex-shrink-0" />
-              <span>{label}</span>
-            </motion.button>
+              <ButtonRenderer
+                style={style}
+                icon={<Icon className="w-5 h-5 flex-shrink-0" />}
+                label={label}
+                onClick={action}
+                accentColor={accentColor}
+                textColor={textColor}
+              />
+            </motion.div>
           )
         })}
       </div>

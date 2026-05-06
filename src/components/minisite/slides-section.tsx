@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
+import { useTranslations } from "@/i18n/provider"
 
 interface SlideData {
   id: string
@@ -25,6 +26,7 @@ export function SlidesSection({ slides, accentColor, textColor }: SlidesSectionP
   const enabledSlides = slides.filter((s) => s.enabled && s.imageUrl)
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(0)
+  const { t } = useTranslations("minisite")
 
   const goTo = useCallback(
     (index: number) => {
@@ -114,14 +116,14 @@ export function SlidesSection({ slides, accentColor, textColor }: SlidesSectionP
             <button
               onClick={prev}
               className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-colors"
-              aria-label="Anterior"
+              aria-label={t("slides.previous")}
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={next}
               className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-colors"
-              aria-label="Siguiente"
+              aria-label={t("slides.next")}
             >
               <ChevronRight className="w-5 h-5" />
             </button>

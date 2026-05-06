@@ -17,7 +17,7 @@ export async function GET(
     return NextResponse.json({ error: "No encontrado" }, { status: 404 })
   }
 
-  const siteUrl = `https://links.kingnect.app/${slug}`
+  const siteUrl = `https://links.qaiross.app/${slug}`
 
   try {
     // Generate QR code as SVG string

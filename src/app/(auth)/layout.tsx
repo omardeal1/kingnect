@@ -4,6 +4,8 @@ import { useTheme } from "next-themes"
 import { Sun, Moon, Crown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
+import { useTranslations } from "@/i18n/provider"
+import { LanguageToggle } from "@/components/ui/language-toggle"
 
 export default function AuthLayout({
   children,
@@ -11,6 +13,7 @@ export default function AuthLayout({
   children: React.ReactNode
 }) {
   const { theme, setTheme } = useTheme()
+  const { t } = useTranslations("auth")
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark")
@@ -46,14 +49,15 @@ export default function AuthLayout({
         />
       </div>
 
-      {/* Theme toggle - top right */}
-      <div className="fixed top-4 right-4 z-50">
+      {/* Language + Theme toggle - top right */}
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+        <LanguageToggle variant="minimal" />
         <Button
           variant="ghost"
           size="icon"
           onClick={toggleTheme}
           className="rounded-full hover:bg-gold/10 transition-colors"
-          aria-label="Cambiar tema"
+          aria-label={t("common.switchLanguage")}
         >
           <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-gold" />
           <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-gold" />
@@ -69,8 +73,8 @@ export default function AuthLayout({
       >
         <Crown className="h-8 w-8 text-gold" />
         <span className="text-2xl font-bold tracking-tight">
-          <span className="text-foreground">King</span>
-          <span className="text-gold">nect</span>
+          <span className="text-foreground">QAIR</span>
+          <span className="text-gold">OSS</span>
         </span>
       </motion.div>
 
@@ -91,7 +95,7 @@ export default function AuthLayout({
         transition={{ delay: 0.8 }}
         className="mt-8 text-xs text-muted-foreground relative z-10"
       >
-        &copy; {new Date().getFullYear()} Kingnect por King Designs
+        &copy; {new Date().getFullYear()} QAIROSS
       </motion.p>
     </div>
   )

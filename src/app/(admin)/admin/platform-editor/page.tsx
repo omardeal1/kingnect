@@ -316,7 +316,7 @@ export default function AdminPlatformEditorPage() {
                     value={settings.platform_url ?? ""}
                     onChange={(e) => updateSetting("platform_url", e.target.value)}
                     className="mt-1"
-                    placeholder="https://kingnect.app"
+                    placeholder="https://qaiross.app"
                   />
                 </div>
                 <div>
@@ -357,7 +357,7 @@ export default function AdminPlatformEditorPage() {
                     value={settings.support_email ?? ""}
                     onChange={(e) => updateSetting("support_email", e.target.value)}
                     className="mt-1"
-                    placeholder="soporte@kingnect.app"
+                    placeholder="soporte@qaiross.app"
                   />
                 </div>
               </div>
@@ -725,7 +725,7 @@ export default function AdminPlatformEditorPage() {
                   value={settings.welcome_message ?? ""}
                   onChange={(e) => updateSetting("welcome_message", e.target.value)}
                   className="mt-1"
-                  placeholder="¡Bienvenido a KINGNECT!..."
+                  placeholder="¡Bienvenido a QAIROSS!..."
                 />
               </div>
               <div>

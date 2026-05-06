@@ -18,12 +18,12 @@ import {
 
 // ─── App Info ────────────────────────────────────────────────────────────────────
 
-export const APP_NAME = "Kingnect"
-export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://links.kingnect.app"
+export const APP_NAME = "QAIROSS"
+export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://links.qaiross.app"
 export const APP_DESCRIPTION =
-  "Todos los links de tu negocio en un Kinec profesional con QR, lista para compartir e imprimir en tarjetas, carpas, banderas, flyers, stickers, menús y publicidad."
+  "Todos los links de tu negocio en una página de QAIROSS profesional con QR, lista para compartir e imprimir en tarjetas, carpas, banderas, flyers, stickers, menús y publicidad."
 export const APP_TAGLINE =
-  "Todos los links de tu negocio en un Kinec profesional con QR"
+  "Todos los links de tu negocio en una página de QAIROSS profesional con QR"
 
 // ─── Social Types ────────────────────────────────────────────────────────────────
 
@@ -183,12 +183,12 @@ export const PLAN_FEATURES: PlanInfo[] = [
     price: 0,
     currency: "USD",
     billingInterval: "month",
-    description: "1 mes gratis para probar Kingnect",
+    description: "1 mes gratis para probar QAIROSS",
     features: [
-      "1 Kinec",
+      "1 QAIROSS",
       "QR en PNG",
       "Catálogo básico",
-      "Con marca Kingnect",
+      "Con marca QAIROSS",
     ],
   },
   {
@@ -199,12 +199,12 @@ export const PLAN_FEATURES: PlanInfo[] = [
     billingInterval: "month",
     description: "Todo lo esencial para tu negocio",
     features: [
-      "1 Kinec",
+      "1 QAIROSS",
       "QR en PNG",
       "Redes sociales",
       "WhatsApp y ubicación",
       "Galería de fotos",
-      "Con marca Kingnect",
+      "Con marca QAIROSS",
     ],
   },
   {
@@ -215,7 +215,7 @@ export const PLAN_FEATURES: PlanInfo[] = [
     billingInterval: "month",
     description: "Para negocios que quieren más",
     features: [
-      "1 Kinec",
+      "1 QAIROSS",
       "QR en PNG y SVG",
       "Catálogo completo",
       "Pedidos por WhatsApp",
@@ -238,7 +238,7 @@ export const PLAN_FEATURES: PlanInfo[] = [
       "Múltiples ubicaciones",
       "Dominio personalizado",
       "Analíticas avanzadas",
-      "Sin marca Kingnect",
+      "Sin marca QAIROSS",
       "Soporte prioritario",
     ],
   },

@@ -4,8 +4,11 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useTranslations } from "@/i18n/provider"
 
 export function CTASection() {
+  const { t } = useTranslations("landing.cta")
+
   return (
     <section className="relative overflow-hidden py-20 sm:py-28">
       {/* Gold gradient background */}
@@ -23,11 +26,10 @@ export function CTASection() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl">
-            ¿Listo para crear tu Kinec?
+            {t("title")}
           </h2>
           <p className="mt-6 text-lg text-muted-foreground sm:text-xl">
-            Únete a cientos de negocios que ya usan Kingnect para tener
-            presencia digital. Comienza gratis hoy mismo.
+            {t("subtitle")}
           </p>
 
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
@@ -37,14 +39,14 @@ export function CTASection() {
               asChild
             >
               <Link href="/register">
-                Crear mi Kinec
+                {t("button")}
                 <ArrowRight className="ml-2 size-5" />
               </Link>
             </Button>
           </div>
 
           <p className="mt-6 text-sm text-muted-foreground">
-            Sin tarjeta de crédito · Configura en 5 minutos · Soporte en español
+            {t("stats")}
           </p>
         </motion.div>
       </div>

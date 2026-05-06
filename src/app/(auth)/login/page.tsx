@@ -19,9 +19,11 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
+import { useTranslations } from "@/i18n/provider"
 
 export default function LoginPage() {
   const router = useRouter()
+  const { t } = useTranslations("auth.login")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -30,15 +32,15 @@ export default function LoginPage() {
     e.preventDefault()
 
     if (!email.trim()) {
-      toast.error("Campo requerido", { description: "Ingresa tu correo electrónico" })
+      toast.error(t("errors.required"), { description: t("errors.emailRequired") })
       return
     }
     if (!password.trim()) {
-      toast.error("Campo requerido", { description: "Ingresa tu contraseña" })
+      toast.error(t("errors.required"), { description: t("errors.passwordRequired") })
       return
     }
     if (password.length < 6) {
-      toast.error("Contraseña inválida", { description: "La contraseña debe tener al menos 6 caracteres" })
+      toast.error(t("errors.invalidPassword"), { description: t("errors.passwordTooShort") })
       return
     }
 
@@ -52,15 +54,15 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        toast.error("Error al iniciar sesión", {
-          description: "Correo electrónico o contraseña incorrectos",
+        toast.error(t("errors.loginFailed"), {
+          description: t("errors.invalidCredentials"),
         })
         return
       }
 
       if (result?.ok) {
-        toast.success("¡Bienvenido!", {
-          description: "Has iniciado sesión correctamente",
+        toast.success(t("success.welcome"), {
+          description: t("success.loggedIn"),
         })
 
         // Fetch session to get role for redirect
@@ -82,8 +84,8 @@ export default function LoginPage() {
         }
       }
     } catch {
-      toast.error("Error de conexión", {
-        description: "No se pudo conectar con el servidor. Inténtalo de nuevo.",
+      toast.error(t("errors.connectionError"), {
+        description: t("errors.connectionErrorDesc"),
       })
     } finally {
       setIsLoading(false)
@@ -98,21 +100,21 @@ export default function LoginPage() {
     >
       <Card className="border-gold/10 shadow-lg shadow-gold/5">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Iniciar sesión</CardTitle>
+          <CardTitle className="text-2xl">{t("loginButton")}</CardTitle>
           <CardDescription>
-            Ingresa a tu cuenta de Kingnect
+            {t("title")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Correo electrónico</Label>
+              <Label htmlFor="email">{t("email")}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
-                  placeholder="tu@email.com"
+                  placeholder={t("emailPlaceholder")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-9"
@@ -123,12 +125,12 @@ export default function LoginPage() {
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Contraseña</Label>
+                <Label htmlFor="password">{t("password")}</Label>
                 <Link
                   href="/forgot-password"
                   className="text-xs text-gold hover:text-gold-dark transition-colors"
                 >
-                  ¿Olvidaste tu contraseña?
+                  {t("forgotPassword")}
                 </Link>
               </div>
               <div className="relative">
@@ -154,10 +156,10 @@ export default function LoginPage() {
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Iniciando sesión...
+                  {t("loggingIn")}
                 </>
               ) : (
-                "Iniciar sesión"
+                t("loginButton")
               )}
             </Button>
           </form>
@@ -165,12 +167,12 @@ export default function LoginPage() {
         <CardFooter className="flex-col gap-3">
           <Separator className="bg-gold/10" />
           <p className="text-sm text-muted-foreground">
-            ¿No tienes cuenta?{" "}
+            {t("noAccount")}{" "}
             <Link
               href="/register"
               className="text-gold hover:text-gold-dark font-medium transition-colors"
             >
-              Crear cuenta
+              {t("createAccount")}
             </Link>
           </p>
         </CardFooter>

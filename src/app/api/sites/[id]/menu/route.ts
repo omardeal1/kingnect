@@ -1,6 +1,10 @@
 import { NextRequest } from "next/server"
 import { getAuthenticatedUser, verifySiteOwnership, errorResponse, successResponse } from "@/lib/api-helpers"
 import { db } from "@/lib/db"
+import { menuCache } from "@/lib/cache"
+import { checkMenuItemLimit, checkCategoryLimit } from "@/lib/product-limits"
+
+// ─── GET: Fetch menu with categories and items (cached) ───────────────────────
 
 export async function GET(
   request: NextRequest,
@@ -13,6 +17,11 @@ export async function GET(
     const { id } = await params
     if (!(await verifySiteOwnership(user.id, id))) return errorResponse("No autorizado", 403)
 
+    // Check cache first (30s TTL via menuCache)
+    const cacheKey = `menu:${id}`
+    const cached = menuCache.get(cacheKey)
+    if (cached) return successResponse(cached)
+
     const categories = await db.menuCategory.findMany({
       where: { miniSiteId: id },
       orderBy: { sortOrder: "asc" },
@@ -23,12 +32,16 @@ export async function GET(
       },
     })
 
-    return successResponse({ menuCategories: categories })
+    const result = { menuCategories: categories }
+    menuCache.set(cacheKey, result)
+    return successResponse(result)
   } catch (error) {
     console.error("Error fetching menu:", error)
     return errorResponse("Error al obtener menú", 500)
   }
 }
+
+// ─── POST: Create category or menu item (with plan limit check) ──────────────
 
 export async function POST(
   request: NextRequest,
@@ -48,6 +61,12 @@ export async function POST(
       const { name, enabled, sortOrder } = body
       if (!name) return errorResponse("Nombre de categoría es requerido")
 
+      // Check plan limits before creating
+      const categoryLimit = await checkCategoryLimit(id)
+      if (!categoryLimit.allowed) {
+        return errorResponse(categoryLimit.message || "Límite de categorías alcanzado", 403)
+      }
+
       const category = await db.menuCategory.create({
         data: {
           miniSiteId: id,
@@ -57,16 +76,23 @@ export async function POST(
         },
       })
 
+      menuCache.invalidate(`menu:${id}`)
       return successResponse({ menuCategory: category }, 201)
     }
 
     if (type === "item") {
-      const { categoryId, name, description, price, imageUrl, isOrderable, enabled, sortOrder } = body
+      const { categoryId, name, description, price, imageUrl, isOrderable, enabled, sortOrder, badge, specialInstructionsEnabled } = body
       if (!categoryId || !name) return errorResponse("categoryId y nombre son requeridos")
 
       // Verify category belongs to this site
       const category = await db.menuCategory.findUnique({ where: { id: categoryId } })
       if (!category || category.miniSiteId !== id) return errorResponse("Categoría no encontrada", 404)
+
+      // Check plan limits before creating
+      const itemLimit = await checkMenuItemLimit(id)
+      if (!itemLimit.allowed) {
+        return errorResponse(itemLimit.message || "Límite de productos alcanzado", 403)
+      }
 
       const item = await db.menuItem.create({
         data: {
@@ -79,9 +105,12 @@ export async function POST(
           isOrderable: isOrderable ?? false,
           enabled: enabled ?? true,
           sortOrder: sortOrder ?? 0,
+          badge: badge || null,
+          specialInstructionsEnabled: specialInstructionsEnabled ?? true,
         },
       })
 
+      menuCache.invalidate(`menu:${id}`)
       return successResponse({ menuItem: item }, 201)
     }
 
@@ -91,6 +120,8 @@ export async function POST(
     return errorResponse("Error al crear elemento del menú", 500)
   }
 }
+
+// ─── PUT: Update category or menu item ───────────────────────────────────────
 
 export async function PUT(
   request: NextRequest,
@@ -123,6 +154,7 @@ export async function PUT(
         },
       })
 
+      menuCache.invalidate(`menu:${id}`)
       return successResponse({ menuCategory: category })
     }
 
@@ -149,9 +181,12 @@ export async function PUT(
           ...(enabled !== undefined && { enabled }),
           ...(sortOrder !== undefined && { sortOrder }),
           ...(categoryId !== undefined && { categoryId }),
+          ...(body.badge !== undefined && { badge: body.badge }),
+          ...(body.specialInstructionsEnabled !== undefined && { specialInstructionsEnabled: body.specialInstructionsEnabled }),
         },
       })
 
+      menuCache.invalidate(`menu:${id}`)
       return successResponse({ menuItem: item })
     }
 
@@ -161,6 +196,8 @@ export async function PUT(
     return errorResponse("Error al actualizar elemento del menú", 500)
   }
 }
+
+// ─── DELETE: Remove category or menu item ────────────────────────────────────
 
 export async function DELETE(
   request: NextRequest,
@@ -183,6 +220,7 @@ export async function DELETE(
       if (!existing || existing.miniSiteId !== id) return errorResponse("Categoría no encontrada", 404)
 
       await db.menuCategory.delete({ where: { id: itemId } })
+      menuCache.invalidate(`menu:${id}`)
       return successResponse({ deleted: true })
     }
 
@@ -191,6 +229,7 @@ export async function DELETE(
       if (!existing || existing.miniSiteId !== id) return errorResponse("Item no encontrado", 404)
 
       await db.menuItem.delete({ where: { id: itemId } })
+      menuCache.invalidate(`menu:${id}`)
       return successResponse({ deleted: true })
     }
 

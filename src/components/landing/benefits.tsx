@@ -12,63 +12,13 @@ import {
   ShoppingBag,
   type LucideIcon,
 } from "lucide-react"
+import { useTranslations } from "@/i18n/provider"
 
 interface Benefit {
   icon: LucideIcon
-  title: string
-  description: string
+  titleKey: string
+  descriptionKey: string
 }
-
-const BENEFITS: Benefit[] = [
-  {
-    icon: Link2,
-    title: "Todos tus links en un lugar",
-    description:
-      "Reúne tus redes sociales, WhatsApp, ubicación y sitio web en un solo Kinec. Tus clientes encuentran todo al instante.",
-  },
-  {
-    icon: QrCode,
-    title: "QR listo para imprimir",
-    description:
-      "Genera tu código QR en PNG y SVG. Descárgalo y úsalo en cualquier material impreso sin perder calidad.",
-  },
-  {
-    icon: CreditCard,
-    title: "Para tarjetas, carpas y banderas",
-    description:
-      "Imprime tu QR en tarjetas de presentación, carpas publicitarias, banderas y flyers. Tu Kinec siempre accesible.",
-  },
-  {
-    icon: Code,
-    title: "Sin saber programar",
-    description:
-      "No necesitas conocimientos técnicos. Desde el panel editas todo de forma visual e intuitiva en minutos.",
-  },
-  {
-    icon: Settings,
-    title: "Edita desde tu panel",
-    description:
-      "Cambia textos, fotos, colores y botones cuando quieras. Los cambios se reflejan al instante en tu Kinec.",
-  },
-  {
-    icon: Store,
-    title: "Para negocios locales",
-    description:
-      "Diseñado especialmente para negocios locales que quieren tener presencia digital sin complicaciones ni costos altos.",
-  },
-  {
-    icon: MessageCircle,
-    title: "Más contactos por WhatsApp",
-    description:
-      "Un botón de WhatsApp directo en tu Kinec. Tus clientes te contactan con un solo toque desde su celular.",
-  },
-  {
-    icon: ShoppingBag,
-    title: "Muestra servicios y productos",
-    description:
-      "Agrega tu catálogo de productos o servicios con precios, fotos y descripciones. Todo organizado y profesional.",
-  },
-]
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -88,6 +38,51 @@ const cardVariants = {
 }
 
 export function Benefits() {
+  const { t } = useTranslations("landing.benefits")
+
+  const BENEFITS: Benefit[] = [
+    {
+      icon: Link2,
+      titleKey: "items.links.title",
+      descriptionKey: "items.links.description",
+    },
+    {
+      icon: QrCode,
+      titleKey: "items.qr.title",
+      descriptionKey: "items.qr.description",
+    },
+    {
+      icon: CreditCard,
+      titleKey: "items.print.title",
+      descriptionKey: "items.print.description",
+    },
+    {
+      icon: Code,
+      titleKey: "items.noCode.title",
+      descriptionKey: "items.noCode.description",
+    },
+    {
+      icon: Settings,
+      titleKey: "items.dashboard.title",
+      descriptionKey: "items.dashboard.description",
+    },
+    {
+      icon: Store,
+      titleKey: "items.local.title",
+      descriptionKey: "items.local.description",
+    },
+    {
+      icon: MessageCircle,
+      titleKey: "items.whatsapp.title",
+      descriptionKey: "items.whatsapp.description",
+    },
+    {
+      icon: ShoppingBag,
+      titleKey: "items.catalog.title",
+      descriptionKey: "items.catalog.description",
+    },
+  ]
+
   return (
     <section id="beneficios" className="py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -99,13 +94,13 @@ export function Benefits() {
           transition={{ duration: 0.5 }}
         >
           <span className="mb-3 inline-block rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-sm font-medium text-gold">
-            Beneficios
+            {t("badge")}
           </span>
           <h2 className="mt-4 text-3xl font-bold text-foreground sm:text-4xl">
-            Todo lo que tu negocio necesita
+            {t("title")}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Una solución completa para llevar tu negocio al mundo digital
+            {t("subtitle")}
           </p>
         </motion.div>
 
@@ -118,7 +113,7 @@ export function Benefits() {
         >
           {BENEFITS.map((benefit) => (
             <motion.div
-              key={benefit.title}
+              key={benefit.titleKey}
               variants={cardVariants}
               className="group rounded-2xl border bg-card p-6 shadow-sm transition-all hover:shadow-md hover:border-gold/30"
             >
@@ -126,10 +121,10 @@ export function Benefits() {
                 <benefit.icon className="size-6 text-gold" />
               </div>
               <h3 className="mt-4 text-base font-semibold text-foreground">
-                {benefit.title}
+                {t(benefit.titleKey)}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {benefit.description}
+                {t(benefit.descriptionKey)}
               </p>
             </motion.div>
           ))}

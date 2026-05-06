@@ -1,4 +1,4 @@
-// ─── KINGNECT — Rate Limiter In-Memory ─────────────────────────────────────────
+// ─── QAIROSS — Rate Limiter In-Memory ─────────────────────────────────────────
 // Limitador de peticiones en memoria usando Map
 // Sin dependencias externas (no Redis necesario)
 // Limpieza periódica automática de entradas expiradas

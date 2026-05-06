@@ -24,7 +24,7 @@ test.describe("Authentication", () => {
     });
 
     test("login with valid admin credentials redirects to admin dashboard", async ({ page }) => {
-      await page.fill('input[id="email"]', "admin@kingnect.app");
+      await page.fill('input[id="email"]', "admin@qaiross.app");
       await page.fill('input[id="password"]', "Admin123!");
       await page.getByRole("button", { name: "Iniciar sesión" }).click();
 

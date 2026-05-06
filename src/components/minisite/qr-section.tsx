@@ -5,6 +5,7 @@ import { QRCodeSVG } from "qrcode.react"
 import { Copy, Share2, MessageCircle, Mail } from "lucide-react"
 import { toast } from "sonner"
 import { trackEvent, trackQRScan, trackWhatsAppClick, trackLinkClick } from "@/lib/analytics"
+import { useTranslations } from "@/i18n/provider"
 
 interface QrSectionProps {
   slug: string
@@ -15,21 +16,22 @@ interface QrSectionProps {
 }
 
 export function QrSection({ slug, accentColor, textColor, whatsappNumber, siteId }: QrSectionProps) {
-  const siteUrl = `${typeof window !== "undefined" ? window.location.origin : "https://links.kingnect.app"}/${slug}`
+  const { t } = useTranslations("minisite")
+  const siteUrl = `${typeof window !== "undefined" ? window.location.origin : "https://links.qaiross.app"}/${slug}`
 
   const handleCopy = async () => {
     trackEvent(siteId, "click_link", { type: "copy_link" })
     try {
       await navigator.clipboard.writeText(siteUrl)
-      toast.success("Link copiado al portapapeles")
+      toast.success(t("qr.copied"))
     } catch {
-      toast.error("No se pudo copiar el link")
+      toast.error(t("qr.copyError"))
     }
   }
 
   const handleShareWhatsApp = () => {
     trackWhatsAppClick(siteId, whatsappNumber || "")
-    const msg = encodeURIComponent(`Visita nuestra página: ${siteUrl}`)
+    const msg = encodeURIComponent(`${t("qr.shareText")} ${siteUrl}`)
     window.open(
       whatsappNumber
         ? `https://wa.me/${whatsappNumber}?text=${msg}`
@@ -40,13 +42,13 @@ export function QrSection({ slug, accentColor, textColor, whatsappNumber, siteId
 
   const handleShareSMS = () => {
     trackLinkClick(siteId, "sms", siteUrl)
-    window.open(`sms:?body=${encodeURIComponent(`Visita nuestra página: ${siteUrl}`)}`, "_self")
+    window.open(`sms:?body=${encodeURIComponent(`${t("qr.shareText")} ${siteUrl}`)}`, "_self")
   }
 
   const handleShareEmail = () => {
     trackLinkClick(siteId, "email", siteUrl)
     window.open(
-      `mailto:?subject=${encodeURIComponent("Mira esta página")}&body=${encodeURIComponent(`Visita nuestra página: ${siteUrl}`)}`,
+      `mailto:?subject=${encodeURIComponent(t("qr.emailSubject"))}&body=${encodeURIComponent(`${t("qr.shareText")} ${siteUrl}`)}`,
       "_self"
     )
   }
@@ -67,14 +69,14 @@ export function QrSection({ slug, accentColor, textColor, whatsappNumber, siteId
         className="text-xl font-bold text-center mb-6"
         style={{ color: textColor }}
       >
-        Comparte tu Kinec
+        {t("qr.title")}
       </h2>
 
       <div className="flex flex-col items-center gap-5">
         <div
           className="p-4 rounded-2xl bg-white shadow-md cursor-pointer"
           onClick={handleQRScan}
-          title="Toca para registrar escaneo QR"
+          title={t("qr.scanTitle")}
         >
           <QRCodeSVG
             value={siteUrl}
@@ -93,7 +95,7 @@ export function QrSection({ slug, accentColor, textColor, whatsappNumber, siteId
             style={{ borderColor: `${accentColor}30`, color: accentColor, backgroundColor: `${accentColor}08` }}
           >
             <Copy className="w-3.5 h-3.5" />
-            Copiar link
+            {t("qr.copyLink")}
           </button>
           <button
             onClick={handleShareWhatsApp}
@@ -117,7 +119,7 @@ export function QrSection({ slug, accentColor, textColor, whatsappNumber, siteId
             style={{ borderColor: `${accentColor}30`, color: accentColor, backgroundColor: `${accentColor}08` }}
           >
             <Mail className="w-3.5 h-3.5" />
-            Correo
+            {t("qr.email")}
           </button>
         </div>
       </div>

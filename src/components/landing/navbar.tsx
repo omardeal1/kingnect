@@ -13,17 +13,13 @@ import {
   SheetTitle,
   SheetClose,
 } from "@/components/ui/sheet"
-
-const NAV_LINKS = [
-  { label: "Beneficios", href: "#beneficios" },
-  { label: "Cómo funciona", href: "#como-funciona" },
-  { label: "Precios", href: "#precios" },
-  { label: "FAQ", href: "#faq" },
-]
+import { useTranslations } from "@/i18n/provider"
+import { LanguageToggle } from "@/components/ui/language-toggle"
 
 const emptySubscribe = () => () => {}
 
 export function Navbar() {
+  const { t } = useTranslations("landing.navbar")
   const { theme, setTheme } = useTheme()
   const [scrolled, setScrolled] = useState(false)
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false)
@@ -36,6 +32,13 @@ export function Navbar() {
 
   const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark")
 
+  const NAV_LINKS = [
+    { label: t("benefits"), href: "#beneficios" },
+    { label: t("howItWorks"), href: "#como-funciona" },
+    { label: t("pricing"), href: "#precios" },
+    { label: t("faq"), href: "#faq" },
+  ]
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -47,8 +50,7 @@ export function Navbar() {
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-1 text-2xl font-bold">
-          <span className="text-foreground">King</span>
-          <span className="text-gold">nect</span>
+          <span className="text-foreground">QAIROSS</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -66,49 +68,50 @@ export function Navbar() {
 
         {/* Desktop Actions */}
         <div className="hidden items-center gap-3 md:flex">
+          <LanguageToggle variant="minimal" />
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
             className="size-9"
-            aria-label="Cambiar tema"
+            aria-label={t("changeTheme")}
           >
             {mounted && (theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />)}
           </Button>
           <Button variant="outline" size="sm" asChild>
-            <Link href="/login">Iniciar sesión</Link>
+            <Link href="/login">{t("login")}</Link>
           </Button>
           <Button
             size="sm"
             className="bg-gold text-gold-foreground hover:bg-gold-hover"
             asChild
           >
-            <Link href="/register">Crear mi Kinec</Link>
+            <Link href="/register">{t("createMyQaiross")}</Link>
           </Button>
         </div>
 
         {/* Mobile Menu */}
         <div className="flex items-center gap-2 md:hidden">
+          <LanguageToggle variant="minimal" />
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
             className="size-9"
-            aria-label="Cambiar tema"
+            aria-label={t("changeTheme")}
           >
             {mounted && (theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />)}
           </Button>
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="size-9" aria-label="Menú">
+              <Button variant="ghost" size="icon" className="size-9" aria-label={t("menu")}>
                 <Menu className="size-5" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px]">
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-1 text-left text-xl font-bold">
-                  <span className="text-foreground">King</span>
-                  <span className="text-gold">nect</span>
+                  <span className="text-foreground">QAIROSS</span>
                 </SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-2 px-4 pt-4">
@@ -126,7 +129,7 @@ export function Navbar() {
               <div className="mt-6 flex flex-col gap-3 px-4">
                 <SheetClose asChild>
                   <Button variant="outline" className="w-full" asChild>
-                    <Link href="/login">Iniciar sesión</Link>
+                    <Link href="/login">{t("login")}</Link>
                   </Button>
                 </SheetClose>
                 <SheetClose asChild>
@@ -134,7 +137,7 @@ export function Navbar() {
                     className="w-full bg-gold text-gold-foreground hover:bg-gold-hover"
                     asChild
                   >
-                    <Link href="/register">Crear mi Kinec</Link>
+                    <Link href="/register">{t("createMyQaiross")}</Link>
                   </Button>
                 </SheetClose>
               </div>

@@ -67,7 +67,7 @@
 
 ### FIX 8: Create test user with seed script
 **File:** `prisma/seed.ts`
-- Added demo client user: `demo@kingnect.app` / `Demo123!`, role: client
+- Added demo client user: `demo@qaiross.app` / `Demo123!`, role: client
 - Created Client record: businessName "Restaurante El Sabor"
 - Created Trial subscription
 - Created MiniSite with slug `restaurante-el-sabor`, isPublished: true

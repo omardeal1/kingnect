@@ -17,6 +17,7 @@ import {
   Menu,
   AlertTriangle,
   Crown,
+  Users,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -34,6 +35,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { useDashboardStore, type DashboardData } from "@/lib/dashboard-store"
+import { useTranslations } from "@/i18n/provider"
+import { LanguageToggle } from "@/components/ui/language-toggle"
 
 interface DashboardShellProps {
   user: {
@@ -45,26 +48,31 @@ interface DashboardShellProps {
   children: React.ReactNode
 }
 
-const navItems = [
+const navItemKeys = [
   {
-    label: "Dashboard",
+    labelKey: "nav.dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
   },
   {
-    label: "Mi Kinec",
+    labelKey: "nav.myQaiross",
     href: "/dashboard/sites/_/edit",
     icon: Globe,
   },
   {
-    label: "Pedidos",
+    labelKey: "nav.orders",
     href: "/dashboard/orders",
     icon: ShoppingCart,
   },
   {
-    label: "Facturación",
+    labelKey: "nav.billing",
     href: "/dashboard/billing",
     icon: CreditCard,
+  },
+  {
+    labelKey: "nav.customers",
+    href: "/dashboard/customers",
+    icon: Users,
   },
 ]
 
@@ -73,6 +81,7 @@ export function DashboardShell({
   dashboardData,
   children,
 }: DashboardShellProps) {
+  const { t } = useTranslations("dashboard")
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
@@ -99,12 +108,12 @@ export function DashboardShell({
 
   const { businessName, planName, siteId, isBlocked } = dashboardData
 
-  // Update "Mi Kinec" href with actual site ID
-  const updatedNavItems = navItems.map((item) => {
-    if (item.label === "Mi Kinec" && siteId) {
-      return { ...item, href: `/dashboard/sites/${siteId}/edit` }
-    }
-    return item
+  // Build nav items with translated labels and dynamic site ID
+  const navItems = navItemKeys.map((item) => {
+    const href = item.labelKey === "nav.myQaiross" && siteId
+      ? `/dashboard/sites/${siteId}/edit`
+      : item.href
+    return { ...item, label: t(item.labelKey), href }
   })
 
   const isActive = (href: string) => {
@@ -126,13 +135,13 @@ export function DashboardShell({
             <div className="flex items-center justify-center gap-3 px-4 py-3 text-sm font-medium">
               <AlertTriangle className="size-4 shrink-0" />
               <span>
-                Tu cuenta está pausada. Actualiza tu pago para continuar.
+                {t("nav.accountPaused")}
               </span>
               <Link
                 href="/dashboard/billing"
                 className="inline-flex items-center gap-1 rounded-md bg-white px-3 py-1 text-xs font-semibold text-destructive hover:bg-white/90 transition-colors"
               >
-                Reactivar ahora
+                {t("nav.reactivateNow")}
               </Link>
             </div>
           </motion.div>
@@ -147,7 +156,7 @@ export function DashboardShell({
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="size-5" />
-                <span className="sr-only">Abrir menú</span>
+                <span className="sr-only">{t("nav.openMenu")}</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-72 p-0">
@@ -156,11 +165,11 @@ export function DashboardShell({
                   <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                     <Crown className="size-4" />
                   </div>
-                  <span className="font-bold text-lg">KINGNECT</span>
+                  <span className="font-bold text-lg">QAIROSS</span>
                 </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col gap-1 p-3">
-                {updatedNavItems.map((navItem) => (
+                {navItems.map((navItem) => (
                   <Link
                     key={navItem.href}
                     href={navItem.href}
@@ -184,7 +193,7 @@ export function DashboardShell({
                   onClick={() => signOut({ callbackUrl: "/login" })}
                 >
                   <LogOut className="size-4" />
-                  Cerrar sesión
+                  {t("nav.closeSession")}
                 </Button>
               </div>
             </SheetContent>
@@ -200,7 +209,7 @@ export function DashboardShell({
                 {businessName}
               </span>
               <span className="text-[11px] text-muted-foreground leading-tight">
-                Plan {planName}
+                {t("nav.plan")} {planName}
               </span>
             </div>
           </div>
@@ -224,12 +233,15 @@ export function DashboardShell({
                   ) : (
                     <Moon className="size-4" />
                   )}
-                  <span className="sr-only">Cambiar tema</span>
+                  <span className="sr-only">{t("nav.changeTheme")}</span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Cambiar tema</TooltipContent>
+              <TooltipContent>{t("nav.changeTheme")}</TooltipContent>
             </Tooltip>
           )}
+
+          {/* Language toggle */}
+          <LanguageToggle variant="minimal" />
 
           {/* User avatar + logout */}
           <div className="flex items-center gap-2">
@@ -246,7 +258,7 @@ export function DashboardShell({
               onClick={() => signOut({ callbackUrl: "/login" })}
             >
               <LogOut className="size-4" />
-              <span className="sr-only">Cerrar sesión</span>
+              <span className="sr-only">{t("nav.closeSession")}</span>
             </Button>
           </div>
         </div>
@@ -256,7 +268,7 @@ export function DashboardShell({
         {/* Desktop Sidebar */}
         <aside className="hidden md:flex w-56 flex-col border-r bg-card/50 shrink-0">
           <nav className="flex flex-col gap-1 p-3 flex-1">
-            {updatedNavItems.map((navItem) => (
+            {navItems.map((navItem) => (
               <Link
                 key={navItem.href}
                 href={navItem.href}
@@ -279,7 +291,7 @@ export function DashboardShell({
               onClick={() => signOut({ callbackUrl: "/login" })}
             >
               <LogOut className="size-4" />
-              Cerrar sesión
+              {t("nav.closeSession")}
             </Button>
           </div>
         </aside>
@@ -295,7 +307,7 @@ export function DashboardShell({
       {/* Mobile Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden safe-area-bottom">
         <div className="grid grid-cols-4 h-16">
-          {updatedNavItems.map((navItem) => (
+          {navItems.map((navItem) => (
             <Link
               key={navItem.href}
               href={navItem.href}

@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { SWProvider } from "@/components/providers/sw-provider";
+import { I18nProvider } from "@/i18n/provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,30 +19,30 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kingnect — Tu negocio en un Kinec profesional con QR",
+  title: "QAIROSS — Tu negocio en un QAIROSS profesional con QR",
   description:
-    "Todos los links de tu negocio en un Kinec profesional con QR, lista para compartir e imprimir en tarjetas, carpas, banderas, flyers, stickers, menús y publicidad.",
+    "Todos los links de tu negocio en un QAIROSS profesional con QR, lista para compartir e imprimir en tarjetas, carpas, banderas, flyers, stickers, menús y publicidad.",
   keywords: [
-    "Kingnect",
-    "Kinec",
+    "QAIROSS",
+    "QAIROSS",
     "QR",
     "negocio",
     "link en bio",
     "tarjetas digitales",
     "menú digital",
   ],
-  authors: [{ name: "King Designs" }],
+  authors: [{ name: "QAIROSS" }],
   icons: {
     icon: "/icons/favicon-32x32.png",
     apple: "/icons/apple-touch-icon.png",
   },
   manifest: "/manifest.webmanifest",
   openGraph: {
-    title: "Kingnect — Kinec profesional con QR",
+    title: "QAIROSS — QAIROSS profesional con QR",
     description:
-      "Todos los links de tu negocio en un Kinec profesional con QR",
-    url: "https://links.kingnect.app",
-    siteName: "Kingnect",
+      "Todos los links de tu negocio en un QAIROSS profesional con QR",
+    url: "https://links.qaiross.app",
+    siteName: "QAIROSS",
     type: "website",
   },
 };
@@ -69,13 +70,15 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange={false}
         >
-          <QueryProvider>
-            <AuthProvider>
-              <SWProvider />
-              {children}
-            </AuthProvider>
-            <Toaster position="top-right" richColors />
-          </QueryProvider>
+          <I18nProvider>
+            <QueryProvider>
+              <AuthProvider>
+                <SWProvider />
+                {children}
+              </AuthProvider>
+              <Toaster position="top-right" richColors />
+            </QueryProvider>
+          </I18nProvider>
         </ThemeProvider>
       </body>
     </html>

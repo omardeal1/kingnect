@@ -19,7 +19,7 @@
 - Added `useQuery` for `/api/orders?siteId=...` (recent 5 orders)
 - Added loading skeleton states for both stats and orders sections
 - Gets `siteId` from `useDashboardStore`
-- All existing UI layout preserved (welcome card, plan status, Kinec card, QR card, stats card, recent orders)
+- All existing UI layout preserved (welcome card, plan status, QAIROSS card, QR card, stats card, recent orders)
 
 ### 3. Updated Orders Page (`dashboard/orders/page.tsx`)
 - Removed `placeholderOrders` mock data

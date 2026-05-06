@@ -1,19 +1,25 @@
+"use client"
+
 import Link from "next/link"
 import { Facebook, Instagram, Twitter } from "lucide-react"
-
-const FOOTER_LINKS = [
-  { label: "Inicio", href: "/" },
-  { label: "Precios", href: "#precios" },
-  { label: "Iniciar sesión", href: "/login" },
-  { label: "Registro", href: "/register" },
-]
-
-const LEGAL_LINKS = [
-  { label: "Términos y condiciones", href: "/terminos" },
-  { label: "Política de privacidad", href: "/privacidad" },
-]
+import { useTranslations } from "@/i18n/provider"
+import { LanguageToggle } from "@/components/ui/language-toggle"
 
 export function Footer() {
+  const { t } = useTranslations("landing.footer")
+
+  const FOOTER_LINKS = [
+    { label: t("home"), href: "/" },
+    { label: t("pricing"), href: "#precios" },
+    { label: t("login"), href: "/login" },
+    { label: t("register"), href: "/register" },
+  ]
+
+  const LEGAL_LINKS = [
+    { label: t("termsAndConditions"), href: "/terminos" },
+    { label: t("privacyPolicy"), href: "/privacidad" },
+  ]
+
   return (
     <footer className="border-t bg-muted/30">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -24,13 +30,12 @@ export function Footer() {
               href="/"
               className="flex items-center gap-1 text-xl font-bold"
             >
-              <span className="text-foreground">King</span>
-              <span className="text-gold">nect</span>
+              <span className="text-foreground">QAIROSS</span>
             </Link>
             <p className="text-sm text-muted-foreground">
               by{" "}
               <span className="font-semibold text-foreground">
-                King Designs
+                QAIROSS
               </span>
             </p>
           </div>
@@ -39,7 +44,7 @@ export function Footer() {
           <nav className="flex flex-wrap items-center justify-center gap-6">
             {FOOTER_LINKS.map((link) => (
               <Link
-                key={link.label}
+                key={link.href}
                 href={link.href}
                 className="text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
@@ -48,8 +53,9 @@ export function Footer() {
             ))}
           </nav>
 
-          {/* Social Icons */}
+          {/* Language Toggle & Social Icons */}
           <div className="flex items-center gap-4">
+            <LanguageToggle variant="minimal" />
             <a
               href="https://facebook.com"
               target="_blank"
@@ -94,7 +100,7 @@ export function Footer() {
             ))}
           </nav>
           <p className="text-xs text-muted-foreground">
-            © 2025 King Designs. Todos los derechos reservados.
+            {t("copyright", { year: "2025" })}
           </p>
         </div>
       </div>

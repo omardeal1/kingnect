@@ -1,7 +1,7 @@
 {
-  "name": "Kingnect",
-  "short_name": "Kingnect",
-  "description": "Todos los links de tu negocio en un Kinec profesional con QR, lista para compartir e imprimir en tarjetas, carpas, banderas, flyers, stickers, menús y publicidad.",
+  "name": "QAIROSS",
+  "short_name": "QAIROSS",
+  "description": "Todos los links de tu negocio en un QAIROSS profesional con QR, lista para compartir e imprimir en tarjetas, carpas, banderas, flyers, stickers, menús y publicidad.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",
@@ -9,7 +9,7 @@
   "orientation": "portrait-primary",
   "lang": "es",
   "categories": ["business", "productivity"],
-  "id": "kingnect-platform",
+  "id": "qaiross-platform",
   "scope": "/",
   "icons": [
     {
@@ -45,9 +45,9 @@
       "description": "Acceder al panel de control"
     },
     {
-      "name": "Crear Kinec",
+      "name": "Crear QAIROSS",
       "url": "/dashboard/editor",
-      "description": "Crear o editar un Kinec"
+      "description": "Crear o editar un QAIROSS"
     }
   ]
 }

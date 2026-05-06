@@ -119,7 +119,7 @@ export function TabLinks({ siteId }: TabLinksProps) {
         <div>
           <h3 className="text-sm font-semibold">Links Personalizados</h3>
           <p className="text-xs text-muted-foreground">
-            Agrega enlaces personalizados a tu Kinec
+            Agrega enlaces personalizados a tu QAIROSS
           </p>
         </div>
         <Button size="sm" onClick={handleAdd} className="gap-1.5 bg-[#D4A849] hover:bg-[#C49A3D] text-white">
@@ -136,7 +136,7 @@ export function TabLinks({ siteId }: TabLinksProps) {
             </div>
             <p className="text-sm font-medium">Sin enlaces</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Agrega enlaces personalizados a tu Kinec
+              Agrega enlaces personalizados a tu QAIROSS
             </p>
           </CardContent>
         </Card>

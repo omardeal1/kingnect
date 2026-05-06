@@ -1,7 +1,7 @@
 # Task 7 — E2E Testing Agent
 
 ## Task
-Set up Playwright E2E testing for the Kinec platform.
+Set up Playwright E2E testing for the QAIROSS platform.
 
 ## Work Done
 
@@ -18,20 +18,20 @@ Set up Playwright E2E testing for the Kinec platform.
 - Note: Existing comprehensive health endpoint from Task 6 already includes status: "ok" and works with tests
 
 ### 3. Created `/tests/landing.spec.ts` (5 tests)
-- Loads correctly with title containing "Kingnect" or "Kinec"
+- Loads correctly with title containing "QAIROSS" or "QAIROSS"
 - Navbar is visible with logo link
-- Hero section is visible with "Kinec" heading and CTA button
+- Hero section is visible with "QAIROSS" heading and CTA button
 - Pricing section (#precios) is visible with "Planes y precios" heading
 - Login link in navbar navigates to /login
 
 ### 4. Created `/tests/auth.spec.ts` (4 tests)
 - Login page loads correctly (title, email/password inputs, submit button)
 - Login with invalid credentials shows error toast
-- Login with valid admin credentials (admin@kingnect.app / Admin123!) redirects to /admin
+- Login with valid admin credentials (admin@qaiross.app / Admin123!) redirects to /admin
 - Register page loads and has form fields (by placeholder text)
 
 ### 5. Created `/tests/dashboard.spec.ts` (3 tests)
-- After login as client (demo@kingnect.app / Demo123!), dashboard shows with welcome heading
+- After login as client (demo@qaiross.app / Demo123!), dashboard shows with welcome heading
 - QR code section ("Código QR") is visible
 - Plan status card ("Estado del plan") is visible
 
@@ -45,7 +45,7 @@ Set up Playwright E2E testing for the Kinec platform.
 - "test:e2e:headed": "playwright test --headed"
 
 ## Key Decisions
-- Used actual DB credentials (admin@kingnect.app / Admin123!) instead of task-specified (admin@kingnect.com / admin123) which don't exist in the database
+- Used actual DB credentials (admin@qaiross.app / Admin123!) instead of task-specified (admin@qaiross.com / admin123) which don't exist in the database
 - Used `.first()` and `getByRole()` selectors to avoid strict mode violations with text matching multiple elements
 - Used `getByPlaceholder()` for register form fields since react-hook-form generates auto-IDs
 - Installed Playwright Chromium browser for test execution

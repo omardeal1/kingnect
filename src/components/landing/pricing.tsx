@@ -6,6 +6,7 @@ import { Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { PLAN_FEATURES } from "@/lib/constants"
+import { useTranslations } from "@/i18n/provider"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -25,6 +26,8 @@ const cardVariants = {
 }
 
 export function Pricing() {
+  const { t } = useTranslations("landing.pricing")
+
   return (
     <section id="precios" className="py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -36,13 +39,13 @@ export function Pricing() {
           transition={{ duration: 0.5 }}
         >
           <span className="mb-3 inline-block rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-sm font-medium text-gold">
-            Precios
+            {t("badge")}
           </span>
           <h2 className="mt-4 text-3xl font-bold text-foreground sm:text-4xl">
-            Planes y precios
+            {t("title")}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Elige el plan perfecto para tu negocio. Comienza gratis.
+            {t("subtitle")}
           </p>
         </motion.div>
 
@@ -65,7 +68,7 @@ export function Pricing() {
             >
               {plan.popular && (
                 <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-gold-foreground hover:bg-gold-hover">
-                  Más popular
+                  {t("popular")}
                 </Badge>
               )}
 
@@ -83,7 +86,7 @@ export function Pricing() {
                   ${plan.price}
                 </span>
                 <span className="text-muted-foreground">
-                  /{plan.billingInterval === "month" ? "mes" : plan.billingInterval}
+                  {t("perMonth")}
                 </span>
               </div>
 
@@ -111,7 +114,7 @@ export function Pricing() {
                 asChild
               >
                 <Link href="/register">
-                  {plan.slug === "trial" ? "Comenzar gratis" : "Elegir plan"}
+                  {plan.slug === "trial" ? t("startFree") : t("choosePlan")}
                 </Link>
               </Button>
             </motion.div>

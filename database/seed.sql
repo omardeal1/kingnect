@@ -1,5 +1,5 @@
 -- ============================================
--- KINGNECT — Datos Iniciales (Seed)
+-- QAIROSS — Datos Iniciales (Seed)
 -- Compatible con Supabase / PostgreSQL
 -- ============================================
 -- Este archivo inserta los datos base necesarios
@@ -68,30 +68,30 @@ COMMENT ON TABLE plans IS 'Planes: Trial (gratuito 7 días), Básico ($9.99/mes)
 
 -- ============================================
 -- Super Administrador
--- Contraseña: Kingnect2024! (hash bcrypt generado)
--- En producción usar un hash real: bun -e "console.log(require('bcryptjs').hashSync('Kingnect2024!', 12))"
+-- Contraseña: QAIROSS2024! (hash bcrypt generado)
+-- En producción usar un hash real: bun -e "console.log(require('bcryptjs').hashSync('QAIROSS2024!', 12))"
 -- ============================================
 INSERT INTO users (id, name, email, email_verified, password_hash, role) VALUES
 (
   'user-superadmin-0000-000000000001',
-  'Kingnect Admin',
-  'admin@kingnect.com',
+  'QAIROSS Admin',
+  'admin@qaiross.com',
   NOW(),
   '$2a$12$placeholder_bcrypt_hash_change_in_production',
   'super_admin'
 );
 
-COMMENT ON TABLE users IS 'Super admin por defecto: admin@kingnect.com — cambiar contraseña en producción';
+COMMENT ON TABLE users IS 'Super admin por defecto: admin@qaiross.com — cambiar contraseña en producción';
 
 -- ============================================
 -- Configuración de la Plataforma
 -- ============================================
 INSERT INTO platform_settings (key, value, type, updated_by) VALUES
 -- Nombre de la aplicación que se muestra en la interfaz y título del navegador
-('app_name',            'Kingnect',                                                      'text',    'user-superadmin-0000-000000000001'),
+('app_name',            'QAIROSS',                                                      'text',    'user-superadmin-0000-000000000001'),
 -- URL base de la aplicación (usada para generar enlaces absolutos)
 ('app_url',             'http://localhost:3000',                                          'text',    'user-superadmin-0000-000000000001'),
--- Color primario de la marca (dorado Kingnect)
+-- Color primario de la marca (dorado QAIROSS)
 ('primary_color',       '#D4A849',                                                        'text',    'user-superadmin-0000-000000000001'),
 -- Color secundario de la marca
 ('secondary_color',     '#1A1A2E',                                                        'text',    'user-superadmin-0000-000000000001'),
@@ -101,20 +101,20 @@ INSERT INTO platform_settings (key, value, type, updated_by) VALUES
 ('default_currency',    'USD',                                                            'text',    'user-superadmin-0000-000000000001'),
 -- Idioma por defecto de la plataforma
 ('default_language',    'es',                                                             'text',    'user-superadmin-0000-000000000001'),
--- Mostrar o no la marca "Powered by Kingnect" en los mini sitios gratuitos
+-- Mostrar o no la marca "Powered by QAIROSS" en los mini sitios gratuitos
 ('show_branding',       'true',                                                           'boolean', 'user-superadmin-0000-000000000001'),
 -- Habilitar o deshabilitar el registro público de nuevos clientes
 ('allow_registration',  'true',                                                           'boolean', 'user-superadmin-0000-000000000001'),
 -- Duración del período de prueba en días (para planes con trial)
 ('trial_duration_days', '7',                                                              'number',  'user-superadmin-0000-000000000001'),
 -- Correo de soporte técnico visible para los clientes
-('support_email',       'soporte@kingnect.com',                                           'text',    'user-superadmin-0000-000000000001'),
--- URL del sitio web principal de Kingnect
+('support_email',       'soporte@qaiross.com',                                           'text',    'user-superadmin-0000-000000000001'),
+-- URL del sitio web principal de QAIROSS
 ('king_website_url',    'https://kingdesigns.co',                                          'text',    'user-superadmin-0000-000000000001'),
 -- Mensaje de bienvenida que ven los clientes al registrarse
-('welcome_message',     '¡Bienvenido a Kingnect! Crea tu mini web profesional en minutos.', 'text',    'user-superadmin-0000-000000000001'),
+('welcome_message',     '¡Bienvenido a QAIROSS! Crea tu mini web profesional en minutos.', 'text',    'user-superadmin-0000-000000000001'),
 -- Configuración de SEO por defecto para mini sitios nuevos
-('default_meta_title',       'Kingnect — Todos tus links en un solo lugar',               'text',    'user-superadmin-0000-000000000001'),
+('default_meta_title',       'QAIROSS — Todos tus links en un solo lugar',               'text',    'user-superadmin-0000-000000000001'),
 ('default_meta_description', 'Crea tu mini web profesional con QR y comparte todos los enlaces de tu negocio al instante.', 'text', 'user-superadmin-0000-000000000001'),
 -- Habilitar módulo de pedidos online globalmente
 ('orders_enabled',      'true',                                                           'boolean', 'user-superadmin-0000-000000000001'),
@@ -156,13 +156,13 @@ INSERT INTO platform_sections (section_key, title, subtitle, content, enabled, s
 -- Sección de Llamada a la Acción (CTA)
 ('cta',
   '¿Listo para transformar tu presencia digital?',
-  'Únete a cientos de negocios que ya usan Kingnect',
+  'Únete a cientos de negocios que ya usan QAIROSS',
   'Comienza tu prueba gratuita de 7 días. Sin tarjeta de crédito.',
   TRUE, 5),
 
 -- Sección Footer
 ('footer',
-  'Kingnect by King Designs',
+  'QAIROSS by QAIROSS',
   NULL,
   'Todos los derechos reservados.',
   TRUE, 6);

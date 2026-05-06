@@ -1,4 +1,4 @@
-// ─── KINGNECT — Structured Logger ───────────────────────────────────────────────
+// ─── QAIROSS — Structured Logger ─────────────────────────────────────────────────
 // Logger estructurado para producción y desarrollo
 // - Desarrollo: output formateado con colores y timestamp
 // - Producción: JSON estructurado para servicios de agregación de logs
@@ -24,7 +24,7 @@ interface LogEntry {
   }
 }
 
-const SERVICE_NAME = "kingnect"
+const SERVICE_NAME = "qaiross"
 
 /**
  * Formatea un nivel de log con colores para terminal (desarrollo)

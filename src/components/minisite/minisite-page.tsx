@@ -15,6 +15,10 @@ import { QrSection } from "./qr-section"
 import { SiteFooter } from "./site-footer"
 import { FloatingWhatsApp } from "./floating-whatsapp"
 import { CartDrawer } from "./cart-drawer"
+import { BranchSelector } from "./branch-selector"
+import { ReservationSection } from "./reservation-section"
+import { LoyaltySection } from "./loyalty-section"
+import { RegistrationSection } from "./registration-section"
 import { ShoppingBag } from "lucide-react"
 import { motion } from "framer-motion"
 
@@ -59,6 +63,7 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
     logoUrl,
     slug,
     id,
+    buttonStyle = "cylinder_pill",
   } = site
 
   // Background styles
@@ -114,6 +119,7 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
           slug={slug}
           whatsappNumber={whatsappNumber}
           siteId={id}
+          buttonStyle={buttonStyle}
         />
 
         {/* Social links */}
@@ -122,6 +128,7 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
           accentColor={accentColor}
           textColor={textColor}
           siteId={id}
+          buttonStyle={buttonStyle}
         />
 
         {/* Menu */}
@@ -130,6 +137,10 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
           accentColor={accentColor}
           textColor={textColor}
           cardColor={cardColor}
+          modifierGroups={site.modifierGroups || []}
+          siteId={id}
+          menuTemplate={(site as Record<string, unknown>).menuTemplate as string || "fresh_modern"}
+          featuredSlides={(site as Record<string, unknown>).menuFeaturedSlides as Array<{id:string;imageUrl:string;title:string|null;enabled:boolean;sortOrder:number}> || []}
         />
 
         {/* Gallery */}
@@ -162,6 +173,56 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
           textColor={textColor}
           cardColor={cardColor}
         />
+
+        {/* Branches — only if 2+ active+published */}
+        {site.branches && site.branches.filter(
+          (b: any) => b.isActive && b.isPublished
+        ).length >= 2 && (
+          <BranchSelector
+            branches={site.branches}
+            siteSlug={slug}
+            accentColor={accentColor}
+            textColor={textColor}
+            cardColor={cardColor}
+          />
+        )}
+
+        {/* Reservations */}
+        {site.reservationConfig?.isEnabled && (
+          <ReservationSection
+            config={site.reservationConfig}
+            siteId={id}
+            siteSlug={slug}
+            accentColor={accentColor}
+            textColor={textColor}
+            cardColor={cardColor}
+            whatsappNumber={whatsappNumber}
+          />
+        )}
+
+        {/* Loyalty program */}
+        {site.loyaltyConfig?.isEnabled && (
+          <LoyaltySection
+            config={site.loyaltyConfig}
+            siteId={id}
+            accentColor={accentColor}
+            textColor={textColor}
+            cardColor={cardColor}
+          />
+        )}
+
+        {/* Customer registration */}
+        {site.registrationFields && site.registrationFields.filter(
+          (f: any) => f.isEnabled
+        ).length > 0 && (
+          <RegistrationSection
+            siteId={id}
+            fields={site.registrationFields}
+            accentColor={accentColor}
+            textColor={textColor}
+            cardColor={cardColor}
+          />
+        )}
 
         {/* Custom links */}
         <CustomLinksSection

@@ -1,7 +1,7 @@
 # Agent Work Record: 1-libfiles
 
 ## Summary
-Created 6 library files for the KINGNECT SaaS platform in `/home/z/my-project/src/lib/`:
+Created 6 library files for the QAIROSS SaaS platform in `/home/z/my-project/src/lib/`:
 - auth.ts, validations.ts, permissions.ts, store.ts, constants.ts, query-client.ts
 
 ## Key Decisions

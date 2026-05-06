@@ -12,6 +12,8 @@ import {
 import { useCart } from "./cart-provider"
 import { OrderForm } from "./order-form"
 import { trackEvent } from "@/lib/analytics"
+import { useTranslations } from "@/i18n/provider"
+import { calculateModifierCost } from "@/lib/modifier-types"
 
 interface CartDrawerProps {
   accentColor: string
@@ -31,6 +33,7 @@ export function CartDrawer({
   slug,
 }: CartDrawerProps) {
   const { items, isOpen, setOpen, removeItem, updateQuantity, total, clearCart } = useCart()
+  const { t } = useTranslations("minisite")
   const [showOrderForm, setShowOrderForm] = useState(false)
 
   return (
@@ -39,12 +42,12 @@ export function CartDrawer({
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <ShoppingBag className="w-5 h-5" style={{ color: accentColor }} />
-            Tu Pedido
+            {t("cart.title")}
           </SheetTitle>
           <SheetDescription>
             {items.length === 0
-              ? "Agrega productos al carrito"
-              : `${items.length} producto${items.length > 1 ? "s" : ""} en tu pedido`}
+              ? t("cart.emptyDesc")
+              : t("cart.itemsCount", { count: items.length })}
           </SheetDescription>
         </SheetHeader>
 
@@ -69,75 +72,96 @@ export function CartDrawer({
               {items.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <ShoppingBag className="w-12 h-12 opacity-20 mb-3" />
-                  <p className="text-sm opacity-60">Tu carrito está vacío</p>
+                  <p className="text-sm opacity-60">{t("cart.empty")}</p>
                 </div>
               ) : (
                 <div className="flex flex-col gap-3">
-                  {items.map((item) => (
-                    <div
-                      key={item.menuItemId}
-                      className="rounded-xl p-3 shadow-sm"
-                      style={{ backgroundColor: cardColor }}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0 flex-1">
-                          <p
-                            className="font-semibold text-sm truncate"
-                            style={{ color: textColor }}
+                  {items.map((item) => {
+                    const modifierCost = calculateModifierCost(item.modifiers)
+                    const itemUnitPrice = item.price + modifierCost
+
+                    return (
+                      <div
+                        key={item.cartItemId}
+                        className="rounded-xl p-3 shadow-sm"
+                        style={{ backgroundColor: cardColor }}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0 flex-1">
+                            <p
+                              className="font-semibold text-sm truncate"
+                              style={{ color: textColor }}
+                            >
+                              {item.name}
+                            </p>
+                            <p
+                              className="text-sm mt-0.5"
+                              style={{ color: accentColor }}
+                            >
+                              ${itemUnitPrice.toFixed(2)} {t("cart.each")}
+                            </p>
+                            {/* Show modifiers under item name */}
+                            {item.modifiers.length > 0 && (
+                              <div className="mt-1 space-y-0.5">
+                                {item.modifiers.map((mod) => (
+                                  <p
+                                    key={mod.optionId}
+                                    className="text-[11px] opacity-60"
+                                    style={{ color: textColor }}
+                                  >
+                                    {mod.quantity > 1 ? `${mod.quantity}x ` : ""}
+                                    {mod.optionName}
+                                    {mod.extraCost > 0 && ` (+$${(mod.extraCost * mod.quantity).toFixed(2)})`}
+                                  </p>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => removeItem(item.cartItemId)}
+                            className="p-1.5 rounded-full hover:bg-red-50 text-red-400 hover:text-red-500 transition-colors"
+                            aria-label={t("cart.remove")}
                           >
-                            {item.name}
-                          </p>
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="flex items-center justify-between mt-2">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() =>
+                                updateQuantity(item.cartItemId, item.quantity - 1)
+                              }
+                              className="w-8 h-8 rounded-full flex items-center justify-center border transition-colors"
+                              style={{ borderColor: `${accentColor}30`, color: accentColor }}
+                            >
+                              <Minus className="w-3.5 h-3.5" />
+                            </button>
+                            <span
+                              className="w-8 text-center font-semibold text-sm"
+                              style={{ color: textColor }}
+                            >
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() =>
+                                updateQuantity(item.cartItemId, item.quantity + 1)
+                              }
+                              className="w-8 h-8 rounded-full flex items-center justify-center border transition-colors"
+                              style={{ borderColor: `${accentColor}30`, color: accentColor }}
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                           <p
-                            className="text-sm mt-0.5"
+                            className="font-bold text-sm"
                             style={{ color: accentColor }}
                           >
-                            ${item.price.toFixed(2)} c/u
+                            ${(itemUnitPrice * item.quantity).toFixed(2)}
                           </p>
                         </div>
-                        <button
-                          onClick={() => removeItem(item.menuItemId)}
-                          className="p-1.5 rounded-full hover:bg-red-50 text-red-400 hover:text-red-500 transition-colors"
-                          aria-label="Eliminar"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
                       </div>
-                      <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() =>
-                              updateQuantity(item.menuItemId, item.quantity - 1)
-                            }
-                            className="w-8 h-8 rounded-full flex items-center justify-center border transition-colors"
-                            style={{ borderColor: `${accentColor}30`, color: accentColor }}
-                          >
-                            <Minus className="w-3.5 h-3.5" />
-                          </button>
-                          <span
-                            className="w-8 text-center font-semibold text-sm"
-                            style={{ color: textColor }}
-                          >
-                            {item.quantity}
-                          </span>
-                          <button
-                            onClick={() =>
-                              updateQuantity(item.menuItemId, item.quantity + 1)
-                            }
-                            className="w-8 h-8 rounded-full flex items-center justify-center border transition-colors"
-                            style={{ borderColor: `${accentColor}30`, color: accentColor }}
-                          >
-                            <Plus className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                        <p
-                          className="font-bold text-sm"
-                          style={{ color: accentColor }}
-                        >
-                          ${(item.price * item.quantity).toFixed(2)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </div>
@@ -147,7 +171,7 @@ export function CartDrawer({
               <div className="border-t pt-4 mt-auto">
                 <div className="flex items-center justify-between mb-4">
                   <span className="font-semibold" style={{ color: textColor }}>
-                    Total
+                    {t("cart.total")}
                   </span>
                   <span
                     className="text-xl font-bold"
@@ -164,7 +188,7 @@ export function CartDrawer({
                   className="w-full py-3 rounded-xl font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md"
                   style={{ backgroundColor: accentColor }}
                 >
-                  Hacer pedido
+                  {t("cart.placeOrder")}
                 </button>
               </div>
             )}

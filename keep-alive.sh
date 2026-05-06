@@ -1,5 +1,5 @@
 #!/bin/bash
-# Kinec Server - Auto-restart wrapper
+# QAIROSS Server - Auto-restart wrapper
 # This script keeps the server alive in the development environment
 cd /home/z/my-project
 

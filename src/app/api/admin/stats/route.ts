@@ -10,7 +10,7 @@ export async function GET() {
       return NextResponse.json({ error: "No autorizado" }, { status: 403 })
     }
 
-    // Kinecs stats
+    // QAIROSS stats
     const [activeSites, inactiveSites, draftSites, totalSites] = await Promise.all([
       db.miniSite.count({ where: { isActive: true, isPublished: true } }),
       db.miniSite.count({ where: { isActive: false } }),
