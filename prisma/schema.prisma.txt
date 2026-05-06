@@ -97,9 +97,14 @@ model Subscription {
   trialEnd             DateTime?
   currentPeriodStart   DateTime?
   currentPeriodEnd     DateTime?
-  blockedAt            DateTime?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  blockedAt               DateTime?
+  annualPlanActivatedAt    DateTime?
+  annualPlanExpiresAt      DateTime?
+  annualPaymentMethod      String?
+  annualPaymentRef         String?
+  annualPlanNote           String?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
 
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
   plan   Plan   @relation(fields: [planId], references: [id])
@@ -120,6 +125,7 @@ model Plan {
   maxProducts     Int      @default(-1) // -1 = unlimited
   maxBranches     Int      @default(-1) // -1 = unlimited
   maxMenuItems    Int      @default(-1) // -1 = unlimited
+  aiDailyLimit    Int      @default(3) // -1 = unlimited, daily AI usage limit
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -169,7 +175,7 @@ model MiniSite {
   customLinks            CustomLink[]
   orders                 Order[]
   analyticsEvents        AnalyticsEvent[]
-  landingContent         LandingContent?
+  landingContents        LandingContent[]
   reservationConfig      ReservationConfig?
   modifierGroups         ModifierGroup[]
   branches               Branch[]
@@ -178,6 +184,8 @@ model MiniSite {
   menuFeaturedSlides     MenuFeaturedSlide[]
   reservations           Reservation[]
   businessCustomers      BusinessCustomer[]
+  aiUsageLogs            AiUsageLog[]
+  aiCustomLimit          AiCustomLimit?
 }
 
 model SocialLink {
@@ -433,8 +441,6 @@ model LandingContent {
   updatedAt   DateTime @updatedAt
 
   site MiniSite? @relation(fields: [siteId], references: [id], onDelete: Cascade)
-
-  @@index([siteId])
 }
 
 // ─── Reservations ───────────────────────────────────────────────────────────────
@@ -728,3 +734,44 @@ model RegistrationFieldConfig {
   @@unique([siteId, fieldName])
   @@index([siteId])
 }
+
+// ─── AI Usage Limits ──────────────────────────────────────────────────────────
+
+model AiUsageLog {
+  id          String   @id @default(cuid())
+  siteId      String
+  action      String
+  tokensUsed  Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  site MiniSite @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId, createdAt])
+}
+
+model AiCustomLimit {
+  id            String   @id @default(cuid())
+  siteId        String   @unique
+  limitType     String   @default("plan") // plan | custom | unlimited
+  customLimit   Int?
+  internalNote  String?
+  changedBy     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  site MiniSite @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId])
+}
+
+model AiLimitHistory {
+  id             String   @id @default(cuid())
+  siteId         String
+  previousLimit  Int?
+  newLimit       Int?
+  limitType      String?
+  changedBy      String?
+  note           String?
+  createdAt      DateTime @default(now())
+
+  @@index([siteId])
