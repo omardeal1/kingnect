@@ -8,7 +8,6 @@ import {
   ArrowUp,
   ArrowDown,
   Camera,
-  Upload,
   Pencil,
 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
@@ -18,6 +17,7 @@ import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { useEditorStore, type GalleryImageData } from "@/lib/editor-store"
 import { ImageEditor } from "@/components/editor/image-editor"
+import { ImageUploadZone } from "@/components/editor/image-upload-zone"
 
 interface TabGaleriaProps {
   siteId: string
@@ -32,30 +32,23 @@ export function TabGaleria({ siteId }: TabGaleriaProps) {
   } = useEditorStore()
 
   const images = site?.galleryImages ?? []
-  const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   const [imageEditorOpen, setImageEditorOpen] = React.useState(false)
   const [editingImageId, setEditingImageId] = React.useState<string | null>(null)
 
-  // ─── Upload + create ────────────────────────────────────────────────
-  const handleAddImage = async (file: File) => {
-    const formData = new FormData()
-    formData.append("file", file)
+  // ─── Upload callback (receives URL from ImageUploadZone) ───────────────
+  const handleImageUploaded = async (url: string) => {
+    const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    const optimistic: GalleryImageData = {
+      id: tempId,
+      imageUrl: url,
+      caption: null,
+      enabled: true,
+      sortOrder: images.length,
+    }
+    addGalleryImage(optimistic)
+
     try {
-      const uploadRes = await fetch("/api/upload", { method: "POST", body: formData })
-      if (!uploadRes.ok) throw new Error()
-      const { url } = await uploadRes.json()
-
-      const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`
-      const optimistic: GalleryImageData = {
-        id: tempId,
-        imageUrl: url,
-        caption: null,
-        enabled: true,
-        sortOrder: images.length,
-      }
-      addGalleryImage(optimistic)
-
       const res = await fetch(`/api/sites/${siteId}/gallery`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -67,7 +60,8 @@ export function TabGaleria({ siteId }: TabGaleriaProps) {
       addGalleryImage(data.image)
       toast.success("Imagen agregada")
     } catch {
-      toast.error("Error al subir imagen")
+      removeGalleryImage(tempId)
+      toast.error("Error al agregar imagen a la galería")
     }
   }
 
@@ -105,7 +99,6 @@ export function TabGaleria({ siteId }: TabGaleriaProps) {
 
     ;[list[index], list[targetIndex]] = [list[targetIndex], list[index]]
 
-    // Update sort orders
     list.forEach((img, i) => {
       updateGalleryImage(img.id, { sortOrder: i })
     })
@@ -150,28 +143,14 @@ export function TabGaleria({ siteId }: TabGaleriaProps) {
             Muestra fotos de tu negocio
           </p>
         </div>
-        <div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0]
-              if (file) handleAddImage(file)
-              e.target.value = ""
-            }}
-          />
-          <Button
-            size="sm"
-            onClick={() => fileInputRef.current?.click()}
-            className="gap-1.5 bg-[#D4A849] hover:bg-[#C49A3D] text-white"
-          >
-            <Plus className="size-3.5" />
-            Agregar imagen
-          </Button>
-        </div>
       </div>
+
+      {/* Upload zone */}
+      <ImageUploadZone
+        onUpload={handleImageUploaded}
+        context="gallery"
+        folder="gallery"
+      />
 
       {images.length === 0 ? (
         <Card>
@@ -190,7 +169,7 @@ export function TabGaleria({ siteId }: TabGaleriaProps) {
           {images.map((img, index) => (
             <Card key={img.id} className="overflow-hidden group">
               <div className="relative aspect-square">
-<img
+                <img
                   src={img.imageUrl}
                   alt={img.caption || "Imagen de galería"}
                   className={`size-full object-cover ${!img.enabled ? "opacity-50" : ""}`}
@@ -262,17 +241,6 @@ export function TabGaleria({ siteId }: TabGaleriaProps) {
               </CardContent>
             </Card>
           ))}
-        </div>
-      )}
-
-      {/* Upload area at bottom for easy drag-like usage */}
-      {images.length > 0 && (
-        <div
-          className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:border-[#D4A849]/50 hover:bg-[#D4A849]/5 transition-colors"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <Upload className="size-6 text-muted-foreground mx-auto mb-2" />
-          <p className="text-xs text-muted-foreground">Haz clic para subir más imágenes</p>
         </div>
       )}
 
