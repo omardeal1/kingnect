@@ -1,24 +1,33 @@
-export interface ProcessImageOptions {
-  file: File;
-  width?: number;
-  height?: number;
-}
+// =============================================
+// Client-safe — SIN sharp, solo fetch a la API
+// =============================================
 
-export interface ProcessImageResult {
-  dataUrl: string;
-  size: number;
-  success: boolean;
-}
+// Re-exporta todo de image-utils para que los imports existentes sigan funcionando
+export {
+  getPreset,
+  formatFileSize,
+  isValidImageType,
+  type ProcessedImage,
+  type ImagePreset,
+  type ProcessImageOptions,
+  type ProcessImageResult,
+} from "./image-utils";
 
+/**
+ * Procesa una imagen llamando a la API route del servidor.
+ * Segura para usar en Client Components.
+ */
 export async function processImage({
   file,
   width = 800,
   height = 600,
-}: ProcessImageOptions): Promise<ProcessImageResult> {
+  preset,
+}: ProcessImageOptions & { preset?: string }): Promise<ProcessImageResult> {
   const formData = new FormData();
   formData.append("image", file);
   formData.append("width", width.toString());
   formData.append("height", height.toString());
+  if (preset) formData.append("preset", preset);
 
   const response = await fetch("/api/process-image", {
     method: "POST",
@@ -26,7 +35,8 @@ export async function processImage({
   });
 
   if (!response.ok) {
-    throw new Error(`Image processing failed: ${response.statusText}`);
+    const error = await response.json().catch(() => ({ error: "Unknown error" }));
+    throw new Error(error.error || `Image processing failed: ${response.statusText}`);
   }
 
   return response.json();
