@@ -8,7 +8,6 @@ import {
   Trash2,
   ArrowUp,
   ArrowDown,
-  Upload,
   Loader2,
   Type,
   Subtitles,
@@ -23,6 +22,7 @@ import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { useEditorStore, type SlideData } from "@/lib/editor-store"
 import { ImageEditor } from "@/components/editor/image-editor"
+import { ImageUploadZone } from "@/components/editor/image-upload-zone"
 
 interface TabSlidesProps {
   siteId: string
@@ -36,7 +36,6 @@ export function TabSlides({ siteId }: TabSlidesProps) {
   const updateSlide = useEditorStore((s) => s.updateSlide)
   const removeSlide = useEditorStore((s) => s.removeSlide)
 
-  const [uploadingSlideId, setUploadingSlideId] = React.useState<string | null>(null)
   const [saving, setSaving] = React.useState(false)
   const [imageEditorOpen, setImageEditorOpen] = React.useState(false)
   const [editingSlideId, setEditingSlideId] = React.useState<string | null>(null)
@@ -129,31 +128,15 @@ export function TabSlides({ siteId }: TabSlidesProps) {
     }
   }
 
-  const handleImageUpload = async (slideId: string, file: File) => {
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("El archivo no puede superar 2MB")
-      return
-    }
-    setUploadingSlideId(slideId)
-    try {
-      const formData = new FormData()
-      formData.append("file", file)
-      const res = await fetch("/api/upload", { method: "POST", body: formData })
-      if (!res.ok) throw new Error("Error al subir imagen")
-      const data = await res.json()
-      updateSlide(slideId, { imageUrl: data.url })
-      // Also persist to backend
-      await fetch(`/api/sites/${siteId}/slides`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slideId, imageUrl: data.url }),
-      })
-      toast.success("Imagen del slide actualizada")
-    } catch {
-      toast.error("Error al subir la imagen")
-    } finally {
-      setUploadingSlideId(null)
-    }
+  const handleSlideImageUploaded = (slideId: string) => (url: string) => {
+    updateSlide(slideId, { imageUrl: url })
+    // Also persist to backend
+    fetch(`/api/sites/${siteId}/slides`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slideId, imageUrl: url }),
+    })
+    toast.success("Imagen del slide actualizada")
   }
 
   const handleMoveUp = (index: number) => {
@@ -268,61 +251,25 @@ export function TabSlides({ siteId }: TabSlidesProps) {
                 <div className="space-y-2">
                   <Label className="text-xs">Imagen</Label>
                   <div className="flex items-start gap-3">
-                    {slide.imageUrl ? (
-                      <div className="relative size-20 rounded-md border overflow-hidden shrink-0 group/img">
-                        <img
-                          src={slide.imageUrl}
-                          alt={`Slide ${idx + 1}`}
-                          className="size-full object-cover"
-                        />
-                        <button
-                          onClick={() => handleOpenImageEditor(slide.id)}
-                          className="absolute -top-1.5 -right-1.5 size-5 rounded-full bg-[#D4A849] text-white flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity hover:bg-[#C49A3D]"
-                        >
-                          <Pencil className="size-3" />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="size-20 rounded-md border-2 border-dashed border-muted-foreground/25 flex items-center justify-center shrink-0">
-                        <ImageIcon className="size-6 text-muted-foreground/30" />
-                      </div>
-                    )}
-                    <div className="flex flex-col gap-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={uploadingSlideId === slide.id}
-                        onClick={() => {
-                          const input = document.createElement("input")
-                          input.type = "file"
-                          input.accept = "image/*"
-                          input.onchange = (e) => {
-                            const file = (e.target as HTMLInputElement).files?.[0]
-                            if (file) handleImageUpload(slide.id, file)
-                          }
-                          input.click()
-                        }}
-                      >
-                        {uploadingSlideId === slide.id ? (
-                          <Loader2 className="size-4 animate-spin mr-1" />
-                        ) : (
-                          <Upload className="size-4 mr-1" />
-                        )}
-                        {uploadingSlideId === slide.id ? "Subiendo..." : "Subir"}
-                      </Button>
-                      {slide.imageUrl && (
+                    <ImageUploadZone
+                      onUpload={handleSlideImageUploaded(slide.id)}
+                      context="slide"
+                      folder="slides"
+                      variant="compact"
+                      currentImageUrl={slide.imageUrl}
+                    />
+                    {slide.imageUrl && (
+                      <div className="flex flex-col gap-1">
                         <Button
                           variant="ghost"
                           size="sm"
                           className="text-destructive text-xs"
-                          onClick={() =>
-                            handleUpdateSlide(slide.id, { imageUrl: null })
-                          }
+                          onClick={() => handleUpdateSlide(slide.id, { imageUrl: null })}
                         >
                           Eliminar
                         </Button>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
