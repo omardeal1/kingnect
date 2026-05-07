@@ -8,7 +8,6 @@ import {
   ArrowUp,
   ArrowDown,
   Briefcase,
-  Upload,
 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -16,6 +15,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { useEditorStore, type ServiceData } from "@/lib/editor-store"
+import { ImageUploadZone } from "@/components/editor/image-upload-zone"
 
 interface TabServiciosProps {
   siteId: string
@@ -30,7 +30,6 @@ export function TabServicios({ siteId }: TabServiciosProps) {
   } = useEditorStore()
 
   const services = site?.services ?? []
-  const fileInputRefs = React.useRef<Record<string, HTMLInputElement | null>>({})
 
   // ─── Add ────────────────────────────────────────────────────────────
   const handleAdd = async () => {
@@ -117,22 +116,9 @@ export function TabServicios({ siteId }: TabServiciosProps) {
     }
   }
 
-  // ─── Image upload ───────────────────────────────────────────────────
-  const handleImageUpload = async (serviceId: string, file: File) => {
-    const formData = new FormData()
-    formData.append("file", file)
-    try {
-      const uploadRes = await fetch("/api/upload", { method: "POST", body: formData })
-      if (!uploadRes.ok) throw new Error()
-      const { url } = await uploadRes.json()
-      handleUpdate(serviceId, { imageUrl: url })
-    } catch {
-      toast.error("Error al subir imagen")
-    }
-  }
-
-  const triggerFileInput = (serviceId: string) => {
-    fileInputRefs.current[serviceId]?.click()
+  // ─── Image upload callback ──────────────────────────────────────────
+  const handleImageUploaded = (serviceId: string) => (url: string) => {
+    handleUpdate(serviceId, { imageUrl: url })
   }
 
   if (!site) return null
@@ -172,35 +158,13 @@ export function TabServicios({ siteId }: TabServiciosProps) {
                 <div className="flex items-start gap-3">
                   {/* Image */}
                   <div className="shrink-0">
-                    <input
-                      ref={(el) => { fileInputRefs.current[svc.id] = el }}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) handleImageUpload(svc.id, file)
-                      }}
+                    <ImageUploadZone
+                      onUpload={handleImageUploaded(svc.id)}
+                      context="service"
+                      folder="services"
+                      variant="compact"
+                      currentImageUrl={svc.imageUrl}
                     />
-                    {svc.imageUrl ? (
-                      <button
-                        onClick={() => triggerFileInput(svc.id)}
-                        className="size-20 rounded-md overflow-hidden border hover:opacity-80 transition-opacity"
-                      >
-<img
-                          src={svc.imageUrl}
-                          alt={svc.name}
-                          className="size-full object-cover"
-                        />
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => triggerFileInput(svc.id)}
-                        className="size-20 rounded-md border-2 border-dashed flex items-center justify-center hover:border-[#D4A849]/50 hover:bg-[#D4A849]/5 transition-colors"
-                      >
-                        <Upload className="size-5 text-muted-foreground" />
-                      </button>
-                    )}
                   </div>
 
                   {/* Fields */}
