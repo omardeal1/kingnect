@@ -9,7 +9,6 @@ import {
   ArrowDown,
   Star,
   MessageSquareQuote,
-  Upload,
 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -17,6 +16,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { ImageUploadZone } from "@/components/editor/image-upload-zone"
 import { useEditorStore, type TestimonialData } from "@/lib/editor-store"
 
 interface TabTestimoniosProps {
@@ -55,7 +55,6 @@ export function TabTestimonios({ siteId }: TabTestimoniosProps) {
   } = useEditorStore()
 
   const testimonials = site?.testimonials ?? []
-  const fileInputRefs = React.useRef<Record<string, HTMLInputElement | null>>({})
 
   // ─── Add ────────────────────────────────────────────────────────────
   const handleAdd = async () => {
@@ -140,22 +139,9 @@ export function TabTestimonios({ siteId }: TabTestimoniosProps) {
     }
   }
 
-  // ─── Photo upload ───────────────────────────────────────────────────
-  const handlePhotoUpload = async (testimonialId: string, file: File) => {
-    const formData = new FormData()
-    formData.append("file", file)
-    try {
-      const uploadRes = await fetch("/api/upload", { method: "POST", body: formData })
-      if (!uploadRes.ok) throw new Error()
-      const { url } = await uploadRes.json()
-      handleUpdate(testimonialId, { photoUrl: url })
-    } catch {
-      toast.error("Error al subir foto")
-    }
-  }
-
-  const triggerFileInput = (testimonialId: string) => {
-    fileInputRefs.current[testimonialId]?.click()
+  // ─── Photo upload callback ──────────────────────────────────────────
+  const handlePhotoUploaded = (testimonialId: string) => (url: string) => {
+    handleUpdate(testimonialId, { photoUrl: url })
   }
 
   if (!site) return null
@@ -195,35 +181,13 @@ export function TabTestimonios({ siteId }: TabTestimoniosProps) {
                 <div className="flex items-start gap-3">
                   {/* Photo */}
                   <div className="shrink-0">
-                    <input
-                      ref={(el) => { fileInputRefs.current[t.id] = el }}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) handlePhotoUpload(t.id, file)
-                      }}
+                    <ImageUploadZone
+                      onUpload={handlePhotoUploaded(t.id)}
+                      context="testimonial"
+                      folder="testimonials"
+                      variant="avatar"
+                      currentImageUrl={t.photoUrl}
                     />
-                    {t.photoUrl ? (
-                      <button
-                        onClick={() => triggerFileInput(t.id)}
-                        className="size-12 rounded-full overflow-hidden border-2 hover:opacity-80 transition-opacity"
-                      >
-<img
-                          src={t.photoUrl}
-                          alt={t.name}
-                          className="size-full object-cover"
-                        />
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => triggerFileInput(t.id)}
-                        className="size-12 rounded-full border-2 border-dashed flex items-center justify-center hover:border-[#D4A849]/50 hover:bg-[#D4A849]/5 transition-colors"
-                      >
-                        <Upload className="size-4 text-muted-foreground" />
-                      </button>
-                    )}
                   </div>
 
                   {/* Fields */}
