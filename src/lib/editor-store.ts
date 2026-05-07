@@ -41,6 +41,7 @@ export interface SiteData {
   registrationFields: RegistrationFieldConfigData[]
   employees: EmployeeData[]
   menuFeaturedSlides: MenuFeaturedSlideData[]
+  modifierGroups: ModifierGroupData[]
 }
 
 export interface SocialLinkData {
@@ -101,6 +102,7 @@ export interface MenuItemData {
   enabled: boolean
   sortOrder: number
   badge: string | null
+  specialInstructionsEnabled: boolean
 }
 
 export interface GalleryImageData {
@@ -147,6 +149,29 @@ export interface MenuFeaturedSlideData {
   title: string | null
   enabled: boolean
   sortOrder: number
+}
+
+export interface ModifierOptionData {
+  id: string
+  groupId: string
+  name: string
+  extraCost: number
+  hasExtraCost: boolean
+  isActive: boolean
+  sortOrder: number
+}
+
+export interface ModifierGroupData {
+  id: string
+  siteId: string
+  productId: string | null
+  name: string
+  selectionType: string
+  isRequired: boolean
+  isActive: boolean
+  sortOrder: number
+  isTemplate: boolean
+  options: ModifierOptionData[]
 }
 
 export interface BranchData {
