@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   reactStrictMode: true,
+  serverExternalPackages: ["sharp"],
   images: {
     remotePatterns: [
       {
