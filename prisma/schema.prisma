@@ -775,3 +775,4 @@ model AiLimitHistory {
   createdAt      DateTime @default(now())
 
   @@index([siteId])
+}
