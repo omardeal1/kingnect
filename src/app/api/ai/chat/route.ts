@@ -228,13 +228,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { messages, siteId, quickAction } = body
 
+    // ✅ BUG FIXED: Llave de cierre } añadida correctamente
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json(
         { error: "messages es requerido y debe ser un array no vacío" },
         { status: 400 }
       )
+    }
 
-if (!siteId) {
+    if (!siteId) {
       return NextResponse.json(
         { error: "siteId es requerido" },
         { status: 400 }
@@ -276,11 +278,9 @@ if (!siteId) {
 
       const systemMsg = `${BASE_SYSTEM_PROMPT}\n\n${context}`
 
-      const userMsg = `¿Qué reservaciones tengo hoy?`
-
       const aiMessages = [
         { role: "system", content: systemMsg },
-        { role: "user", content: userMsg },
+        { role: "user", content: `¿Qué reservaciones tengo hoy?` },
         {
           role: "assistant",
           content: `Aquí tienes el resumen de las reservaciones de hoy para **${businessName}**:\n\n${reservations}\n\n¿Necesitas hacer algo con alguna de estas reservaciones? Puedo ayudarte a gestionarlas.`,
@@ -301,11 +301,9 @@ if (!siteId) {
 
 Cuando el usuario pide consejos para su negocio, da 3-5 consejos específicos y prácticos basados en el tipo de negocio. Sé concreto, no genérico.`
 
-      const userMsg = "Dame consejos para mejorar mi negocio"
-
       const fullMessages = [
         { role: "system", content: systemMsg },
-        ...messages.slice(-6), // last 6 messages for context
+        ...messages.slice(-6),
       ]
 
       const response = await callOpenAI(fullMessages)
@@ -316,10 +314,9 @@ Cuando el usuario pide consejos para su negocio, da 3-5 consejos específicos y 
       })
     }
 
-    // ─── Handle generate_menu action (when user says "create menu") ──
+    // ─── Handle generate_menu action ──────────────────────────────
     const lastUserMsg = messages[messages.length - 1]?.content?.toLowerCase() || ""
 
-    // Check if the user is providing menu info (step 2+ of menu creation)
     const isMenuCreationFlow = messages.some(
       (m: { role: string; content: string }) =>
         m.role === "assistant" &&
@@ -327,15 +324,6 @@ Cuando el usuario pide consejos para su negocio, da 3-5 consejos específicos y 
         m.content.includes("menú")
     )
 
-    const hasAllMenuInfo =
-      messages.filter((m: { role: string }) => m.role === "user").length >= 3
-
-    // If we have enough info and user seems to be in menu creation flow, generate the menu
-    if (isMenuCreationFlow && hasAllMenuInfo && !lastUserMsg.includes("generar") && !lastUserMsg.includes("crear")) {
-      // User is answering questions, keep conversing
-    }
-
-    // Detect if user wants to generate the full menu now
     const wantsToGenerate =
       lastUserMsg.includes("genera") ||
       lastUserMsg.includes("crear") ||
@@ -346,7 +334,6 @@ Cuando el usuario pide consejos para su negocio, da 3-5 consejos específicos y 
       lastUserMsg.includes("adelante")
 
     if (wantsToGenerate && isMenuCreationFlow) {
-      // Build context from the conversation
       const conversationContext = messages
         .filter((m: { role: string; content: string }) => m.role === "user")
         .map((m: { content: string }) => m.content)
@@ -402,10 +389,9 @@ REGLAS:
     const context = await getSiteContext(siteId)
     const systemMsg = `${BASE_SYSTEM_PROMPT}\n\n${context}`
 
-    // Build message array: system + recent conversation history
     const fullMessages = [
       { role: "system", content: systemMsg },
-      ...messages.slice(-10), // Keep last 10 messages for context
+      ...messages.slice(-10),
     ]
 
     const response = await callOpenAI(fullMessages)
