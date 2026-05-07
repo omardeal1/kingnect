@@ -515,8 +515,11 @@ export function TabModifiers({ siteId }: TabModifiersProps) {
                       id={`group-active-${group.id}`}
                       checked={group.isActive}
                       onCheckedChange={(v) => {
-                        v === false && handleUpdateGroup(group.id, { isActive: false })
-                        else handleUpdateGroup(group.id, { isActive: true })
+                        if (v === false) {
+                          handleUpdateGroup(group.id, { isActive: false })
+                        } else {
+                          handleUpdateGroup(group.id, { isActive: true })
+                        }
                       }}
                       className="scale-75"
                       onClick={(e) => e.stopPropagation()}
