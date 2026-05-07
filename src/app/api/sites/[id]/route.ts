@@ -74,14 +74,6 @@ export async function GET(
             },
           },
         },
-        employees: {
-          orderBy: { name: "asc" },
-          include: {
-            role: {
-              select: { id: true, name: true, description: true },
-            },
-          },
-        },
       },
     })
 
