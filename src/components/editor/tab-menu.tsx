@@ -6,7 +6,6 @@ import {
   Plus,
   Trash2,
   ChevronDown,
-  Upload,
   GripVertical,
   Pencil,
   Sparkles,
@@ -33,6 +32,7 @@ import {
 } from "@/components/ui/tooltip"
 import { useEditorStore } from "@/lib/editor-store"
 import { ImageEditor } from "@/components/editor/image-editor"
+import { ImageUploadZone } from "@/components/editor/image-upload-zone"
 import AiMenuModal from "@/components/editor/ai-menu-modal"
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
@@ -65,8 +65,6 @@ export function TabMenu({ siteId }: TabMenuProps) {
 
   const categories = site?.menuCategories ?? []
   const accentColor = site?.accentColor ?? "#D4A849"
-
-  const fileInputRefs = React.useRef<Record<string, HTMLInputElement | null>>({})
 
   const [imageEditorOpen, setImageEditorOpen] = React.useState(false)
   const [editingItemId, setEditingItemId] = React.useState<string | null>(null)
@@ -217,21 +215,8 @@ export function TabMenu({ siteId }: TabMenuProps) {
   }
 
   // ─── Image upload ───────────────────────────────────────────────────
-  const handleImageUpload = async (itemId: string, file: File) => {
-    const formData = new FormData()
-    formData.append("file", file)
-    try {
-      const uploadRes = await fetch("/api/upload", { method: "POST", body: formData })
-      if (!uploadRes.ok) throw new Error()
-      const { url } = await uploadRes.json()
-      handleUpdateItem(itemId, { imageUrl: url })
-    } catch {
-      toast.error("Error al subir imagen")
-    }
-  }
-
-  const triggerFileInput = (itemId: string) => {
-    fileInputRefs.current[itemId]?.click()
+  const handleItemImageUploaded = (itemId: string) => (url: string) => {
+    handleUpdateItem(itemId, { imageUrl: url })
   }
 
   const editingItem = categories
@@ -648,44 +633,21 @@ export function TabMenu({ siteId }: TabMenuProps) {
                         <CardContent className="p-3 space-y-3">
                           <div className="flex items-start gap-3">
                             {/* Item image */}
-                            <div className="shrink-0">
-                              <input
-                                ref={(el) => { fileInputRefs.current[item.id] = el }}
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={(e) => {
-                                  const file = e.target.files?.[0]
-                                  if (file) handleImageUpload(item.id, file)
-                                }}
+                            <div className="shrink-0 relative group/img">
+                              <ImageUploadZone
+                                onUpload={handleItemImageUploaded(item.id)}
+                                context="menuItem"
+                                folder="menu"
+                                variant="compact"
+                                currentImageUrl={item.imageUrl}
                               />
-                              {item.imageUrl ? (
-                                <div className="relative group/img">
-                                  <button
-                                    onClick={() => triggerFileInput(item.id)}
-                                    className="size-16 rounded-md overflow-hidden border hover:opacity-80 transition-opacity"
-                                  >
-                                    <img
-                                      src={item.imageUrl}
-                                      alt={item.name}
-                                      className="size-full object-cover"
-                                    />
-                                  </button>
-                                  <button
-                                    onClick={() => handleOpenImageEditor(item.id)}
-                                    className="absolute -top-1.5 -right-1.5 size-5 rounded-full text-white flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity"
-                                    style={{ backgroundColor: accentColor }}
-                                  >
-                                    <Pencil className="size-3" />
-                                  </button>
-                                </div>
-                              ) : (
+                              {item.imageUrl && (
                                 <button
-                                  onClick={() => triggerFileInput(item.id)}
-                                  className="size-16 rounded-md border-2 border-dashed flex items-center justify-center hover:opacity-60 transition-opacity"
-                                  style={{ borderColor: `${accentColor}50` }}
+                                  onClick={() => handleOpenImageEditor(item.id)}
+                                  className="absolute -top-1.5 -right-1.5 size-5 rounded-full text-white flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity"
+                                  style={{ backgroundColor: accentColor }}
                                 >
-                                  <Upload className="size-4 text-muted-foreground" />
+                                  <Pencil className="size-3" />
                                 </button>
                               )}
                             </div>
