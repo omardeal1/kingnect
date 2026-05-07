@@ -5,8 +5,6 @@ import { toast } from "sonner"
 import {
   Palette,
   Paintbrush,
-  Upload,
-  Loader2,
   Moon,
   Sun,
 } from "lucide-react"
@@ -17,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { ImageUploadZone } from "@/components/editor/image-upload-zone"
 import { useEditorStore } from "@/lib/editor-store"
 import {
   COLOR_PRESETS,
@@ -27,8 +26,6 @@ import {
 export function TabDiseno() {
   const site = useEditorStore((s) => s.site)
   const updateSite = useEditorStore((s) => s.updateSite)
-
-  const [uploadingBg, setUploadingBg] = React.useState(false)
 
   if (!site) return null
 
@@ -48,25 +45,9 @@ export function TabDiseno() {
     toast.success(`Preset "${preset.name}" aplicado`)
   }
 
-  const handleBgImageUpload = async (file: File) => {
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("El archivo no puede superar 2MB")
-      return
-    }
-    setUploadingBg(true)
-    try {
-      const formData = new FormData()
-      formData.append("file", file)
-      const res = await fetch("/api/upload", { method: "POST", body: formData })
-      if (!res.ok) throw new Error("Error al subir imagen")
-      const data = await res.json()
-      updateSite({ backgroundImageUrl: data.url })
-      toast.success("Imagen de fondo subida correctamente")
-    } catch {
-      toast.error("Error al subir la imagen")
-    } finally {
-      setUploadingBg(false)
-    }
+  const handleBgImageUploaded = (url: string) => {
+    updateSite({ backgroundImageUrl: url })
+    toast.success("Imagen de fondo subida correctamente")
   }
 
   return (
@@ -231,40 +212,23 @@ export function TabDiseno() {
                   />
                 </div>
               )}
-              <div className="flex gap-2">
+              <ImageUploadZone
+                onUpload={handleBgImageUploaded}
+                context="background"
+                folder="backgrounds"
+                variant="inline"
+                currentImageUrl={site.backgroundImageUrl}
+              />
+              {site.backgroundImageUrl && (
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  disabled={uploadingBg}
-                  onClick={() => {
-                    const input = document.createElement("input")
-                    input.type = "file"
-                    input.accept = "image/*"
-                    input.onchange = (e) => {
-                      const file = (e.target as HTMLInputElement).files?.[0]
-                      if (file) handleBgImageUpload(file)
-                    }
-                    input.click()
-                  }}
+                  className="text-destructive text-xs"
+                  onClick={() => updateSite({ backgroundImageUrl: null })}
                 >
-                  {uploadingBg ? (
-                    <Loader2 className="size-4 animate-spin mr-2" />
-                  ) : (
-                    <Upload className="size-4 mr-2" />
-                  )}
-                  {uploadingBg ? "Subiendo..." : "Subir imagen"}
+                  Eliminar imagen de fondo
                 </Button>
-                {site.backgroundImageUrl && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-destructive"
-                    onClick={() => updateSite({ backgroundImageUrl: null })}
-                  >
-                    Eliminar
-                  </Button>
-                )}
-              </div>
+              )}
             </div>
           )}
         </CardContent>
