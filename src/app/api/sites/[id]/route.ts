@@ -66,6 +66,22 @@ export async function GET(
         menuFeaturedSlides: {
           orderBy: { sortOrder: "asc" },
         },
+        modifierGroups: {
+          orderBy: { sortOrder: "asc" },
+          include: {
+            options: {
+              orderBy: { sortOrder: "asc" },
+            },
+          },
+        },
+        employees: {
+          orderBy: { name: "asc" },
+          include: {
+            role: {
+              select: { id: true, name: true, description: true },
+            },
+          },
+        },
       },
     })
 
