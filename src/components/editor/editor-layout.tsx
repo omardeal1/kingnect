@@ -108,6 +108,8 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
       } catch (err) {
         console.error(err)
         toast.error("Error al cargar los datos del sitio")
+      } finally {
+        setIsLoading(false)
       }
     }
     loadSite()
