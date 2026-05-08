@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     // Subir a storage
     const finalName = `processed-${Date.now()}-${file.name.replace(/\.[^.]+$/, `.${preset.format}`)}`;
-    const { url, key } = await uploadToStorage(processedBuffer, finalName, preset.format);
+    const { url } = await uploadToStorage(processedBuffer, finalName, preset.format);
 
     return NextResponse.json({
       url,
