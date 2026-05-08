@@ -46,7 +46,11 @@ export async function GET(request: Request) {
       !process.env.GOOGLE_CLIENT_SECRET
     ) {
       return NextResponse.json(
-        { error: "Google Calendar no está configurado. Contacta al administrador." },
+        { 
+          error: "Google Calendar no está configurado",
+          configNeeded: true,
+          requiredVars: ["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"]
+        },
         { status: 400 }
       )
     }

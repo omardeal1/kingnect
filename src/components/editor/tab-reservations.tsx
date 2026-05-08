@@ -249,7 +249,14 @@ export function TabReservations({ siteId }: TabReservationsProps) {
         )
       } else {
         const err = await res.json()
-        toast.error(err.error || "Error al conectar Google Calendar")
+        if (err.configNeeded) {
+          toast.error(
+            `Google Calendar no está configurado. Variables requeridas: ${err.requiredVars?.join(", ")}. Contacta al administrador.`,
+            { duration: 8000 }
+          )
+        } else {
+          toast.error(err.error || "Error al conectar Google Calendar")
+        }
       }
     } catch {
       toast.error("Error al conectar Google Calendar")

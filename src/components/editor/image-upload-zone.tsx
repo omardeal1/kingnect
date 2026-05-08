@@ -185,6 +185,9 @@ export function ImageUploadZone({
           <p className="text-xs text-muted-foreground">
             Haz clic o arrastra una imagen
           </p>
+          <p className="text-[10px] text-muted-foreground">
+            Recomendado: 800 x 600 px (máx. 10 MB)
+          </p>
         </>
       )}
       <input

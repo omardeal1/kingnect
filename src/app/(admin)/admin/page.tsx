@@ -12,6 +12,7 @@ import {
   TrendingUp,
   Clock,
   Plus,
+  Shield,
   Eye,
   EyeOff,
   FileEdit,
@@ -165,12 +166,26 @@ export default function AdminDashboard() {
             {t("dashboard.subtitle")}
           </p>
         </div>
-        <Button asChild className="gold-gradient text-black font-semibold">
-          <Link href="/admin/sites">
-            <Plus className="w-4 h-4 mr-2" />
-            {t("dashboard.newQaiross")}
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/admin/customers">
+              <Users className="w-4 h-4 mr-1" />
+              Agregar Cliente
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/admin/employees">
+              <Shield className="w-4 h-4 mr-1" />
+              Agregar Equipo
+            </Link>
+          </Button>
+          <Button asChild className="gold-gradient text-black font-semibold">
+            <Link href="/admin/sites">
+              <Plus className="w-4 h-4 mr-2" />
+              {t("dashboard.newQaiross")}
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Metric Cards */}

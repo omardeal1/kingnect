@@ -18,6 +18,7 @@ import {
   Moon,
   Sun,
   LogOut,
+  ArrowLeft,
   Crown,
   FileEdit,
   ShieldCheck,
@@ -264,6 +265,13 @@ export function AdminShell({ user, children }: AdminShellProps) {
               />
             </SheetContent>
           </Sheet>
+
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/dashboard">
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Volver
+            </Link>
+          </Button>
 
           <div className="flex-1" />
 

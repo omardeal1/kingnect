@@ -122,7 +122,7 @@ const ALLOWED_IMAGE_TYPES = new Set([
   "image/webp",
 ])
 
-const MAX_IMAGE_SIZE = 2 * 1024 * 1024 // 2MB
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024 // 10MB
 
 /**
  * Valida un archivo de imagen subido
@@ -145,7 +145,7 @@ export function validateImageUpload(file: File): { valid: boolean; error?: strin
     const sizeMB = (file.size / (1024 * 1024)).toFixed(1)
     return {
       valid: false,
-      error: `El archivo excede el tamaño máximo de 2MB (actual: ${sizeMB}MB)`,
+      error: `El archivo excede el tamaño máximo de 10MB (actual: ${sizeMB}MB)`,
     }
   }
 
@@ -170,7 +170,7 @@ export function validateImageBuffer(
     const sizeMB = (buffer.length / (1024 * 1024)).toFixed(1)
     return {
       valid: false,
-      error: `El archivo excede el tamaño máximo de 2MB (actual: ${sizeMB}MB)`,
+      error: `El archivo excede el tamaño máximo de 10MB (actual: ${sizeMB}MB)`,
     }
   }
 
@@ -305,7 +305,7 @@ export const SECURITY = {
   MAX_BUSINESS_NAME_LENGTH: 100,
   MAX_DESCRIPTION_LENGTH: 500,
   MAX_URL_LENGTH: 2048,
-  MAX_IMAGE_SIZE_MB: 2,
+  MAX_IMAGE_SIZE_MB: 10,
   ALLOWED_IMAGE_TYPES: ["image/jpeg", "image/png", "image/gif", "image/webp"],
   RATE_LIMIT: {
     ORDERS_PER_MINUTE: 5,

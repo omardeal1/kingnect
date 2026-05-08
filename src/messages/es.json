@@ -558,7 +558,7 @@
       "reactivateNow": "Reactivar ahora",
       "loadError": "Error al cargar planes",
       "idRequired": "No se pudo identificar tu cuenta",
-      "stripeNotConfigured": "Los pagos en línea no están disponibles en este momento. Contacta al soporte.",
+      "stripeNotConfigured": "",
       "portalError": "Error al abrir el portal de pagos",
       "connectionError": "Error de conexión. Intenta de nuevo.",
       "trialFree": "El plan Trial es gratuito y se asigna automáticamente.",

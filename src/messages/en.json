@@ -558,7 +558,7 @@
       "reactivateNow": "Reactivate now",
       "loadError": "Error loading plans",
       "idRequired": "Could not identify your account",
-      "stripeNotConfigured": "Online payments are not available at this time. Contact support.",
+      "stripeNotConfigured": "",
       "portalError": "Error opening payment portal",
       "connectionError": "Connection error. Please try again.",
       "trialFree": "The Trial plan is free and is assigned automatically.",
