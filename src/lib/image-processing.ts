@@ -2,6 +2,8 @@
 // Client-safe — SIN sharp, solo fetch a la API
 // =============================================
 
+import type { ProcessImageOptions, ProcessImageResult } from "./image-utils";
+
 // Re-exporta todo de image-utils para que los imports existentes sigan funcionando
 export {
   getPreset,
