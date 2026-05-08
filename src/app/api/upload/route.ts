@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         fit: preset.fit,
         withoutEnlargement: true,
       })
-      .preset.format]({ quality: preset.quality })
+      .[preset.format]({ quality: preset.quality })
       .toBuffer();
 
     // Obtener metadata
