@@ -86,7 +86,7 @@ async function getSiteContext(siteId: string): Promise<string> {
         },
         locations: {
           orderBy: { sortOrder: "asc" },
-          select: { name: true, address: true, city: true },
+          select: { name: true, address: true },
         },
         branches: {
           orderBy: { name: "asc" },
