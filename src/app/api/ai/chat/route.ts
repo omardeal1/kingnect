@@ -90,7 +90,7 @@ async function getSiteContext(siteId: string): Promise<string> {
         },
         branches: {
           orderBy: { name: "asc" },
-          select: { name: true, city: true },
+          select: { name: true },
         },
       },
     })
