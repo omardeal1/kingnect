@@ -107,7 +107,7 @@ export function ReservationSection({
     async function fetchCapacity() {
       try {
         const res = await fetch(
-          `/api/sites/${siteId}/reservations?from=${format(date, "yyyy-MM-dd")}&to=${format(date, "yyyy-MM-dd")}&limit=100`
+          `/api/sites/${siteId}/reservations?from=${format(date!, "yyyy-MM-dd")}&to=${format(date!, "yyyy-MM-dd")}&limit=100`
         )
         if (res.ok) {
           const data = await res.json()

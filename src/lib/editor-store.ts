@@ -85,6 +85,7 @@ export interface SlideData {
 
 export interface MenuCategoryData {
   id: string
+  miniSiteId?: string
   name: string
   enabled: boolean
   sortOrder: number
@@ -93,6 +94,7 @@ export interface MenuCategoryData {
 
 export interface MenuItemData {
   id: string
+  miniSiteId?: string
   categoryId: string
   name: string
   description: string | null

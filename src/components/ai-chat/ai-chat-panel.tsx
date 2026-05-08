@@ -211,8 +211,6 @@ export function AIChatPanel({ isOpen, onClose, siteId }: AIChatPanelProps) {
           name: category.name,
           enabled: true,
           sortOrder: categoryIndex,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
           menuItems: [],
         })
 

@@ -35,7 +35,7 @@ export function PhonePreview() {
   const enabledTestimonials = site.testimonials.filter((t) => t.enabled)
   const enabledLinks = site.customLinks.filter((l) => l.enabled)
 
-  const buttonStyle = (site as Record<string, unknown>).buttonStyle as ButtonStyleType || "cylinder_pill"
+  const buttonStyle = (site as unknown as Record<string, unknown>).buttonStyle as ButtonStyleType || "cylinder_pill"
 
   return (
     <div className="flex flex-col items-center">

@@ -346,7 +346,7 @@ export function RegistrationSection({
                             updateField(fieldConfig.fieldName, checked === true)
                           }
                           style={
-                            checked || false
+                            (getFieldValue(fieldConfig.fieldName) as boolean) || false
                               ? { backgroundColor: accentColor, borderColor: accentColor }
                               : undefined
                           }

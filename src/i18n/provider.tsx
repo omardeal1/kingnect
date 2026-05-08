@@ -10,7 +10,7 @@ const messages: Record<Locale, typeof es> = { es, en } as Record<Locale, typeof 
 interface I18nContextType {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: string, params?: Record<string, string | number>) => string;
+  t: (key: string, params?: Record<string, string | number> | string) => string;
 }
 
 const I18nContext = createContext<I18nContextType>({
@@ -64,13 +64,15 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const t = useCallback(
-    (key: string, params?: Record<string, string | number>): string => {
+    (key: string, params?: Record<string, string | number> | string): string => {
       const value = getNestedValue(
         messages[locale] as unknown as Record<string, unknown>,
         key
       );
       if (!params) return value;
-      // Replace {param} placeholders
+      if (typeof params === "string") {
+        return value !== key ? value : params;
+      }
       return Object.entries(params).reduce(
         (acc, [k, v]) => acc.replace(`{${k}}`, String(v)),
         value
@@ -99,7 +101,7 @@ export function useTranslations(namespace?: string) {
   const { t, locale, setLocale } = useContext(I18nContext);
 
   const namespacedT = useCallback(
-    (key: string, params?: Record<string, string | number>): string => {
+    (key: string, params?: Record<string, string | number> | string): string => {
       const fullKey = namespace ? `${namespace}.${key}` : key;
       return t(fullKey, params);
     },

@@ -16,7 +16,7 @@ export interface LandingSection {
   sectionType: "json" | "image"
   title?: string | null
   subtitle?: string | null
-  content: Record<string, unknown>
+  content: Record<string, any>
   images: LandingImage[]
   isActive: boolean
   sortOrder: number

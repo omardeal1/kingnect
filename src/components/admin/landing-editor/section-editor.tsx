@@ -89,15 +89,15 @@ export function SectionEditor({ section, onChange }: SectionEditorProps) {
       <Separator />
 
       {/* Section-specific editors */}
-      {section.sectionKey === "hero" && <HeroEditor content={section.content as HeroContent} onUpdate={updateContent} />}
+      {section.sectionKey === "hero" && <HeroEditor content={section.content as unknown as HeroContent} onUpdate={updateContent} />}
       {section.sectionKey === "benefits" && <BenefitsEditor content={section.content} onUpdate={updateContent} />}
       {section.sectionKey === "howItWorks" && <HowItWorksEditor content={section.content} onUpdate={updateContent} />}
       {section.sectionKey === "orders" && <OrdersEditor content={section.content} onUpdate={updateContent} />}
-      {section.sectionKey === "pricing" && <PricingEditor content={section.content as PricingContent} onUpdate={updateContent} />}
+      {section.sectionKey === "pricing" && <PricingEditor content={section.content as unknown as PricingContent} onUpdate={updateContent} />}
       {section.sectionKey === "testimonials" && <TestimonialsEditor content={section.content} onUpdate={updateContent} />}
       {section.sectionKey === "faq" && <FAQEditor content={section.content} onUpdate={updateContent} />}
-      {section.sectionKey === "cta" && <CTAEditor content={section.content as CTAContent} onUpdate={updateContent} />}
-      {section.sectionKey === "footer" && <FooterEditor content={section.content as FooterContent} onUpdate={updateContent} />}
+      {section.sectionKey === "cta" && <CTAEditor content={section.content as unknown as CTAContent} onUpdate={updateContent} />}
+      {section.sectionKey === "footer" && <FooterEditor content={section.content as unknown as FooterContent} onUpdate={updateContent} />}
     </div>
   )
 }

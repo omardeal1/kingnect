@@ -162,6 +162,7 @@ export function TabMenu({ siteId }: TabMenuProps) {
       enabled: true,
       sortOrder: cat?.menuItems.length ?? 0,
       badge: null,
+      specialInstructionsEnabled: true,
     }
     addMenuItem(categoryId, optimisticItem)
 

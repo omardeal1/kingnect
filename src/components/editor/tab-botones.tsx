@@ -25,7 +25,7 @@ export function TabBotones() {
 
   if (!site) return null
 
-  const currentStyle = (site as Record<string, unknown>).buttonStyle as ButtonStyleType || "cylinder_pill"
+  const currentStyle = (site as unknown as Record<string, unknown>).buttonStyle as ButtonStyleType || "cylinder_pill"
 
   const handleSelect = (style: ButtonStyleType) => {
     updateSite({ buttonStyle: style } as any)

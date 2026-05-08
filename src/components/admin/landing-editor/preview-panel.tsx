@@ -133,7 +133,7 @@ function SectionBadge({ label, mini }: { label: string; mini: boolean }) {
 // ─── Hero Preview ──────────────────────────────────────────────────────────────
 
 function PreviewHero({ section, mini }: { section: LandingSection; mini: boolean }) {
-  const c = section.content as HeroContent
+  const c = section.content as unknown as HeroContent
   return (
     <div className={`${mini ? "p-3 border rounded-lg" : "py-16"}`}>
       {!mini && (
@@ -174,7 +174,7 @@ function PreviewHero({ section, mini }: { section: LandingSection; mini: boolean
 // ─── Benefits Preview ──────────────────────────────────────────────────────────
 
 function PreviewBenefits({ section, mini }: { section: LandingSection; mini: boolean }) {
-  const c = section.content as BenefitsContent
+  const c = section.content as unknown as BenefitsContent
   const items = c.items ?? []
   return (
     <div className={`${mini ? "p-3 border rounded-lg" : "py-16"}`}>
@@ -205,7 +205,7 @@ function PreviewBenefits({ section, mini }: { section: LandingSection; mini: boo
 // ─── How It Works Preview ──────────────────────────────────────────────────────
 
 function PreviewHowItWorks({ section, mini }: { section: LandingSection; mini: boolean }) {
-  const c = section.content as HowItWorksContent
+  const c = section.content as unknown as HowItWorksContent
   const steps = c.steps ?? []
   return (
     <div className={`${mini ? "p-3 border rounded-lg bg-muted/30" : "py-16 bg-muted/40"}`}>
@@ -231,7 +231,7 @@ function PreviewHowItWorks({ section, mini }: { section: LandingSection; mini: b
 // ─── Orders Preview ────────────────────────────────────────────────────────────
 
 function PreviewOrders({ section, mini }: { section: LandingSection; mini: boolean }) {
-  const c = section.content as OrdersContent
+  const c = section.content as unknown as OrdersContent
   const features = c.features ?? []
   return (
     <div className={`${mini ? "p-3 border rounded-lg bg-muted/30" : "py-16 bg-muted/40"}`}>
@@ -266,7 +266,7 @@ function PreviewOrders({ section, mini }: { section: LandingSection; mini: boole
 // ─── Pricing Preview ────────────────────────────────────────────────────────────
 
 function PreviewPricing({ section, mini }: { section: LandingSection; mini: boolean }) {
-  const c = section.content as PricingContent
+  const c = section.content as unknown as PricingContent
   return (
     <div className={`${mini ? "p-3 border rounded-lg" : "py-16"}`}>
       {section.title && <SectionBadge label={section.title} mini={mini} />}
@@ -289,7 +289,7 @@ function PreviewPricing({ section, mini }: { section: LandingSection; mini: bool
 // ─── Testimonials Preview ──────────────────────────────────────────────────────
 
 function PreviewTestimonials({ section, mini }: { section: LandingSection; mini: boolean }) {
-  const c = section.content as TestimonialsContent
+  const c = section.content as unknown as TestimonialsContent
   const items = c.items ?? []
   return (
     <div className={`${mini ? "p-3 border rounded-lg bg-muted/30" : "py-16 bg-muted/40"}`}>
@@ -328,7 +328,7 @@ function PreviewTestimonials({ section, mini }: { section: LandingSection; mini:
 // ─── FAQ Preview ───────────────────────────────────────────────────────────────
 
 function PreviewFAQ({ section, mini }: { section: LandingSection; mini: boolean }) {
-  const c = section.content as FAQContent
+  const c = section.content as unknown as FAQContent
   const items = c.items ?? []
   return (
     <div className={`${mini ? "p-3 border rounded-lg" : "py-16"}`}>
@@ -353,7 +353,7 @@ function PreviewFAQ({ section, mini }: { section: LandingSection; mini: boolean 
 // ─── CTA Preview ───────────────────────────────────────────────────────────────
 
 function PreviewCTA({ section, mini }: { section: LandingSection; mini: boolean }) {
-  const c = section.content as CTAContent
+  const c = section.content as unknown as CTAContent
   return (
     <div className={`${mini ? "p-3 border rounded-lg" : "py-16 relative overflow-hidden"}`}>
       <div className={`rounded-lg bg-[#D4A849]/5 p-${mini ? "3" : "8"} text-center`}>
@@ -373,7 +373,7 @@ function PreviewCTA({ section, mini }: { section: LandingSection; mini: boolean 
 // ─── Footer Preview ─────────────────────────────────────────────────────────────
 
 function PreviewFooter({ section, mini }: { section: LandingSection; mini: boolean }) {
-  const c = section.content as FooterContent
+  const c = section.content as unknown as FooterContent
   return (
     <div className={`${mini ? "p-3 border rounded-lg bg-muted/30" : "py-12 border-t bg-muted/30"}`}>
       <div className="flex items-center justify-between">
