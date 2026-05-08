@@ -103,7 +103,7 @@ async function getSiteContext(siteId: string): Promise<string> {
       .join(", ")
     const serviceNames = site.services.map((s) => s.name).join(", ")
     const locationNames = site.locations
-      .map((l) => `${l.name}${l.city ? ` (${l.city})` : ""}`)
+            .map((l) => l.name)
       .join(", ")
     const branchNames = site.branches
       .map((b) => `${b.name}${b.city ? ` (${b.city})` : ""}`)
