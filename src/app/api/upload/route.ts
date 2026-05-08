@@ -39,8 +39,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (validateImageUpload) {
-      await validateImageUpload(file);
+    const validation = validateImageUpload(file);
+    if (!validation.valid) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
     // Procesar con sharp (server-side)
@@ -52,15 +53,15 @@ export async function POST(request: NextRequest) {
         fit: preset.fit,
         withoutEnlargement: true,
       })
-      [preset.format]({ quality: preset.quality })
+      .preset.format]({ quality: preset.quality })
       .toBuffer();
 
     // Obtener metadata
     const metadata = await sharp(processedBuffer).metadata();
 
-    // Crear un File object desde el buffer procesado para uploadToStorage
+    // Crear un File object desde el buffer procesado
     const processedFile = new File(
-      [processedBuffer],
+      [new Uint8Array(processedBuffer)],
       `processed-${Date.now()}.${preset.format}`,
       { type: `image/${preset.format}` }
     );
