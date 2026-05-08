@@ -64,7 +64,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       url,
-      key,
       width: metadata.width,
       height: metadata.height,
       size: processedBuffer.length,
