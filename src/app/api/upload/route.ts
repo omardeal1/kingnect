@@ -1,5 +1,5 @@
-import sharp from "sharp";                              // ✅ server-only
-import { getPreset, formatFileSize } from "@/lib/image-utils"; // ✅ sin sharp
+import sharp from "sharp";
+import { getPreset, formatFileSize } from "@/lib/image-utils";
 import { validateImageUpload } from "@/lib/security";
 import { uploadToStorage } from "@/lib/storage";
 import { NextRequest, NextResponse } from "next/server";
@@ -58,9 +58,15 @@ export async function POST(request: NextRequest) {
     // Obtener metadata
     const metadata = await sharp(processedBuffer).metadata();
 
-    // Subir a storage
-    const finalName = `processed-${Date.now()}-${file.name.replace(/\.[^.]+$/, `.${preset.format}`)}`;
-    const { url } = await uploadToStorage(processedBuffer, finalName, preset.format);
+    // Crear un File object desde el buffer procesado para uploadToStorage
+    const processedFile = new File(
+      [processedBuffer],
+      `processed-${Date.now()}.${preset.format}`,
+      { type: `image/${preset.format}` }
+    );
+
+    // Subir a storage — recibe (File, folder?)
+    const { url } = await uploadToStorage(processedFile, "processed");
 
     return NextResponse.json({
       url,
