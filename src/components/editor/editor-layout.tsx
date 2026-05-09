@@ -26,6 +26,7 @@ import {
   Heart,
   UserPlus,
   Users,
+  LayoutTemplate,
 } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -54,8 +55,10 @@ import { TabReservations } from "./tab-reservations"
 import { TabLoyalty } from "./tab-loyalty"
 import { TabRegistration } from "./tab-registration"
 import { TabEmployees } from "./tab-employees"
+import { TemplateSelector } from "./template-selector"
 
 const TAB_ITEMS: { value: EditorTab; label: string; icon: React.ElementType }[] = [
+  { value: "template", label: "Plantilla", icon: LayoutTemplate },
   { value: "info", label: "Datos", icon: FileText },
   { value: "appearance", label: "Diseño", icon: Palette },
   { value: "social", label: "Redes", icon: Share2 },
@@ -139,6 +142,7 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
           isPublished: false,
           showKingBrand: site.showKingBrand,
           buttonStyle: site.buttonStyle,
+          siteTemplate: site.siteTemplate,
           metaTitle: site.metaTitle,
           metaDescription: site.metaDescription,
         }),
@@ -178,6 +182,7 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
           isActive: true,
           showKingBrand: site.showKingBrand,
           buttonStyle: site.buttonStyle,
+          siteTemplate: site.siteTemplate,
           metaTitle: site.metaTitle,
           metaDescription: site.metaDescription,
         }),
@@ -276,6 +281,9 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.15 }}
                 >
+                  <TabsContent value="template" className="mt-0">
+                    <TemplateSelector />
+                  </TabsContent>
                   <TabsContent value="info" className="mt-0">
                     <TabDatos siteId={siteId} />
                   </TabsContent>

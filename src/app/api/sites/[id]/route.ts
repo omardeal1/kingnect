@@ -168,6 +168,7 @@ export async function PUT(
       slug,
       menuTemplate,
       buttonStyle,
+      siteTemplate,
     } = body
 
     // ─── Input Validation ──────────────────────────────────────────────────────
@@ -305,6 +306,7 @@ export async function PUT(
         ...(metaDescription !== undefined && { metaDescription }),
         ...(menuTemplate !== undefined && { menuTemplate }),
         ...(buttonStyle !== undefined && { buttonStyle }),
+        ...(siteTemplate !== undefined && { siteTemplate }),
       },
     })
 

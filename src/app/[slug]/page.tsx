@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
-import { MiniSitePage } from "@/components/minisite/minisite-page"
+import { TemplateRenderer } from "@/components/minisite/template-renderer"
 import { BlockedScreen } from "@/components/minisite/blocked-screen"
 import type { Metadata, Viewport } from "next"
 
@@ -255,5 +255,5 @@ export default async function SlugPage({ params }: SlugPageProps) {
     // Silently fail analytics
   }
 
-  return <MiniSitePage site={serializedSite} />
+  return <TemplateRenderer site={serializedSite} />
 }

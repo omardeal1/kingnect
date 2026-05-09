@@ -2,6 +2,14 @@ import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 import { MiniSitePage } from "@/components/minisite/minisite-page"
 import { BlockedScreen } from "@/components/minisite/blocked-screen"
+import { SectionPage } from "@/components/minisite/section-page"
+import {
+  getSiteData,
+  serializeSite,
+  isSiteAccessible,
+  isSectionName,
+  SECTION_LABELS,
+} from "@/lib/site-data"
 import type { Metadata, Viewport } from "next"
 
 interface BranchPageProps {
@@ -11,11 +19,23 @@ interface BranchPageProps {
 export async function generateMetadata({
   params,
 }: BranchPageProps): Promise<Metadata> {
-  const { slug, branch: branchSlug } = await params
+  const { slug, branch: segment } = await params
 
+  // ── Section route ──────────────────────────────────────────────────────────
+  if (isSectionName(segment)) {
+    const site = await getSiteData(slug)
+    if (!site) return { title: "Página no encontrada" }
+    const sectionLabel = SECTION_LABELS[segment] || segment
+    return {
+      title: `${sectionLabel} — ${site.businessName} — QAIROSS`,
+      description: site.tagline || `Visita ${site.businessName}`,
+    }
+  }
+
+  // ── Branch route ──────────────────────────────────────────────────────────
   const branch = await db.branch.findFirst({
     where: {
-      slug: branchSlug,
+      slug: segment,
       site: { slug },
       isPublished: true,
       isActive: true,
@@ -55,7 +75,7 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
-      url: `https://links.qaiross.app/${slug}/${branchSlug}`,
+      url: `https://links.qaiross.app/${slug}/${segment}`,
       siteName: branch.site.businessName,
       type: "website",
       images: [
@@ -78,28 +98,7 @@ export async function generateViewport({
     select: { accentColor: true },
   })
 
-  // Allow branch-level theme overrides for theme color
-  const branch = await db.branch.findFirst({
-    where: {
-      slug: (await params).branch,
-      site: { slug },
-      isPublished: true,
-      isActive: true,
-    },
-    select: { themeOverrides: true },
-  })
-
-  let accentColor = site?.accentColor || "#D4A849"
-  if (branch?.themeOverrides) {
-    try {
-      const overrides = JSON.parse(branch.themeOverrides)
-      if (overrides.accentColor) {
-        accentColor = overrides.accentColor
-      }
-    } catch {
-      // ignore parse errors
-    }
-  }
+  const accentColor = site?.accentColor || "#D4A849"
 
   return {
     themeColor: accentColor,
@@ -109,12 +108,30 @@ export async function generateViewport({
   }
 }
 
-export default async function BranchPage({ params }: BranchPageProps) {
-  const { slug, branch: branchSlug } = await params
+export default async function BranchOrSectionPage({ params }: BranchPageProps) {
+  const { slug, branch: segment } = await params
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SECTION ROUTE — internal minisite sections (menu, servicios, galeria, etc.)
+  // ═══════════════════════════════════════════════════════════════════════════
+  if (isSectionName(segment)) {
+    const site = await getSiteData(slug)
+
+    if (!site) notFound()
+    if (!isSiteAccessible(site))
+      return <BlockedScreen businessName={site.businessName} />
+
+    const serializedSite = serializeSite(site)
+
+    return <SectionPage site={serializedSite} section={segment} slug={slug} />
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BRANCH ROUTE — branch-specific pages
+  // ═══════════════════════════════════════════════════════════════════════════
   const branch = await db.branch.findFirst({
     where: {
-      slug: branchSlug,
+      slug: segment,
       site: { slug },
       isPublished: true,
       isActive: true,

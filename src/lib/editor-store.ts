@@ -24,6 +24,7 @@ export interface SiteData {
   showKingBrand: boolean
   buttonStyle: string
   menuTemplate: string
+  siteTemplate: string
   metaTitle: string | null
   metaDescription: string | null
   socialLinks: SocialLinkData[]
@@ -267,6 +268,7 @@ export interface EmployeeData {
 // ─── Editor Tab Type ─────────────────────────────────────────────────────────────
 
 export type EditorTab =
+  | "template"
   | "info"
   | "appearance"
   | "social"

@@ -1469,6 +1469,21 @@
       "viewBranch": "View branch",
       "allStates": "All states",
       "allCities": "All cities"
+    },
+    "medical": {
+      "services": "Services",
+      "menu": "Menu",
+      "viewAll": "View all",
+      "bookNow": "Book now",
+      "scrollForMore": "Scroll up or down for more services",
+      "ourServices": "Our Services",
+      "exploreMenu": "Explore Menu",
+      "contactUs": "Contact Us",
+      "callNow": "Call now",
+      "getDirections": "Get directions",
+      "sendMessage": "Send message",
+      "visitWebsite": "Visit website",
+      "scheduleAppointment": "Schedule appointment"
     }
   },
   "modifiers": {

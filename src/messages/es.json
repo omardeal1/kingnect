@@ -1469,6 +1469,21 @@
       "viewBranch": "Ver sucursal",
       "allStates": "Todos los estados",
       "allCities": "Todas las ciudades"
+    },
+    "medical": {
+      "services": "Servicios",
+      "menu": "Menú",
+      "viewAll": "Ver todo",
+      "bookNow": "Reservar",
+      "scrollForMore": "Desliza arriba o abajo para ver más servicios",
+      "ourServices": "Nuestros Servicios",
+      "exploreMenu": "Explorar Menú",
+      "contactUs": "Contáctanos",
+      "callNow": "Llamar",
+      "getDirections": "Cómo llegar",
+      "sendMessage": "Enviar mensaje",
+      "visitWebsite": "Visitar sitio web",
+      "scheduleAppointment": "Agendar cita"
     }
   },
   "modifiers": {

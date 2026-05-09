@@ -156,6 +156,7 @@ model MiniSite {
   metaDescription    String?
   buttonStyle         String   @default("cylinder_pill") // cylinder_pill | square_soft | icon_only | glassmorphism | outline_elegant
   menuTemplate        String   @default("fresh_modern") // dark_elegant | fresh_modern | warm_casual
+  siteTemplate        String   @default("classic") // classic | medical | premium | fashion
   modifiersEnabled    Boolean  @default(false)
   customTexts         String   @default("{}") // JSON string for editable business texts
   notificationPrefs   String   @default("{}") // JSON string for notification preferences
