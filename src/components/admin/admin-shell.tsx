@@ -8,7 +8,6 @@ import {
   LayoutDashboard,
   Users,
   UserCog,
-  Kanban,
   Globe,
   ShoppingCart,
   CreditCard,
@@ -49,7 +48,6 @@ import { Badge } from "@/components/ui/badge"
 const navItems = [
   { href: "/admin", key: "nav.dashboard", icon: LayoutDashboard },
   { href: "/admin/clients", key: "nav.clients", icon: Users },
-  { href: "/admin/pipeline", key: "nav.pipeline", icon: Kanban },
   { href: "/admin/orders", key: "nav.orders", icon: ShoppingCart },
   { href: "/admin/plans", key: "nav.plans", icon: CreditCard },
   { href: "/admin/roles", key: "nav.roles", icon: Shield },

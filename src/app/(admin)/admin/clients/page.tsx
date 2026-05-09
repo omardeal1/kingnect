@@ -4,8 +4,8 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Search, Eye, Ban, CheckCircle2, StickyNote, ExternalLink,
-  Loader2, ChevronLeft, ChevronRight, Plus, Edit3, Trash2,
-  FileEdit, QrCode, Save, X, Users, MapPin, Building2, CreditCard,
+  Loader2, ChevronLeft, ChevronRight, ChevronDown, Plus, Edit3, Trash2,
+  FileEdit, QrCode, Save, X, Users, MapPin, Building2, CreditCard, Globe,
 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -28,6 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { toast } from "sonner"
 
 /* ─── Types ──────────────────────────────────────────────────────────────────── */
@@ -125,6 +126,16 @@ export default function AdminClientsPage() {
 
   const [extraFeatures, setExtraFeatures] = useState<string[]>([])
   const [savingFeatures, setSavingFeatures] = useState(false)
+  const [expandedSites, setExpandedSites] = useState<Set<string>>(new Set())
+
+  const toggleSite = (siteId: string) => {
+    setExpandedSites((prev) => {
+      const next = new Set(prev)
+      if (next.has(siteId)) next.delete(siteId)
+      else next.add(siteId)
+      return next
+    })
+  }
 
   /* derived */
   const paginated = clients.slice(page * pageSize, (page + 1) * pageSize)
@@ -319,8 +330,8 @@ export default function AdminClientsPage() {
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Clientes &amp; QAIROSS</h1>
-          <p className="text-muted-foreground mt-1">Gestiona clientes, sitios, sucursales y empleados desde un solo lugar</p>
+          <h1 className="text-2xl md:text-3xl font-bold">Clientes</h1>
+          <p className="text-muted-foreground mt-1">Gestiona clientes, sitios, sucursales y equipo desde un solo lugar</p>
         </div>
         <Button className="gold-gradient text-black font-semibold" onClick={() => setCreateOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />Agregar Cliente
@@ -518,71 +529,170 @@ export default function AdminClientsPage() {
                   )}
                 </TabsContent>
 
-                {/* ── Tab 2: QAIROSS (Sitios) ── */}
+                {/* ── Tab 2: QAIROSS (Sitios + Sucursales) ── */}
                 <TabsContent value="sites" className="mt-4">
                   {selected.miniSites.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-8">Sin sitios QAIROSS</p>
                   ) : (
-                    <div className="overflow-x-auto rounded-lg border">
-                      <Table>
-                        <TableHeader><TableRow>
-                          <TableHead>Sitio</TableHead><TableHead>Slug</TableHead><TableHead>Estado</TableHead>
-                          <TableHead className="text-right">Acciones</TableHead>
-                        </TableRow></TableHeader>
-                        <TableBody>
-                          {selected.miniSites.map((site) => (
-                            <TableRow key={site.id}>
-                              <TableCell className="font-medium">{site.businessName}</TableCell>
-                              <TableCell><code className="text-xs bg-accent px-1.5 py-0.5 rounded">/{site.slug}</code></TableCell>
-                              <TableCell>{siteStatusBadge(site)}</TableCell>
-                              <TableCell className="text-right">
-                                <div className="flex items-center justify-end gap-1">
-                                  <Button variant="ghost" size="icon" className="h-8 w-8" asChild title="Abrir Editor">
-                                    <a href={`/dashboard/sites/${site.id}/edit`} target="_blank" rel="noopener noreferrer"><Edit3 className="w-4 h-4" /></a>
-                                  </Button>
-                                  <Button variant="ghost" size="icon" className="h-8 w-8" asChild title="Ver Sitio">
-                                    <a href={`/${site.slug}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="w-4 h-4" /></a>
-                                  </Button>
-                                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => downloadQR(site.slug)} title="QR">
-                                    <QrCode className="w-4 h-4" />
-                                  </Button>
+                    <div className="space-y-3">
+                      {selected.miniSites.map((site) => {
+                        const hasBranches = site.branches.length > 0
+                        const isExpanded = expandedSites.has(site.id)
+                        return hasBranches ? (
+                          <Collapsible key={site.id} open={isExpanded} onOpenChange={() => toggleSite(site.id)}>
+                            <div className="rounded-lg border bg-card">
+                              <CollapsibleTrigger className="w-full flex items-center justify-between p-4 hover:bg-accent/50 transition-colors rounded-lg">
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <FileEdit className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                                  <div className="min-w-0 text-left">
+                                    <p className="font-medium truncate">{site.businessName}</p>
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                      <code className="text-xs bg-accent px-1.5 py-0.5 rounded">/{site.slug}</code>
+                                      {siteStatusBadge(site)}
+                                      <Badge variant="outline" className="text-xs">{site.branches.length} sucursal{site.branches.length !== 1 ? "es" : ""}</Badge>
+                                    </div>
+                                  </div>
                                 </div>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                  <Button variant="ghost" size="sm" className="h-8 text-xs gap-1" asChild onClick={(e) => e.stopPropagation()}>
+                                    <a href={`/dashboard/sites/${site.id}/edit`} target="_blank" rel="noopener noreferrer">
+                                      <Globe className="w-3.5 h-3.5" />Abrir QAIROSS
+                                    </a>
+                                  </Button>
+                                  <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                                  </motion.div>
+                                </div>
+                              </CollapsibleTrigger>
+                              <CollapsibleContent>
+                                <div className="px-4 pb-4 space-y-2">
+                                  {site.branches.map((branch) => (
+                                    <div key={branch.id} className="flex items-center justify-between p-3 rounded-md bg-accent/30 border">
+                                      <div className="flex items-center gap-3 min-w-0">
+                                        <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                                        <div className="min-w-0">
+                                          <p className="text-sm font-medium truncate">{branch.name}</p>
+                                          <code className="text-xs text-muted-foreground">/{branch.slug}</code>
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-2 flex-shrink-0">
+                                        <Badge variant={branch.isActive ? "default" : "secondary"} className="text-xs">
+                                          {branch.isActive ? "Activa" : "Inactiva"}
+                                        </Badge>
+                                        <Button variant="ghost" size="icon" className="h-7 w-7" asChild title="Abrir QAIROSS">
+                                          <a href={`/dashboard/sites/${site.id}/edit`} target="_blank" rel="noopener noreferrer"><Globe className="w-3.5 h-3.5" /></a>
+                                        </Button>
+                                        <Button variant="ghost" size="icon" className="h-7 w-7" asChild title="Ver Sitio">
+                                          <a href={`/${site.slug}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="w-3.5 h-3.5" /></a>
+                                        </Button>
+                                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => downloadQR(branch.slug)} title="QR">
+                                          <QrCode className="w-3.5 h-3.5" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </CollapsibleContent>
+                            </div>
+                          </Collapsible>
+                        ) : (
+                          <div key={site.id} className="rounded-lg border bg-card p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <FileEdit className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                                <div className="min-w-0">
+                                  <p className="font-medium truncate">{site.businessName}</p>
+                                  <div className="flex items-center gap-2 mt-0.5">
+                                    <code className="text-xs bg-accent px-1.5 py-0.5 rounded">/{site.slug}</code>
+                                    {siteStatusBadge(site)}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1 flex-shrink-0">
+                                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1" asChild title="Abrir QAIROSS">
+                                  <a href={`/dashboard/sites/${site.id}/edit`} target="_blank" rel="noopener noreferrer">
+                                    <Globe className="w-3.5 h-3.5" />Abrir QAIROSS
+                                  </a>
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-8 w-8" asChild title="Ver Sitio">
+                                  <a href={`/${site.slug}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="w-4 h-4" /></a>
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => downloadQR(site.slug)} title="QR">
+                                  <QrCode className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
                   )}
                 </TabsContent>
 
                 {/* ── Tab 3: Sucursales ── */}
-                <TabsContent value="branches" className="mt-4">
+                <TabsContent value="branches" className="mt-4 space-y-4">
                   {(() => {
                     const allBranches = selected.miniSites.flatMap((s) =>
-                      s.branches.map((b) => ({ ...b, siteName: s.businessName }))
+                      s.branches.map((b) => ({ ...b, siteName: s.businessName, siteId: s.id }))
                     )
                     if (allBranches.length === 0) return <p className="text-sm text-muted-foreground text-center py-8">Sin sucursales</p>
                     return (
-                      <div className="overflow-x-auto rounded-lg border">
-                        <Table>
-                          <TableHeader><TableRow>
-                            <TableHead>Sucursal</TableHead><TableHead>Sitio</TableHead><TableHead>Estado</TableHead>
-                          </TableRow></TableHeader>
-                          <TableBody>
-                            {allBranches.map((b) => (
-                              <TableRow key={b.id}>
-                                <TableCell className="font-medium">{b.name}</TableCell>
-                                <TableCell className="text-sm text-muted-foreground">{b.siteName}</TableCell>
-                                <TableCell>
-                                  <Badge variant={b.isActive ? "default" : "secondary"} className="text-xs">
-                                    {b.isActive ? "Activa" : "Inactiva"}</Badge>
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
+                      <>
+                        <div className="overflow-x-auto rounded-lg border">
+                          <Table>
+                            <TableHeader><TableRow>
+                              <TableHead>Sucursal</TableHead><TableHead>Sitio</TableHead><TableHead>Estado</TableHead>
+                            </TableRow></TableHeader>
+                            <TableBody>
+                              {allBranches.map((b) => (
+                                <TableRow key={b.id}>
+                                  <TableCell className="font-medium">{b.name}</TableCell>
+                                  <TableCell className="text-sm text-muted-foreground">{b.siteName}</TableCell>
+                                  <TableCell>
+                                    <Badge variant={b.isActive ? "default" : "secondary"} className="text-xs">
+                                      {b.isActive ? "Activa" : "Inactiva"}</Badge>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                        {clientEmployees.length > 0 && (
+                          <Collapsible>
+                            <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors py-1">
+                              <ChevronDown className="w-4 h-4" />
+                              <Users className="w-4 h-4" />
+                              Usuarios del cliente ({clientEmployees.length})
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                              <div className="mt-2 overflow-x-auto rounded-lg border">
+                                <Table>
+                                  <TableHeader><TableRow>
+                                    <TableHead>Nombre</TableHead><TableHead>Email</TableHead><TableHead>Rol</TableHead><TableHead>Estado</TableHead>
+                                  </TableRow></TableHeader>
+                                  <TableBody>
+                                    {clientEmployees.map((emp) => (
+                                      <TableRow key={emp.id}>
+                                        <TableCell className="font-medium text-sm">{emp.name}</TableCell>
+                                        <TableCell className="text-sm">{emp.email}</TableCell>
+                                        <TableCell><Badge variant="outline" className="text-xs">{emp.role?.name ?? "—"}</Badge></TableCell>
+                                        <TableCell>
+                                          <Badge variant={emp.isActive ? "default" : "secondary"} className="text-xs">
+                                            {emp.isActive ? "Activo" : "Inactivo"}
+                                          </Badge>
+                                        </TableCell>
+                                      </TableRow>
+                                    ))}
+                                  </TableBody>
+                                </Table>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-2">
+                                Nota: Los empleados no están asignados a sucursales específicas. Se muestran todos los usuarios del cliente.
+                              </p>
+                            </CollapsibleContent>
+                          </Collapsible>
+                        )}
+                      </>
                     )
                   })()}
                 </TabsContent>
