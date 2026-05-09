@@ -99,6 +99,37 @@ export async function PUT(request: Request) {
       return NextResponse.json({ subscription })
     }
 
+    // Support creating a subscription for a client that doesn't have one
+    if (body.createSubscription && body.clientId && body.planId) {
+      // Check if client already has a subscription
+      const existing = await db.subscription.findUnique({
+        where: { clientId: body.clientId },
+      })
+      if (existing) {
+        return NextResponse.json({ error: "El cliente ya tiene una suscripción" }, { status: 400 })
+      }
+
+      const subscription = await db.subscription.create({
+        data: {
+          clientId: body.clientId,
+          planId: body.planId,
+          status: body.status ?? "active",
+        },
+        include: { plan: true },
+      })
+
+      await db.activityLog.create({
+        data: {
+          userId: session.user.id,
+          action: `Suscripción creada para cliente ${body.clientId} con plan ${body.planId}`,
+          entityType: "subscription",
+          entityId: subscription.id,
+        },
+      })
+
+      return NextResponse.json({ subscription }, { status: 201 })
+    }
+
     const { planId, name, slug, price, currency, billingInterval, trialDays, features, limits, isActive, sortOrder, maxProducts, maxBranches, maxMenuItems, aiDailyLimit } = body
 
     if (!planId) {

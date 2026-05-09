@@ -114,6 +114,25 @@ export async function PUT(request: Request) {
       return NextResponse.json({ success: true })
     }
 
+    // If subscriptionId + customLimits: update subscription customLimits
+    if (subscriptionId && body.customLimits !== undefined) {
+      await db.subscription.update({
+        where: { id: subscriptionId },
+        data: { customLimits: typeof body.customLimits === "string" ? body.customLimits : JSON.stringify(body.customLimits) },
+      })
+
+      await db.activityLog.create({
+        data: {
+          userId: session.user.id,
+          action: `Límites personalizados actualizados para suscripción ${subscriptionId}`,
+          entityType: "subscription",
+          entityId: subscriptionId,
+        },
+      })
+
+      return NextResponse.json({ success: true })
+    }
+
     if (!clientId) {
       return NextResponse.json({ error: "clientId es requerido" }, { status: 400 })
     }

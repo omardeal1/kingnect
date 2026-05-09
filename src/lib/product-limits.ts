@@ -8,6 +8,7 @@ interface PlanLimits {
   maxProducts: number // -1 = unlimited
   maxMenuItems: number // -1 = unlimited
   maxBranches: number // -1 = unlimited
+  aiDailyLimit: number // -1 = unlimited
 }
 
 export interface LimitCheckResult {
@@ -21,6 +22,7 @@ export interface LimitCheckResult {
 /**
  * Get the plan limits for a given mini-site.
  * Falls back to unlimited (-1) if no plan is found.
+ * Custom limits from the subscription override plan defaults.
  */
 export async function getPlanLimits(siteId: string): Promise<PlanLimits> {
   const site = await db.miniSite.findUnique({
@@ -36,8 +38,10 @@ export async function getPlanLimits(siteId: string): Promise<PlanLimits> {
                   maxProducts: true,
                   maxMenuItems: true,
                   maxBranches: true,
+                  aiDailyLimit: true,
                 },
               },
+              customLimits: true,
             },
           },
         },
@@ -46,13 +50,28 @@ export async function getPlanLimits(siteId: string): Promise<PlanLimits> {
   })
 
   if (!site?.client?.subscription?.plan) {
-    return { maxProducts: -1, maxMenuItems: -1, maxBranches: -1 }
+    return { maxProducts: -1, maxMenuItems: -1, maxBranches: -1, aiDailyLimit: -1 }
   }
 
-  return {
+  const planLimits = {
     maxProducts: site.client.subscription.plan.maxProducts ?? -1,
     maxMenuItems: site.client.subscription.plan.maxMenuItems ?? -1,
     maxBranches: site.client.subscription.plan.maxBranches ?? -1,
+    aiDailyLimit: site.client.subscription.plan.aiDailyLimit ?? -1,
+  }
+
+  // Apply per-client custom limits overrides (if set)
+  const customLimitsJson = site.client.subscription.customLimits ?? "{}"
+  try {
+    const custom: Partial<PlanLimits> = JSON.parse(customLimitsJson)
+    return {
+      maxProducts: custom.maxProducts !== undefined ? custom.maxProducts : planLimits.maxProducts,
+      maxMenuItems: custom.maxMenuItems !== undefined ? custom.maxMenuItems : planLimits.maxMenuItems,
+      maxBranches: custom.maxBranches !== undefined ? custom.maxBranches : planLimits.maxBranches,
+      aiDailyLimit: custom.aiDailyLimit !== undefined ? custom.aiDailyLimit : planLimits.aiDailyLimit,
+    }
+  } catch {
+    return planLimits
   }
 }
 
@@ -134,6 +153,18 @@ export async function checkBranchLimit(siteId: string): Promise<LimitCheckResult
     message: allowed
       ? undefined
       : `Has alcanzado el límite de ${limits.maxBranches} sucursales en tu plan`,
+  }
+}
+
+/**
+ * Parse custom limits JSON from a subscription.
+ */
+export function parseCustomLimits(customLimitsJson: string | null | undefined): Partial<PlanLimits> {
+  if (!customLimitsJson) return {}
+  try {
+    return JSON.parse(customLimitsJson)
+  } catch {
+    return {}
   }
 }
 

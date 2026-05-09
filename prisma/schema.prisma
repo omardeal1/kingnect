@@ -105,6 +105,7 @@ model Subscription {
   annualPaymentRef         String?
   annualPlanNote           String?
   extraFeatures            String   @default("[]") // JSON array of extra feature keys added per-client
+  customLimits             String   @default("{}") // JSON string of per-client limit overrides {maxProducts, maxMenuItems, maxBranches, aiDailyLimit}
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
 

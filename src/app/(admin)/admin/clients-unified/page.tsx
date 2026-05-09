@@ -28,6 +28,12 @@ import {
   Phone,
   Mail,
   Sparkles,
+  Save,
+  Info,
+  Zap,
+  Lock,
+  Unlock,
+  Check,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -61,6 +67,7 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
+import { type FeatureKey, FEATURE_DEFINITIONS, parsePlanFeatures, getEffectiveFeatures, CATEGORY_LABELS, parseExtraFeatures as parseExtraFeaturesLib } from "@/lib/plan-features"
 
 // ── Types ────────────────────────────────────────────────────────────────────────
 
@@ -94,7 +101,8 @@ interface ClientData {
     currentPeriodStart: string | null
     currentPeriodEnd: string | null
     extraFeatures: string
-    plan: { id: string; name: string; slug: string; price: number }
+    customLimits: string
+    plan: { id: string; name: string; slug: string; price: number; features: string }
   } | null
   miniSites: ClientMiniSite[]
 }
@@ -108,20 +116,19 @@ interface PlanOption {
 
 // ── Constants ────────────────────────────────────────────────────────────────────
 
-const EXTRA_FEATURE_OPTIONS = [
-  { key: "custom_domain", label: "Dominio Personalizado" },
-  { key: "white_label", label: "White Label (Sin marca)" },
-  { key: "advanced_analytics", label: "Analíticas Avanzadas" },
-  { key: "priority_support", label: "Soporte Prioritario" },
-  { key: "extra_branches", label: "Sucursales Ilimitadas" },
-  { key: "ai_unlimited", label: "IA Ilimitada" },
-  { key: "custom_integrations", label: "Integraciones Custom" },
-  { key: "api_access", label: "Acceso API" },
-  { key: "multi_language", label: "Multi-idioma" },
-  { key: "bulk_import", label: "Importación Masiva" },
-  { key: "custom_branding", label: "Branding Personalizado" },
-  { key: "loyalty_advanced", label: "Fidelización Avanzada" },
-]
+const CUSTOM_LIMIT_DEFAULTS: Record<string, number> = {
+  maxCategories: 10,
+  maxProducts: 100,
+  maxBranches: 3,
+  dailyAiLimit: 50,
+}
+
+const CUSTOM_LIMIT_LABELS: Record<string, string> = {
+  maxCategories: "Máx. Categorías",
+  maxProducts: "Máx. Productos",
+  maxBranches: "Máx. Sucursales",
+  dailyAiLimit: "Límite Diario IA",
+}
 
 const statusBadgeMap: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   active: { label: "Activo", variant: "default" },
@@ -200,7 +207,9 @@ export default function ClientsUnifiedPage() {
 
   // Extra features
   const [extraFeatures, setExtraFeatures] = useState<string[]>([])
-  const [newFeatureKey, setNewFeatureKey] = useState("")
+
+  // Custom limits
+  const [customLimits, setCustomLimits] = useState<Record<string, number>>({})
 
   // ── Fetch ───────────────────────────────────────────────────────────────────
 
@@ -289,6 +298,7 @@ export default function ClientsUnifiedPage() {
         setSelectedClient(client)
         setSelectedPlanId(client.subscription?.plan?.id ?? "")
         setExtraFeatures(client.subscription?.extraFeatures ? parseExtraFeatures(client.subscription.extraFeatures) : [])
+        try { setCustomLimits(client.subscription?.customLimits ? JSON.parse(client.subscription.customLimits) : {}) } catch { setCustomLimits({}) }
       }
     }
   }
@@ -444,6 +454,47 @@ export default function ClientsUnifiedPage() {
       }
     } catch {
       toast.error("Error al guardar funciones extra")
+    }
+  }
+
+  const createSubscriptionForClient = async (clientId: string, planId: string) => {
+    try {
+      const res = await fetch("/api/admin/plans", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ createSubscription: true, clientId, planId }),
+      })
+      if (res.ok) {
+        toast.success("Suscripción creada exitosamente")
+        fetchClients()
+      } else {
+        const data = await res.json()
+        toast.error(data.error || "Error al crear suscripción")
+      }
+    } catch {
+      toast.error("Error al crear suscripción")
+    }
+  }
+
+  const saveCustomLimits = async () => {
+    if (!selectedClient?.subscription) return
+    try {
+      const res = await fetch("/api/admin/clients", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subscriptionId: selectedClient.subscription.id,
+          customLimits: JSON.stringify(customLimits),
+        }),
+      })
+      if (res.ok) {
+        toast.success("Límites personalizados guardados")
+        fetchClients()
+      } else {
+        toast.error("Error al guardar límites")
+      }
+    } catch {
+      toast.error("Error al guardar límites")
     }
   }
 
@@ -664,8 +715,10 @@ export default function ClientsUnifiedPage() {
                                           extraFeatures={extraFeatures}
                                           setExtraFeatures={setExtraFeatures}
                                           saveExtraFeatures={saveExtraFeatures}
-                                          newFeatureKey={newFeatureKey}
-                                          setNewFeatureKey={setNewFeatureKey}
+                                          customLimits={customLimits}
+                                          setCustomLimits={setCustomLimits}
+                                          saveCustomLimits={saveCustomLimits}
+                                          createSubscriptionForClient={createSubscriptionForClient}
                                         />
                                       </div>
                                     </motion.div>
@@ -906,8 +959,10 @@ function ClientExpandedDetail({
   extraFeatures,
   setExtraFeatures,
   saveExtraFeatures,
-  newFeatureKey,
-  setNewFeatureKey,
+  customLimits,
+  setCustomLimits,
+  saveCustomLimits,
+  createSubscriptionForClient,
 }: {
   client: ClientData
   plans: PlanOption[]
@@ -922,9 +977,16 @@ function ClientExpandedDetail({
   extraFeatures: string[]
   setExtraFeatures: (v: string[]) => void
   saveExtraFeatures: () => void
-  newFeatureKey: string
-  setNewFeatureKey: (v: string) => void
+  customLimits: Record<string, number>
+  setCustomLimits: (v: Record<string, number>) => void
+  saveCustomLimits: () => void
+  createSubscriptionForClient: (clientId: string, planId: string) => void
 }) {
+  // Compute plan features & effective features for the client
+  const planFeaturesJson = client.subscription?.plan?.features ?? null
+  const extraFeaturesJson = client.subscription?.extraFeatures ?? null
+  const { planFeatures, extraFeatures: parsedExtra, effectiveFeatures } = getEffectiveFeatures(planFeaturesJson, extraFeaturesJson)
+  const extraKeysSet = new Set(parsedExtra)
   return (
     <Tabs defaultValue="details" className="w-full">
       <TabsList className="flex-wrap h-auto gap-1 p-1">
@@ -1101,144 +1163,278 @@ function ClientExpandedDetail({
       {/* ── Plan / Extra Features Tab ──────────────────────────────────────── */}
       <TabsContent value="plan">
         <div className="mt-2 space-y-6">
-          {/* Current Plan */}
-          <div>
-            <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-primary" />
-              Plan Actual
-            </h3>
-            {client.subscription ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Plan</p>
-                  <p className="text-sm font-medium">
-                    {client.subscription.plan.name} — ${client.subscription.plan.price}
-                  </p>
+          {/* ── Section A: Plan Assignment ─────────────────────────────────── */}
+          {client.subscription ? (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-primary" />
+                  Plan Actual
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Plan</p>
+                    <p className="text-sm font-medium">
+                      {client.subscription.plan.name} — ${client.subscription.plan.price}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Estado</p>
+                    <Badge
+                      variant="outline"
+                      className={
+                        subscriptionBadgeMap[client.subscription.status]?.className ?? ""
+                      }
+                    >
+                      {subscriptionBadgeMap[client.subscription.status]?.label ?? client.subscription.status}
+                    </Badge>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Inicio Periodo</p>
+                    <p className="text-sm">
+                      {client.subscription.currentPeriodStart
+                        ? new Date(client.subscription.currentPeriodStart).toLocaleDateString("es")
+                        : "—"}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Fin Periodo</p>
+                    <p className="text-sm">
+                      {client.subscription.currentPeriodEnd
+                        ? new Date(client.subscription.currentPeriodEnd).toLocaleDateString("es")
+                        : "—"}
+                    </p>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Estado</p>
-                  <Badge
-                    variant="outline"
-                    className={
-                      subscriptionBadgeMap[client.subscription.status]?.className ?? ""
-                    }
+                <div className="flex items-end gap-2 pt-2 border-t">
+                  <div className="flex-1">
+                    <p className="text-xs text-muted-foreground mb-1">Cambiar Plan</p>
+                    <Select value={selectedPlanId} onValueChange={setSelectedPlanId}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar plan" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {plans.map((plan) => (
+                          <SelectItem key={plan.id} value={plan.id}>
+                            {plan.name} — ${plan.price}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="gold-gradient text-black font-semibold"
+                    onClick={() => changePlan(client.id, selectedPlanId)}
+                    disabled={!selectedPlanId || selectedPlanId === client.subscription?.plan?.id}
                   >
-                    {subscriptionBadgeMap[client.subscription.status]?.label ?? client.subscription.status}
-                  </Badge>
+                    Cambiar Plan
+                  </Button>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Inicio Periodo</p>
-                  <p className="text-sm">
-                    {client.subscription.currentPeriodStart
-                      ? new Date(client.subscription.currentPeriodStart).toLocaleDateString("es")
-                      : "—"}
-                  </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-primary" />
+                  Asignar Plan
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-3">Este cliente no tiene suscripción. Asigna un plan para activarlo.</p>
+                <div className="flex items-end gap-2">
+                  <div className="flex-1">
+                    <Select value={selectedPlanId} onValueChange={setSelectedPlanId}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar plan" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {plans.map((plan) => (
+                          <SelectItem key={plan.id} value={plan.id}>
+                            {plan.name} — ${plan.price}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="gold-gradient text-black font-semibold"
+                    onClick={() => createSubscriptionForClient(client.id, selectedPlanId)}
+                    disabled={!selectedPlanId}
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    Asignar Plan
+                  </Button>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Fin Periodo</p>
-                  <p className="text-sm">
-                    {client.subscription.currentPeriodEnd
-                      ? new Date(client.subscription.currentPeriodEnd).toLocaleDateString("es")
-                      : "—"}
-                  </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {client.subscription && (
+            <>
+              <Separator />
+
+              {/* ── Section B: Features del Plan (READ-ONLY) ─────────────────── */}
+              <div>
+                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-primary" />
+                  Features del Plan
+                </h3>
+                <div className="space-y-4">
+                  {Object.entries(CATEGORY_LABELS).map(([category, label]) => {
+                    const categoryFeatures = FEATURE_DEFINITIONS.filter((f) => f.category === category)
+                    if (categoryFeatures.length === 0) return null
+                    return (
+                      <div key={category}>
+                        <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">{label}</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                          {categoryFeatures.map((feat) => {
+                            const isEnabled = effectiveFeatures[feat.key] ?? true
+                            const isFromPlan = planFeatures[feat.key] === true
+                            const isFromExtra = !isFromPlan && extraKeysSet.has(feat.key)
+                            return (
+                              <div
+                                key={feat.key}
+                                className={`flex items-center gap-2 p-2 rounded-lg border text-sm ${
+                                  isEnabled ? "bg-emerald-500/5 border-emerald-500/20" : "bg-red-500/5 border-red-500/20"
+                                }`}
+                              >
+                                {isEnabled ? (
+                                  <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                                ) : (
+                                  <X className="w-4 h-4 text-red-500 shrink-0" />
+                                )}
+                                <span className="flex-1 text-xs">{feat.label}</span>
+                                {isFromPlan && (
+                                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5">Plan</Badge>
+                                )}
+                                {isFromExtra && (
+                                  <Badge className="text-[10px] px-1.5 py-0 h-5 bg-amber-500/10 text-amber-600 border-amber-500/20">EXTRA</Badge>
+                                )}
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">Sin suscripción activa</p>
-            )}
-          </div>
 
-          {/* Change Plan */}
-          <div>
-            <h3 className="text-sm font-semibold mb-3">Cambiar Plan</h3>
-            <div className="flex items-end gap-2">
-              <div className="flex-1">
-                <Select value={selectedPlanId} onValueChange={setSelectedPlanId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar plan" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {plans.map((plan) => (
-                      <SelectItem key={plan.id} value={plan.id}>
-                        {plan.name} — ${plan.price}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <Separator />
+
+              {/* ── Section C: Funciones Extra (TOGGLES) ────────────────────── */}
+              <div>
+                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  Funciones Extra
+                  <span className="text-xs font-normal text-muted-foreground">(activar features no incluidas en el plan)</span>
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-4">
+                  {FEATURE_DEFINITIONS.filter((f) => planFeatures[f.key] === false).map((feat) => {
+                    const isToggledOn = extraFeatures.includes(feat.key)
+                    return (
+                      <div
+                        key={feat.key}
+                        className={`flex items-center justify-between p-2.5 rounded-lg border transition-colors ${
+                          isToggledOn
+                            ? "bg-amber-500/5 border-amber-500/30"
+                            : "bg-accent/30 border-border"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Zap className={`w-4 h-4 shrink-0 ${isToggledOn ? "text-amber-500" : "text-muted-foreground"}`} />
+                          <span className="text-xs truncate">{feat.label}</span>
+                        </div>
+                        <Switch
+                          checked={isToggledOn}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setExtraFeatures([...extraFeatures, feat.key])
+                            } else {
+                              setExtraFeatures(extraFeatures.filter((k) => k !== feat.key))
+                            }
+                          }}
+                          className="scale-90"
+                        />
+                      </div>
+                    )
+                  })}
+                  {FEATURE_DEFINITIONS.filter((f) => planFeatures[f.key] === false).length === 0 && (
+                    <p className="text-sm text-muted-foreground col-span-full">Todas las features están incluidas en el plan.</p>
+                  )}
+                </div>
+                <Button size="sm" onClick={saveExtraFeatures} className="gold-gradient text-black font-semibold">
+                  <Save className="w-4 h-4 mr-1" />
+                  Guardar Funciones Extra
+                </Button>
               </div>
-              <Button
-                size="sm"
-                onClick={() => changePlan(client.id, selectedPlanId)}
-                disabled={!selectedPlanId || selectedPlanId === client.subscription?.plan?.id}
-              >
-                Cambiar
-              </Button>
-            </div>
-          </div>
 
-          <Separator />
+              <Separator />
 
-          {/* Extra Features */}
-          <div>
-            <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-primary" />
-              Funciones Extra
-            </h3>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {extraFeatures.map((key) => (
-                <Badge
-                  key={key}
-                  variant="secondary"
-                  className="text-xs gap-1 pr-1"
-                >
-                  {EXTRA_FEATURE_OPTIONS.find((f) => f.key === key)?.label ?? key}
+              {/* ── Section D: Límites Personalizados ───────────────────────── */}
+              <div>
+                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                  <Info className="w-4 h-4 text-primary" />
+                  Límites Personalizados
+                </h3>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Deja vacío para usar el valor por defecto del plan. Los valores personalizados sobreescriben los límites del plan.
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                  {Object.entries(CUSTOM_LIMIT_LABELS).map(([key, label]) => (
+                    <div key={key} className="space-y-1">
+                      <Label className="text-xs">{label}</Label>
+                      <div className="relative">
+                        <Input
+                          type="number"
+                          min={0}
+                          value={customLimits[key] ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value
+                            setCustomLimits({
+                              ...customLimits,
+                              [key]: val ? Number(val) : undefined as unknown as number,
+                            })
+                          }}
+                          placeholder={`Default: ${CUSTOM_LIMIT_DEFAULTS[key] ?? "—"}`}
+                          className="pr-8 text-sm"
+                        />
+                        {customLimits[key] && (
+                          <button
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-destructive"
+                            onClick={() => {
+                              const copy = { ...customLimits }
+                              delete copy[key]
+                              setCustomLimits(copy)
+                            }}
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center gap-3">
+                  <Button size="sm" onClick={saveCustomLimits} className="gold-gradient text-black font-semibold">
+                    <Save className="w-4 h-4 mr-1" />
+                    Guardar Límites
+                  </Button>
                   <button
-                    onClick={() => setExtraFeatures(extraFeatures.filter((f) => f !== key))}
-                    className="ml-1 rounded-full hover:bg-destructive/20 p-0.5"
+                    className="text-xs text-muted-foreground hover:text-primary underline underline-offset-2"
+                    onClick={() => setCustomLimits({})}
                   >
-                    <X className="w-3 h-3" />
+                    Restablecer a valores del plan
                   </button>
-                </Badge>
-              ))}
-              {extraFeatures.length === 0 && (
-                <p className="text-sm text-muted-foreground">Sin funciones extra</p>
-              )}
-            </div>
-            <div className="flex items-end gap-2">
-              <div className="flex-1">
-                <Select value={newFeatureKey} onValueChange={(v) => { setNewFeatureKey(v) }}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Agregar función extra" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {EXTRA_FEATURE_OPTIONS.filter(
-                      (f) => !extraFeatures.includes(f.key)
-                    ).map((f) => (
-                      <SelectItem key={f.key} value={f.key}>
-                        {f.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                </div>
               </div>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  if (newFeatureKey && !extraFeatures.includes(newFeatureKey)) {
-                    setExtraFeatures([...extraFeatures, newFeatureKey])
-                    setNewFeatureKey("")
-                  }
-                }}
-                disabled={!newFeatureKey}
-              >
-                <Plus className="w-4 h-4" />
-              </Button>
-              <Button size="sm" onClick={saveExtraFeatures}>
-                Guardar
-              </Button>
-            </div>
-          </div>
+            </>
+          )}
         </div>
       </TabsContent>
 

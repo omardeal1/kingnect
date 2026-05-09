@@ -298,7 +298,8 @@ export function parsePlanFeatures(featuresJson: string | null | undefined): Reco
 
 /**
  * Check if a specific feature is enabled for a given site.
- * Looks up: site -> client -> subscription -> plan -> features
+ * Looks up: site -> client -> subscription -> plan -> features + extraFeatures
+ * Extra features from the subscription always enable additional features (never disable).
  */
 export async function getSiteFeatures(siteId: string): Promise<Record<FeatureKey, boolean>> {
   const { db } = await import("@/lib/db")
@@ -314,6 +315,7 @@ export async function getSiteFeatures(siteId: string): Promise<Record<FeatureKey
               plan: {
                 select: { features: true },
               },
+              extraFeatures: true,
             },
           },
         },
@@ -330,7 +332,23 @@ export async function getSiteFeatures(siteId: string): Promise<Record<FeatureKey
     return defaults as Record<FeatureKey, boolean>
   }
 
-  return parsePlanFeatures(site.client.subscription.plan.features)
+  // Start with plan features
+  const merged = parsePlanFeatures(site.client.subscription.plan.features)
+
+  // Merge extra features (always additive — extra features can only enable, never disable)
+  const extraJson: string = site.client.subscription.extraFeatures ?? "[]"
+  try {
+    const extras: string[] = JSON.parse(extraJson)
+    for (const key of extras) {
+      if (key in merged) {
+        merged[key as FeatureKey] = true
+      }
+    }
+  } catch {
+    // Invalid JSON — ignore extra features gracefully
+  }
+
+  return merged
 }
 
 /**
@@ -339,6 +357,43 @@ export async function getSiteFeatures(siteId: string): Promise<Record<FeatureKey
 export async function isFeatureEnabled(siteId: string, featureKey: FeatureKey): Promise<boolean> {
   const features = await getSiteFeatures(siteId)
   return features[featureKey] ?? true
+}
+
+/**
+ * Parse extra features JSON array from a subscription.
+ */
+export function parseExtraFeatures(extraFeaturesJson: string | null | undefined): string[] {
+  if (!extraFeaturesJson) return []
+  try {
+    return JSON.parse(extraFeaturesJson)
+  } catch {
+    return []
+  }
+}
+
+/**
+ * Get effective features for a client: plan features + extra features.
+ * Returns { planFeatures, extraFeatures, effectiveFeatures }
+ */
+export function getEffectiveFeatures(
+  planFeaturesJson: string | null | undefined,
+  extraFeaturesJson: string | null | undefined
+): {
+  planFeatures: Record<FeatureKey, boolean>
+  extraFeatures: string[]
+  effectiveFeatures: Record<FeatureKey, boolean>
+} {
+  const planFeatures = parsePlanFeatures(planFeaturesJson)
+  const extraFeatures = parseExtraFeatures(extraFeaturesJson)
+
+  const effectiveFeatures = { ...planFeatures }
+  for (const key of extraFeatures) {
+    if (key in effectiveFeatures) {
+      effectiveFeatures[key as FeatureKey] = true
+    }
+  }
+
+  return { planFeatures, extraFeatures, effectiveFeatures }
 }
 
 /**
