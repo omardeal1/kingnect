@@ -307,8 +307,9 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
         return
       }
 
-      const currentOrder = tabItems.map((t) => t.value)
-      const fromIndex = currentOrder.indexOf(draggedTab)
+      const currentOrder: EditorTab[] = tabItems.map((t) => t.value)
+      const safeDragged = draggedTab as EditorTab
+      const fromIndex = currentOrder.indexOf(safeDragged)
       const toIndex = currentOrder.indexOf(targetTabValue)
 
       if (fromIndex === -1 || toIndex === -1) {
@@ -317,9 +318,9 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
       }
 
       // Reorder
-      const newOrder = [...currentOrder]
+      const newOrder: EditorTab[] = [...currentOrder]
       newOrder.splice(fromIndex, 1)
-      newOrder.splice(toIndex, 0, draggedTab)
+      newOrder.splice(toIndex, 0, safeDragged)
 
       // Update store
       setSectionOrder(newOrder)
