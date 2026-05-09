@@ -2,17 +2,41 @@
 
 import * as React from "react"
 import { motion } from "framer-motion"
-import { Check, LayoutTemplate } from "lucide-react"
+import { Check, LayoutTemplate, Loader2 } from "lucide-react"
 import { SITE_TEMPLATES, type SiteTemplate } from "@/lib/template-constants"
 import { useEditorStore } from "@/lib/editor-store"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
 
 export function TemplateSelector() {
   const { site, updateSite } = useEditorStore()
   const currentTemplate = (site?.siteTemplate || "classic") as SiteTemplate
+  const [saving, setSaving] = React.useState<string | null>(null)
 
-  const handleSelect = (templateId: SiteTemplate) => {
+  const handleSelect = async (templateId: SiteTemplate) => {
+    if (!site || templateId === currentTemplate) return
+
+    // Optimistic update
     updateSite({ siteTemplate: templateId })
+    setSaving(templateId)
+
+    try {
+      const res = await fetch(`/api/sites/${site.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ siteTemplate: templateId }),
+      })
+      if (!res.ok) throw new Error("Error al guardar plantilla")
+
+      const templateName = SITE_TEMPLATES.find(t => t.id === templateId)?.name || templateId
+      toast.success(`Plantilla "${templateName}" aplicada`)
+    } catch {
+      // Revert on error
+      updateSite({ siteTemplate: currentTemplate })
+      toast.error("Error al cambiar la plantilla")
+    } finally {
+      setSaving(null)
+    }
   }
 
   return (
@@ -39,12 +63,20 @@ export function TemplateSelector() {
               "relative rounded-2xl border-2 overflow-hidden cursor-pointer transition-all duration-300",
               currentTemplate === template.id
                 ? "border-primary shadow-lg shadow-primary/20"
-                : "border-transparent hover:border-muted-foreground/20"
+                : "border-transparent hover:border-muted-foreground/20",
+              saving === template.id && "pointer-events-none opacity-70"
             )}
             onClick={() => handleSelect(template.id)}
           >
+            {/* Saving indicator */}
+            {saving === template.id && (
+              <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/60 backdrop-blur-sm">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+              </div>
+            )}
+
             {/* Selected indicator */}
-            {currentTemplate === template.id && (
+            {currentTemplate === template.id && saving !== template.id && (
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}

@@ -158,6 +158,7 @@ export function TabServicios({ siteId }: TabServiciosProps) {
                 <div className="flex items-start gap-3">
                   {/* Image */}
                   <div className="shrink-0">
+                    <p className="text-[10px] text-muted-foreground mb-1">Recomendado: 800×600px, máximo 3MB</p>
                     <ImageUploadZone
                       onUpload={handleImageUploaded(svc.id)}
                       context="service"

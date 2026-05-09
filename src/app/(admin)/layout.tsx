@@ -35,6 +35,12 @@ export default async function AdminLayout({
     redirect("/login")
   }
 
+  // Fetch first site for logo link
+  const firstSite = await db.miniSite.findFirst({
+    select: { id: true },
+    orderBy: { createdAt: "asc" },
+  })
+
   return (
     <AdminShell
       user={{
@@ -42,6 +48,7 @@ export default async function AdminLayout({
         email: adminUser.email,
         image: adminUser.image ?? null,
       }}
+      firstSiteId={firstSite?.id ?? null}
     >
       {children}
     </AdminShell>

@@ -16,10 +16,11 @@ model User {
   email         String   @unique
   emailVerified DateTime?
   passwordHash  String?
-  image         String?
-  role          String   @default("client") // "super_admin" | "client"
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  image              String?
+  role               String   @default("client") // "super_admin" | "client"
+  mustChangePassword Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   client             Client?
   accounts           Account[]
@@ -103,6 +104,7 @@ model Subscription {
   annualPaymentMethod      String?
   annualPaymentRef         String?
   annualPlanNote           String?
+  extraFeatures            String   @default("[]") // JSON array of extra feature keys added per-client
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
 
@@ -160,6 +162,7 @@ model MiniSite {
   modifiersEnabled    Boolean  @default(false)
   customTexts         String   @default("{}") // JSON string for editable business texts
   notificationPrefs   String   @default("{}") // JSON string for notification preferences
+  sectionOrder        String   @default("[]") // JSON string of section keys in custom order
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
@@ -590,6 +593,7 @@ model Role {
   name        String   @unique
   description String?
   isSystem    Boolean  @default(false)
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

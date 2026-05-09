@@ -635,6 +635,7 @@ export function TabMenu({ siteId }: TabMenuProps) {
                           <div className="flex items-start gap-3">
                             {/* Item image */}
                             <div className="shrink-0 relative group/img">
+                              <p className="text-[10px] text-muted-foreground mb-1">Recomendado: 800×600px, máximo 3MB</p>
                               <ImageUploadZone
                                 onUpload={handleItemImageUploaded(item.id)}
                                 context="menuItem"

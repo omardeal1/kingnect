@@ -43,6 +43,7 @@ export interface SiteData {
   employees: EmployeeData[]
   menuFeaturedSlides: MenuFeaturedSlideData[]
   modifierGroups: ModifierGroupData[]
+  sectionOrder: string[]
 }
 
 export interface SocialLinkData {
@@ -371,6 +372,9 @@ interface EditorState {
   // Loyalty config
   setLoyaltyConfig: (config: LoyaltyConfigData | null) => void
   updateLoyaltyConfig: (fields: Partial<LoyaltyConfigData>) => void
+
+  // Section order
+  setSectionOrder: (order: string[]) => void
 
   // Employees
   addEmployee: (employee: EmployeeData) => void
@@ -825,6 +829,12 @@ export const useEditorStore = create<EditorState>((set) => ({
               : null,
           }
         : null,
+    })),
+
+  setSectionOrder: (order) =>
+    set((state) => ({
+      hasUnsavedChanges: true,
+      site: state.site ? { ...state.site, sectionOrder: order } : null,
     })),
 
   addEmployee: (employee) =>

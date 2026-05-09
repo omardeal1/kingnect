@@ -321,7 +321,7 @@ export default function AdminSitesPage() {
                             asChild
                             title={t("sites.edit")}
                           >
-                            <a href={`/dashboard/sites/${site.id}/edit`}>
+                            <a href={`/dashboard/sites/${site.id}/edit`} target="_blank" rel="noopener noreferrer">
                               <Edit className="w-4 h-4" />
                             </a>
                           </Button>

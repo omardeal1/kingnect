@@ -44,21 +44,30 @@ export function TabDatos({ siteId }: TabDatosProps) {
     field: "logoUrl" | "faviconUrl",
     setUploading: (v: boolean) => void
   ) => {
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("El archivo no puede superar 2MB")
+    const maxMB = field === "logoUrl" ? 2 : 0.5
+    if (file.size > maxMB * 1024 * 1024) {
+      toast.error(`El archivo no puede superar ${maxMB}MB`)
       return
     }
     setUploading(true)
     try {
       const formData = new FormData()
-      formData.append("file", file)
+      formData.append("image", file)
+      formData.append("preset", field === "logoUrl" ? "avatar" : "thumbnail")
       const res = await fetch("/api/upload", { method: "POST", body: formData })
-      if (!res.ok) throw new Error("Error al subir archivo")
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        throw new Error(errData.error || "Error al subir archivo")
+      }
       const data = await res.json()
-      updateSite({ [field]: data.url })
-      toast.success("Archivo subido correctamente")
-    } catch {
-      toast.error("Error al subir el archivo")
+      if (data.url) {
+        updateSite({ [field]: data.url })
+        toast.success("Archivo subido correctamente")
+      } else {
+        throw new Error("No se recibió la URL del archivo")
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Error al subir el archivo")
     } finally {
       setUploading(false)
     }
@@ -157,6 +166,7 @@ export function TabDatos({ siteId }: TabDatosProps) {
           {/* Logo */}
           <div className="space-y-2">
             <Label>Logo del negocio</Label>
+            <p className="text-xs text-muted-foreground">Recomendado: 500×500px, máximo 2MB</p>
             <div className="flex items-center gap-4">
               {site.logoUrl ? (
                 <div className="relative size-16 rounded-lg border bg-muted flex items-center justify-center overflow-hidden">
@@ -211,6 +221,7 @@ export function TabDatos({ siteId }: TabDatosProps) {
           {/* Favicon */}
           <div className="space-y-2">
             <Label>Favicon</Label>
+            <p className="text-xs text-muted-foreground">Recomendado: 64×64px, máximo 512KB</p>
             <div className="flex items-center gap-4">
               {site.faviconUrl ? (
                 <div className="relative size-10 rounded border bg-muted flex items-center justify-center overflow-hidden">

@@ -151,6 +151,7 @@ export function TabGaleria({ siteId }: TabGaleriaProps) {
         context="gallery"
         folder="gallery"
       />
+      <p className="text-xs text-muted-foreground -mt-2">Recomendado: 800×800px, máximo 3MB</p>
 
       {images.length === 0 ? (
         <Card>

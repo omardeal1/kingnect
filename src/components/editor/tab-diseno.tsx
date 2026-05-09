@@ -203,6 +203,7 @@ export function TabDiseno() {
           {site.backgroundType === "image" && (
             <div className="space-y-3">
               <Label>Imagen de fondo</Label>
+              <p className="text-xs text-muted-foreground">Recomendado: 1920×1080px, máximo 5MB</p>
               {site.backgroundImageUrl && (
                 <div className="relative h-24 rounded-md border overflow-hidden">
                   <img

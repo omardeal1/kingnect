@@ -65,13 +65,16 @@ export default function LoginPage() {
           description: t("success.loggedIn"),
         })
 
-        // Fetch session to get role for redirect
+        // Fetch session to get role and mustChangePassword for redirect
         try {
           const res = await fetch("/api/auth/session")
           const session = await res.json()
           const role = session?.user?.role
+          const mustChangePassword = session?.user?.mustChangePassword
 
-          if (role === "super_admin") {
+          if (mustChangePassword) {
+            router.push("/change-password")
+          } else if (role === "super_admin") {
             router.push("/admin")
           } else {
             router.push("/dashboard")

@@ -169,6 +169,7 @@ export async function PUT(
       menuTemplate,
       buttonStyle,
       siteTemplate,
+      sectionOrder,
     } = body
 
     // ─── Input Validation ──────────────────────────────────────────────────────
@@ -282,6 +283,17 @@ export async function PUT(
       }
     }
 
+    // Validate siteTemplate if provided
+    if (siteTemplate !== undefined) {
+      const validSiteTemplates = ["classic", "medical", "premium", "fashion"]
+      if (!validSiteTemplates.includes(siteTemplate)) {
+        return NextResponse.json(
+          { error: "Plantilla de sitio no válida. Valores permitidos: classic, medical, premium, fashion" },
+          { status: 400 }
+        )
+      }
+    }
+
     const updatedSite = await db.miniSite.update({
       where: { id },
       data: {
@@ -307,6 +319,7 @@ export async function PUT(
         ...(menuTemplate !== undefined && { menuTemplate }),
         ...(buttonStyle !== undefined && { buttonStyle }),
         ...(siteTemplate !== undefined && { siteTemplate }),
+        ...(sectionOrder !== undefined && { sectionOrder: typeof sectionOrder === "string" ? sectionOrder : JSON.stringify(sectionOrder) }),
       },
     })
 

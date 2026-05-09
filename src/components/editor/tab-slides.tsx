@@ -250,6 +250,7 @@ export function TabSlides({ siteId }: TabSlidesProps) {
                 {/* Image upload */}
                 <div className="space-y-2">
                   <Label className="text-xs">Imagen</Label>
+                  <p className="text-[10px] text-muted-foreground">Recomendado: 1920×1080px, máximo 5MB</p>
                   <div className="flex items-start gap-3">
                     <ImageUploadZone
                       onUpload={handleSlideImageUploaded(slide.id)}

@@ -181,6 +181,7 @@ export function TabTestimonios({ siteId }: TabTestimoniosProps) {
                 <div className="flex items-start gap-3">
                   {/* Photo */}
                   <div className="shrink-0">
+                    <p className="text-[10px] text-muted-foreground mb-1">Recomendado: 500×500px, máximo 2MB</p>
                     <ImageUploadZone
                       onUpload={handlePhotoUploaded(t.id)}
                       context="testimonial"

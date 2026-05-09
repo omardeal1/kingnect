@@ -17,6 +17,7 @@ model User {
   passwordHash  String?
   image         String?
   role          String   @default("client") // "super_admin" | "client"
+  mustChangePassword  Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -94,6 +95,7 @@ model Subscription {
   currentPeriodStart   DateTime?
   currentPeriodEnd     DateTime?
   blockedAt            DateTime?
+  extraFeatures         String   @default("[]")
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 

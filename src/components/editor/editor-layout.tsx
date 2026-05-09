@@ -27,6 +27,7 @@ import {
   UserPlus,
   Users,
   LayoutTemplate,
+  GripVertical,
 } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -57,7 +58,7 @@ import { TabRegistration } from "./tab-registration"
 import { TabEmployees } from "./tab-employees"
 import { TemplateSelector } from "./template-selector"
 
-const TAB_ITEMS: { value: EditorTab; label: string; icon: React.ElementType }[] = [
+const ALL_TAB_ITEMS: { value: EditorTab; label: string; icon: React.ElementType }[] = [
   { value: "template", label: "Plantilla", icon: LayoutTemplate },
   { value: "info", label: "Datos", icon: FileText },
   { value: "appearance", label: "Diseño", icon: Palette },
@@ -97,7 +98,42 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
     setShowMobilePreview,
     setIsLoading,
     setIsSaving,
+    setSectionOrder,
   } = useEditorStore()
+
+  // Drag and drop state
+  const [draggedTab, setDraggedTab] = React.useState<string | null>(null)
+  const [dragOverTab, setDragOverTab] = React.useState<string | null>(null)
+
+  // Compute tab items in custom order (respecting saved sectionOrder)
+  const tabItems = React.useMemo(() => {
+    if (!site?.sectionOrder || site.sectionOrder.length === 0) {
+      return ALL_TAB_ITEMS
+    }
+    const order = site.sectionOrder
+    // Build ordered list: items in the saved order first, then any items not in the saved order
+    const ordered: typeof ALL_TAB_ITEMS = []
+    const seen = new Set<string>()
+
+    // Add items in the saved order
+    for (const key of order) {
+      const item = ALL_TAB_ITEMS.find((t) => t.value === key)
+      if (item && !seen.has(key)) {
+        ordered.push(item)
+        seen.add(key)
+      }
+    }
+
+    // Add any remaining items not in the saved order
+    for (const item of ALL_TAB_ITEMS) {
+      if (!seen.has(item.value)) {
+        ordered.push(item)
+        seen.add(item.value)
+      }
+    }
+
+    return ordered
+  }, [site?.sectionOrder])
 
   // Fetch site data
   React.useEffect(() => {
@@ -107,6 +143,10 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
         const res = await fetch(`/api/sites/${siteId}`)
         if (!res.ok) throw new Error("Error al cargar sitio")
         const data = await res.json()
+        // Ensure sectionOrder is always an array
+        if (data.site && !data.site.sectionOrder) {
+          data.site.sectionOrder = []
+        }
         setSite(data.site)
       } catch (err) {
         console.error(err)
@@ -117,6 +157,23 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
     }
     loadSite()
   }, [siteId, setSite, setIsLoading])
+
+  // Save section order to the database
+  const saveSectionOrder = React.useCallback(
+    async (order: string[]) => {
+      try {
+        const res = await fetch(`/api/sites/${siteId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sectionOrder: JSON.stringify(order) }),
+        })
+        if (!res.ok) throw new Error("Error al guardar orden")
+      } catch {
+        // Silent fail for order saving
+      }
+    },
+    [siteId]
+  )
 
   const handleSaveDraft = React.useCallback(async () => {
     if (!site) return
@@ -145,6 +202,7 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
           siteTemplate: site.siteTemplate,
           metaTitle: site.metaTitle,
           metaDescription: site.metaDescription,
+          sectionOrder: JSON.stringify(site.sectionOrder),
         }),
       })
       if (!res.ok) throw new Error("Error al guardar")
@@ -185,6 +243,7 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
           siteTemplate: site.siteTemplate,
           metaTitle: site.metaTitle,
           metaDescription: site.metaDescription,
+          sectionOrder: JSON.stringify(site.sectionOrder),
         }),
       })
       if (!res.ok) throw new Error("Error al publicar")
@@ -202,6 +261,82 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
       window.open(`${APP_URL}/${site.slug}`, "_blank")
     }
   }, [site])
+
+  const handleRefreshPreview = React.useCallback(() => {
+    setShowMobilePreview(false)
+    setTimeout(() => {
+      setShowMobilePreview(true)
+      toast.success("Vista previa actualizada")
+    }, 100)
+  }, [setShowMobilePreview])
+
+  const handleOpenMenu = React.useCallback(() => {
+    setActiveTab("menu")
+    const menuTab = document.querySelector('[value="menu"]')
+    if (menuTab) {
+      menuTab.scrollIntoView({ behavior: "smooth", block: "center" })
+    }
+  }, [setActiveTab])
+
+  // Drag and drop handlers
+  const handleDragStart = React.useCallback((e: React.DragEvent, tabValue: string) => {
+    setDraggedTab(tabValue)
+    e.dataTransfer.effectAllowed = "move"
+    e.dataTransfer.setData("text/plain", tabValue)
+  }, [])
+
+  const handleDragOver = React.useCallback((e: React.DragEvent, tabValue: string) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = "move"
+    if (tabValue !== draggedTab) {
+      setDragOverTab(tabValue)
+    }
+  }, [draggedTab])
+
+  const handleDragLeave = React.useCallback(() => {
+    setDragOverTab(null)
+  }, [])
+
+  const handleDrop = React.useCallback(
+    (e: React.DragEvent, targetTabValue: string) => {
+      e.preventDefault()
+      setDragOverTab(null)
+
+      if (!draggedTab || draggedTab === targetTabValue) {
+        setDraggedTab(null)
+        return
+      }
+
+      const currentOrder = tabItems.map((t) => t.value)
+      const fromIndex = currentOrder.indexOf(draggedTab)
+      const toIndex = currentOrder.indexOf(targetTabValue)
+
+      if (fromIndex === -1 || toIndex === -1) {
+        setDraggedTab(null)
+        return
+      }
+
+      // Reorder
+      const newOrder = [...currentOrder]
+      newOrder.splice(fromIndex, 1)
+      newOrder.splice(toIndex, 0, draggedTab)
+
+      // Update store
+      setSectionOrder(newOrder)
+
+      // Save to database
+      saveSectionOrder(newOrder)
+
+      toast.success("Orden de secciones actualizado")
+      setDraggedTab(null)
+    },
+    [draggedTab, tabItems, setSectionOrder, saveSectionOrder]
+  )
+
+  const handleDragEnd = React.useCallback(() => {
+    setDraggedTab(null)
+    setDragOverTab(null)
+  }, [])
 
   if (isLoading || !site) {
     return (
@@ -242,6 +377,8 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
           onSaveDraft={handleSaveDraft}
           onPublish={handlePublish}
           onPreview={handlePreview}
+          onRefreshPreview={handleRefreshPreview}
+          onOpenMenu={handleOpenMenu}
         />
         {/* Mobile preview toggle */}
         <Button
@@ -260,12 +397,27 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
         <div className="lg:col-span-3">
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as EditorTab)}>
             <TabsList className="w-full flex flex-wrap h-auto gap-1 bg-muted/50 p-1 rounded-lg">
-              {TAB_ITEMS.map((tab) => (
+              {tabItems.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md"
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, tab.value)}
+                  onDragOver={(e) => handleDragOver(e, tab.value)}
+                  onDragLeave={handleDragLeave}
+                  onDrop={(e) => handleDrop(e, tab.value)}
+                  onDragEnd={handleDragEnd}
+                  className={`
+                    flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md
+                    data-[state=active]:bg-background data-[state=active]:shadow-sm
+                    cursor-grab active:cursor-grabbing select-none
+                    transition-all duration-150
+                    ${draggedTab === tab.value ? "opacity-40 scale-95" : ""}
+                    ${dragOverTab === tab.value ? "ring-2 ring-primary/40 bg-primary/5" : ""}
+                    ${dragOverTab === tab.value && draggedTab && draggedTab !== tab.value ? "ml-1 mr-1" : ""}
+                  `}
                 >
+                  <GripVertical className="size-3 text-muted-foreground/50 shrink-0" />
                   <tab.icon className="size-3.5" />
                   <span className="hidden sm:inline">{tab.label}</span>
                 </TabsTrigger>

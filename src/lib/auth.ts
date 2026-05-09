@@ -38,6 +38,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           image: user.image,
           role: user.role,
+          mustChangePassword: user.mustChangePassword,
         }
       },
     }),
@@ -50,6 +51,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = (user as { role?: string }).role ?? "client"
         token.id = user.id
+        token.mustChangePassword = (user as { mustChangePassword?: boolean }).mustChangePassword ?? false
       }
       return token
     },
@@ -57,6 +59,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as string
+        session.user.mustChangePassword = token.mustChangePassword as boolean
       }
       return session
     },
@@ -113,11 +116,13 @@ declare module "next-auth" {
       email?: string | null
       image?: string | null
       role: string
+      mustChangePassword: boolean
     }
   }
 
   interface User {
     role?: string
+    mustChangePassword?: boolean
   }
 }
 
@@ -125,5 +130,6 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string
     role: string
+    mustChangePassword: boolean
   }
 }

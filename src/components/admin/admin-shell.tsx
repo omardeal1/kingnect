@@ -21,6 +21,7 @@ import {
   ArrowLeft,
   Crown,
   FileEdit,
+  Shield,
   ShieldCheck,
   GitBranch,
   CalendarDays,
@@ -49,9 +50,9 @@ const navItems = [
   { href: "/admin", key: "nav.dashboard", icon: LayoutDashboard },
   { href: "/admin/clients", key: "nav.clients", icon: Users },
   { href: "/admin/pipeline", key: "nav.pipeline", icon: Kanban },
-  { href: "/admin/sites", key: "nav.qaiross", icon: Globe },
   { href: "/admin/orders", key: "nav.orders", icon: ShoppingCart },
   { href: "/admin/plans", key: "nav.plans", icon: CreditCard },
+  { href: "/admin/roles", key: "nav.roles", icon: Shield },
   { href: "/admin/platform-editor", key: "nav.platformEditor", icon: Settings },
   { href: "/admin/landing-editor", key: "nav.landingEditor", icon: FileEdit },
   { href: "/admin/branding", key: "nav.branding", icon: ShieldCheck },
@@ -67,16 +68,19 @@ interface AdminShellProps {
     email: string
     image: string | null
   }
+  firstSiteId?: string | null
   children: React.ReactNode
 }
 
 function SidebarContent({
   collapsed,
   user,
+  firstSiteId,
   onNavigate,
 }: {
   collapsed: boolean
   user: { name: string; email: string; image: string | null }
+  firstSiteId?: string | null
   onNavigate?: () => void
 }) {
   const pathname = usePathname()
@@ -87,19 +91,25 @@ function SidebarContent({
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-border">
-        <div className="flex items-center justify-center w-9 h-9 rounded-lg gold-gradient flex-shrink-0">
-          <Crown className="w-5 h-5 text-black" />
-        </div>
-        {!collapsed && (
-          <motion.div
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="overflow-hidden"
-          >
-            <h1 className="text-lg font-bold gold-gradient-text">QAIROSS</h1>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest">{t("nav.adminPanel")}</p>
-          </motion.div>
-        )}
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-3 flex-shrink-0"
+          onClick={onNavigate}
+        >
+          <div className="flex items-center justify-center w-9 h-9 rounded-lg gold-gradient flex-shrink-0">
+            <Crown className="w-5 h-5 text-black" />
+          </div>
+          {!collapsed && (
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="overflow-hidden"
+            >
+              <h1 className="text-lg font-bold gold-gradient-text">QAIROSS</h1>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest">{t("nav.adminPanel")}</p>
+            </motion.div>
+          )}
+        </Link>
       </div>
 
       {/* Navigation */}
@@ -217,7 +227,7 @@ function SidebarContent({
   )
 }
 
-export function AdminShell({ user, children }: AdminShellProps) {
+export function AdminShell({ user, firstSiteId, children }: AdminShellProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const { t } = useTranslations("admin")
@@ -230,7 +240,7 @@ export function AdminShell({ user, children }: AdminShellProps) {
         transition={{ duration: 0.2, ease: "easeInOut" }}
         className="hidden lg:flex flex-col border-r border-border bg-card overflow-hidden"
       >
-        <SidebarContent collapsed={collapsed} user={user} />
+        <SidebarContent collapsed={collapsed} user={user} firstSiteId={firstSiteId} />
         <div className="border-t border-border p-2 hidden lg:block">
           <Button
             variant="ghost"
@@ -261,6 +271,7 @@ export function AdminShell({ user, children }: AdminShellProps) {
               <SidebarContent
                 collapsed={false}
                 user={user}
+                firstSiteId={firstSiteId}
                 onNavigate={() => setMobileOpen(false)}
               />
             </SheetContent>
