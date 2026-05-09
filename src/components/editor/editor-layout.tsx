@@ -102,8 +102,8 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
   } = useEditorStore()
 
   // Drag and drop state
-  const [draggedTab, setDraggedTab] = React.useState<string | null>(null)
-  const [dragOverTab, setDragOverTab] = React.useState<string | null>(null)
+  const [draggedTab, setDraggedTab] = React.useState<EditorTab | null>(null)
+  const [dragOverTab, setDragOverTab] = React.useState<EditorTab | null>(null)
 
   // Compute tab items in custom order (respecting saved sectionOrder)
   const tabItems = React.useMemo(() => {
@@ -279,13 +279,13 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
   }, [setActiveTab])
 
   // Drag and drop handlers
-  const handleDragStart = React.useCallback((e: React.DragEvent, tabValue: string) => {
+  const handleDragStart = React.useCallback((e: React.DragEvent, tabValue: EditorTab) => {
     setDraggedTab(tabValue)
     e.dataTransfer.effectAllowed = "move"
     e.dataTransfer.setData("text/plain", tabValue)
   }, [])
 
-  const handleDragOver = React.useCallback((e: React.DragEvent, tabValue: string) => {
+  const handleDragOver = React.useCallback((e: React.DragEvent, tabValue: EditorTab) => {
     e.preventDefault()
     e.dataTransfer.dropEffect = "move"
     if (tabValue !== draggedTab) {
@@ -298,7 +298,7 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
   }, [])
 
   const handleDrop = React.useCallback(
-    (e: React.DragEvent, targetTabValue: string) => {
+    (e: React.DragEvent, targetTabValue: EditorTab) => {
       e.preventDefault()
       setDragOverTab(null)
 
