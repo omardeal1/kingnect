@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
@@ -20,6 +20,14 @@ import {
 import { signOut } from "next-auth/react"
 
 export default function ChangePasswordPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><p>Cargando...</p></div>}>
+      <ChangePasswordContent />
+    </Suspense>
+  )
+}
+
+function ChangePasswordContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
