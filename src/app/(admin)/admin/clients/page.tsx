@@ -730,7 +730,8 @@ export default function AdminClientsPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={deleteClient}>Eliminar</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
