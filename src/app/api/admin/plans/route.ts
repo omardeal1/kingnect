@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { name, slug, price, currency, billingInterval, trialDays, features, limits, isActive, sortOrder } = body
+    const { name, slug, price, currency, billingInterval, trialDays, features, limits, isActive, sortOrder, maxProducts, maxBranches, maxMenuItems, aiDailyLimit } = body
 
     if (!name || !slug) {
       return NextResponse.json({ error: "nombre y slug son requeridos" }, { status: 400 })
@@ -58,6 +58,10 @@ export async function POST(request: Request) {
         limits: JSON.stringify(limits ?? {}),
         isActive: isActive ?? true,
         sortOrder: sortOrder ?? 0,
+        ...(maxProducts !== undefined && { maxProducts }),
+        ...(maxBranches !== undefined && { maxBranches }),
+        ...(maxMenuItems !== undefined && { maxMenuItems }),
+        ...(aiDailyLimit !== undefined && { aiDailyLimit }),
       },
     })
 
@@ -95,7 +99,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ subscription })
     }
 
-    const { planId, name, slug, price, currency, billingInterval, trialDays, features, limits, isActive, sortOrder } = body
+    const { planId, name, slug, price, currency, billingInterval, trialDays, features, limits, isActive, sortOrder, maxProducts, maxBranches, maxMenuItems, aiDailyLimit } = body
 
     if (!planId) {
       return NextResponse.json({ error: "planId es requerido" }, { status: 400 })
@@ -120,6 +124,10 @@ export async function PUT(request: Request) {
     if (limits !== undefined) updateData.limits = JSON.stringify(limits)
     if (isActive !== undefined) updateData.isActive = isActive
     if (sortOrder !== undefined) updateData.sortOrder = sortOrder
+    if (maxProducts !== undefined) updateData.maxProducts = maxProducts
+    if (maxBranches !== undefined) updateData.maxBranches = maxBranches
+    if (maxMenuItems !== undefined) updateData.maxMenuItems = maxMenuItems
+    if (aiDailyLimit !== undefined) updateData.aiDailyLimit = aiDailyLimit
 
     const plan = await db.plan.update({
       where: { id: planId },

@@ -35,8 +35,11 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useEditorStore, type EditorTab } from "@/lib/editor-store"
 import { APP_URL } from "@/lib/constants"
+import { type FeatureKey, FEATURE_DEFINITIONS, getEnabledEditorTabs } from "@/lib/plan-features"
 import { EditorHeader } from "./editor-header"
 import { PhonePreview } from "./phone-preview"
+import { Lock } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { TabDatos } from "./tab-datos"
 import { TabDiseno } from "./tab-diseno"
 import { TabRedes } from "./tab-redes"
@@ -92,6 +95,7 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
     activeTab,
     hasUnsavedChanges,
     showMobilePreview,
+    planFeatures,
     setSite,
     setActiveTab,
     setHasUnsavedChanges,
@@ -99,55 +103,77 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
     setIsLoading,
     setIsSaving,
     setSectionOrder,
+    setPlanFeatures,
   } = useEditorStore()
 
   // Drag and drop state
   const [draggedTab, setDraggedTab] = React.useState<EditorTab | null>(null)
   const [dragOverTab, setDragOverTab] = React.useState<EditorTab | null>(null)
 
-  // Compute tab items in custom order (respecting saved sectionOrder)
+  // Compute which tabs are enabled by plan features
+  const enabledTabs = React.useMemo(() => {
+    if (!planFeatures) return null // null = not loaded yet, show all
+    return new Set(getEnabledEditorTabs(planFeatures))
+  }, [planFeatures])
+
+  // Compute tab items in custom order (respecting saved sectionOrder + plan features)
   const tabItems = React.useMemo(() => {
-    if (!site?.sectionOrder || site.sectionOrder.length === 0) {
-      return ALL_TAB_ITEMS
-    }
-    const order = site.sectionOrder
-    // Build ordered list: items in the saved order first, then any items not in the saved order
-    const ordered: typeof ALL_TAB_ITEMS = []
-    const seen = new Set<string>()
+    let items = ALL_TAB_ITEMS
 
-    // Add items in the saved order
-    for (const key of order) {
-      const item = ALL_TAB_ITEMS.find((t) => t.value === key)
-      if (item && !seen.has(key)) {
-        ordered.push(item)
-        seen.add(key)
+    // Filter by plan features
+    if (enabledTabs) {
+      items = items.filter((tab) => enabledTabs.has(tab.value))
+    }
+
+    // Reorder by saved sectionOrder
+    if (site?.sectionOrder && site.sectionOrder.length > 0) {
+      const order = site.sectionOrder
+      const ordered: typeof items = []
+      const seen = new Set<string>()
+
+      for (const key of order) {
+        const item = items.find((t) => t.value === key)
+        if (item && !seen.has(key)) {
+          ordered.push(item)
+          seen.add(key)
+        }
       }
-    }
 
-    // Add any remaining items not in the saved order
-    for (const item of ALL_TAB_ITEMS) {
-      if (!seen.has(item.value)) {
-        ordered.push(item)
-        seen.add(item.value)
+      for (const item of items) {
+        if (!seen.has(item.value)) {
+          ordered.push(item)
+          seen.add(item.value)
+        }
       }
+
+      return ordered
     }
 
-    return ordered
-  }, [site?.sectionOrder])
+    return items
+  }, [site?.sectionOrder, enabledTabs])
 
-  // Fetch site data
+  // Fetch site data + plan features
   React.useEffect(() => {
     async function loadSite() {
       setIsLoading(true)
       try {
-        const res = await fetch(`/api/sites/${siteId}`)
-        if (!res.ok) throw new Error("Error al cargar sitio")
-        const data = await res.json()
+        const [siteRes, featuresRes] = await Promise.all([
+          fetch(`/api/sites/${siteId}`),
+          fetch(`/api/sites/${siteId}/plan-features`),
+        ])
+        if (!siteRes.ok) throw new Error("Error al cargar sitio")
+        const data = await siteRes.json()
         // Ensure sectionOrder is always an array
         if (data.site && !data.site.sectionOrder) {
           data.site.sectionOrder = []
         }
         setSite(data.site)
+
+        // Load plan features
+        if (featuresRes.ok) {
+          const featuresData = await featuresRes.json()
+          setPlanFeatures(featuresData.features)
+        }
       } catch (err) {
         console.error(err)
         toast.error("Error al cargar los datos del sitio")
@@ -156,7 +182,7 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
       }
     }
     loadSite()
-  }, [siteId, setSite, setIsLoading])
+  }, [siteId, setSite, setIsLoading, setPlanFeatures])
 
   // Save section order to the database
   const saveSectionOrder = React.useCallback(
@@ -422,6 +448,27 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
                   <tab.icon className="size-3.5" />
                   <span className="hidden sm:inline">{tab.label}</span>
                 </TabsTrigger>
+              ))}
+              {/* Disabled tabs (locked by plan) */}
+              {enabledTabs && ALL_TAB_ITEMS.filter((t) => !enabledTabs.has(t.value)).map((tab) => (
+                <TooltipProvider key={`locked-${tab.value}`} delayDuration={0}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="
+                        flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md
+                        text-muted-foreground/40 cursor-not-allowed select-none
+                      ">
+                        <Lock className="size-3" />
+                        <tab.icon className="size-3.5" />
+                        <span className="hidden sm:inline line-through">{tab.label}</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Funcion no disponible en tu plan actual</p>
+                      <p className="text-xs text-muted-foreground mt-1">Actualiza tu plan para acceder</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               ))}
             </TabsList>
 

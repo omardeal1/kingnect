@@ -268,6 +268,8 @@ export interface EmployeeData {
 
 // ─── Editor Tab Type ─────────────────────────────────────────────────────────────
 
+import { type FeatureKey } from "@/lib/plan-features"
+
 export type EditorTab =
   | "template"
   | "info"
@@ -299,6 +301,7 @@ interface EditorState {
   activeTab: EditorTab
   hasUnsavedChanges: boolean
   showMobilePreview: boolean
+  planFeatures: Record<FeatureKey, boolean> | null
 
   setSite: (site: SiteData) => void
   setActiveTab: (tab: EditorTab) => void
@@ -306,6 +309,7 @@ interface EditorState {
   setShowMobilePreview: (v: boolean) => void
   setIsLoading: (v: boolean) => void
   setIsSaving: (v: boolean) => void
+  setPlanFeatures: (features: Record<FeatureKey, boolean>) => void
 
   // Site field updates
   updateSite: (fields: Partial<SiteData>) => void
@@ -389,6 +393,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   activeTab: "info",
   hasUnsavedChanges: false,
   showMobilePreview: false,
+  planFeatures: null,
 
   setSite: (site) => set({ site, isLoading: false }),
   setActiveTab: (tab) => set({ activeTab: tab }),
@@ -396,6 +401,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   setShowMobilePreview: (v) => set({ showMobilePreview: v }),
   setIsLoading: (v) => set({ isLoading: v }),
   setIsSaving: (v) => set({ isSaving: v }),
+  setPlanFeatures: (features) => set({ planFeatures: features }),
 
   updateSite: (fields) =>
     set((state) => ({

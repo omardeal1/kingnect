@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { TemplateRenderer } from "@/components/minisite/template-renderer"
 import { BlockedScreen } from "@/components/minisite/blocked-screen"
 import type { Metadata, Viewport } from "next"
+import { parsePlanFeatures, type FeatureKey } from "@/lib/plan-features"
 
 interface SlugPageProps {
   params: Promise<{ slug: string }>
@@ -65,7 +66,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
     where: { slug },
     include: {
       client: {
-        select: { whatsapp: true, accountStatus: true },
+        select: { whatsapp: true, accountStatus: true, subscription: { select: { plan: { select: { features: true } } } } },
       },
       socialLinks: {
         orderBy: { sortOrder: "asc" },
@@ -139,9 +140,15 @@ export default async function SlugPage({ params }: SlugPageProps) {
     return <BlockedScreen businessName={site.businessName} />
   }
 
+  // Parse plan features
+  const planFeatures = parsePlanFeatures(
+    site.client?.subscription?.plan?.features
+  )
+
   // Serialize dates for client component
   const serializedSite = {
     ...site,
+    planFeatures,
     createdAt: site.createdAt.toISOString(),
     updatedAt: site.updatedAt.toISOString(),
     menuCategories: site.menuCategories.map((cat) => ({

@@ -21,10 +21,11 @@ import { LoyaltySection } from "./loyalty-section"
 import { RegistrationSection } from "./registration-section"
 import { ShoppingBag } from "lucide-react"
 import { motion } from "framer-motion"
+import { type FeatureKey } from "@/lib/plan-features"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface MiniSitePageProps {
-  site: any
+  site: any & { planFeatures?: Record<FeatureKey, boolean> }
 }
 
 function CartBadge({ accentColor }: { accentColor: string }) {
@@ -64,7 +65,14 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
     slug,
     id,
     buttonStyle = "cylinder_pill",
+    planFeatures,
   } = site
+
+  // Helper to check if a feature is enabled (defaults to true for backwards compatibility)
+  const isFeatureEnabled = (key: FeatureKey): boolean => {
+    if (!planFeatures) return true
+    return planFeatures[key] ?? true
+  }
 
   // Background styles
   const containerStyle: React.CSSProperties = {
@@ -104,11 +112,13 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
         />
 
         {/* Slides */}
-        <SlidesSection
-          slides={site.slides || []}
-          accentColor={accentColor}
-          textColor={textColor}
-        />
+        {isFeatureEnabled("slides") && (
+          <SlidesSection
+            slides={site.slides || []}
+            accentColor={accentColor}
+            textColor={textColor}
+          />
+        )}
 
         {/* Contact buttons */}
         <ContactButtons
@@ -123,59 +133,71 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
         />
 
         {/* Social links */}
-        <SocialLinks
-          links={site.socialLinks || []}
-          accentColor={accentColor}
-          textColor={textColor}
-          siteId={id}
-          buttonStyle={buttonStyle}
-        />
+        {isFeatureEnabled("socialLinks") && (
+          <SocialLinks
+            links={site.socialLinks || []}
+            accentColor={accentColor}
+            textColor={textColor}
+            siteId={id}
+            buttonStyle={buttonStyle}
+          />
+        )}
 
         {/* Menu */}
-        <MenuSection
-          categories={site.menuCategories || []}
-          accentColor={accentColor}
-          textColor={textColor}
-          cardColor={cardColor}
-          modifierGroups={site.modifierGroups || []}
-          siteId={id}
-          menuTemplate={(site as Record<string, unknown>).menuTemplate as string || "fresh_modern"}
-          featuredSlides={(site as Record<string, unknown>).menuFeaturedSlides as Array<{id:string;imageUrl:string;title:string|null;enabled:boolean;sortOrder:number}> || []}
-        />
+        {isFeatureEnabled("menu") && (
+          <MenuSection
+            categories={site.menuCategories || []}
+            accentColor={accentColor}
+            textColor={textColor}
+            cardColor={cardColor}
+            modifierGroups={isFeatureEnabled("modifiers") ? site.modifierGroups || [] : []}
+            siteId={id}
+            menuTemplate={(site as Record<string, unknown>).menuTemplate as string || "fresh_modern"}
+            featuredSlides={(site as Record<string, unknown>).menuFeaturedSlides as Array<{id:string;imageUrl:string;title:string|null;enabled:boolean;sortOrder:number}> || []}
+          />
+        )}
 
         {/* Gallery */}
-        <GallerySection
-          images={site.galleryImages || []}
-          accentColor={accentColor}
-          textColor={textColor}
-        />
+        {isFeatureEnabled("gallery") && (
+          <GallerySection
+            images={site.galleryImages || []}
+            accentColor={accentColor}
+            textColor={textColor}
+          />
+        )}
 
         {/* Services */}
-        <ServicesSection
-          services={site.services || []}
-          accentColor={accentColor}
-          textColor={textColor}
-          cardColor={cardColor}
-        />
+        {isFeatureEnabled("services") && (
+          <ServicesSection
+            services={site.services || []}
+            accentColor={accentColor}
+            textColor={textColor}
+            cardColor={cardColor}
+          />
+        )}
 
         {/* Testimonials */}
-        <TestimonialsSection
-          testimonials={site.testimonials || []}
-          accentColor={accentColor}
-          textColor={textColor}
-          cardColor={cardColor}
-        />
+        {isFeatureEnabled("testimonials") && (
+          <TestimonialsSection
+            testimonials={site.testimonials || []}
+            accentColor={accentColor}
+            textColor={textColor}
+            cardColor={cardColor}
+          />
+        )}
 
         {/* Locations */}
-        <LocationsSection
-          locations={site.locations || []}
-          accentColor={accentColor}
-          textColor={textColor}
-          cardColor={cardColor}
-        />
+        {isFeatureEnabled("locations") && (
+          <LocationsSection
+            locations={site.locations || []}
+            accentColor={accentColor}
+            textColor={textColor}
+            cardColor={cardColor}
+          />
+        )}
 
-        {/* Branches — only if 2+ active+published */}
-        {site.branches && site.branches.filter(
+        {/* Branches — only if 2+ active+published and feature enabled */}
+        {isFeatureEnabled("branches") && site.branches && site.branches.filter(
           (b: any) => b.isActive && b.isPublished
         ).length >= 2 && (
           <BranchSelector
@@ -188,7 +210,7 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
         )}
 
         {/* Reservations */}
-        {site.reservationConfig?.isEnabled && (
+        {isFeatureEnabled("reservations") && site.reservationConfig?.isEnabled && (
           <ReservationSection
             config={site.reservationConfig}
             siteId={id}
@@ -201,7 +223,7 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
         )}
 
         {/* Loyalty program */}
-        {site.loyaltyConfig?.isEnabled && (
+        {isFeatureEnabled("loyalty") && site.loyaltyConfig?.isEnabled && (
           <LoyaltySection
             config={site.loyaltyConfig}
             siteId={id}
@@ -212,7 +234,7 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
         )}
 
         {/* Customer registration */}
-        {site.registrationFields && site.registrationFields.filter(
+        {isFeatureEnabled("registration") && site.registrationFields && site.registrationFields.filter(
           (f: any) => f.isEnabled
         ).length > 0 && (
           <RegistrationSection
@@ -225,12 +247,14 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
         )}
 
         {/* Custom links */}
-        <CustomLinksSection
-          links={site.customLinks || []}
-          accentColor={accentColor}
-          textColor={textColor}
-          siteId={id}
-        />
+        {isFeatureEnabled("customLinks") && (
+          <CustomLinksSection
+            links={site.customLinks || []}
+            accentColor={accentColor}
+            textColor={textColor}
+            siteId={id}
+          />
+        )}
 
         {/* QR section */}
         <QrSection
@@ -241,25 +265,31 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
           siteId={id}
         />
 
-        {/* Footer */}
-        <SiteFooter showKingBrand={showKingBrand} textColor={textColor} />
+        {/* Footer — respect removeBranding feature */}
+        {!isFeatureEnabled("removeBranding") ? (
+          <SiteFooter showKingBrand={showKingBrand} textColor={textColor} />
+        ) : (
+          <SiteFooter showKingBrand={false} textColor={textColor} />
+        )}
       </div>
 
-      {/* Floating WhatsApp */}
-      {whatsappNumber && <FloatingWhatsApp phoneNumber={whatsappNumber} siteId={id as string} />}
+      {/* Floating WhatsApp — only if feature enabled */}
+      {isFeatureEnabled("whatsapp") && whatsappNumber && <FloatingWhatsApp phoneNumber={whatsappNumber} siteId={id as string} />}
 
-      {/* Cart badge */}
-      <CartBadge accentColor={accentColor} />
+      {/* Cart badge — only if orders feature enabled */}
+      {isFeatureEnabled("orders") && <CartBadge accentColor={accentColor} />}
 
-      {/* Cart drawer */}
-      <CartDrawer
-        accentColor={accentColor}
-        textColor={textColor}
-        cardColor={cardColor}
-        whatsappNumber={whatsappNumber}
-        miniSiteId={id}
-        slug={slug}
-      />
+      {/* Cart drawer — only if orders feature enabled */}
+      {isFeatureEnabled("orders") && (
+        <CartDrawer
+          accentColor={accentColor}
+          textColor={textColor}
+          cardColor={cardColor}
+          whatsappNumber={whatsappNumber}
+          miniSiteId={id}
+          slug={slug}
+        />
+      )}
     </div>
   )
 }
