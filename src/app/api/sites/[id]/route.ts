@@ -97,7 +97,13 @@ export async function GET(
       return NextResponse.json({ error: "No autorizado" }, { status: 403 })
     }
 
-    return NextResponse.json({ site })
+    return NextResponse.json({
+      site: {
+        ...site,
+        // Parse sectionOrder from JSON string to array
+        sectionOrder: JSON.parse(site.sectionOrder || "[]"),
+      },
+    })
   } catch (error) {
     console.error("Error fetching site:", error)
     return NextResponse.json(

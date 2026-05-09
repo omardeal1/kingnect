@@ -148,6 +148,8 @@ export default async function SlugPage({ params }: SlugPageProps) {
   // Serialize dates for client component
   const serializedSite = {
     ...site,
+    // Parse sectionOrder from JSON string to array
+    sectionOrder: JSON.parse(site.sectionOrder || "[]"),
     planFeatures,
     createdAt: site.createdAt.toISOString(),
     updatedAt: site.updatedAt.toISOString(),

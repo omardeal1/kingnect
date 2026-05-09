@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { CartProvider, useCart } from "./cart-provider"
 import { SiteHeader } from "./site-header"
 import { ContactButtons } from "./contact-buttons"
@@ -89,6 +90,204 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
   )
   const whatsappNumber = whatsappButton?.value || site.client?.whatsapp
 
+  // ─── Section rendering functions keyed by editor tab name ───────────────
+  // Each returns JSX or null if the section should be hidden.
+  // These are used to render sections in the custom order saved by the editor.
+
+  const sectionRenderers: Record<string, () => React.ReactNode> = {
+    slides: () =>
+      isFeatureEnabled("slides") ? (
+        <SlidesSection
+          slides={site.slides || []}
+          accentColor={accentColor}
+          textColor={textColor}
+        />
+      ) : null,
+
+    contact: () =>
+      <ContactButtons
+        buttons={site.contactButtons || []}
+        accentColor={accentColor}
+        textColor={textColor}
+        cardColor={cardColor}
+        slug={slug}
+        whatsappNumber={whatsappNumber}
+        siteId={id}
+        buttonStyle={buttonStyle}
+      />,
+
+    social: () =>
+      isFeatureEnabled("socialLinks") ? (
+        <SocialLinks
+          links={site.socialLinks || []}
+          accentColor={accentColor}
+          textColor={textColor}
+          siteId={id}
+          buttonStyle={buttonStyle}
+        />
+      ) : null,
+
+    menu: () =>
+      isFeatureEnabled("menu") ? (
+        <MenuSection
+          categories={site.menuCategories || []}
+          accentColor={accentColor}
+          textColor={textColor}
+          cardColor={cardColor}
+          modifierGroups={isFeatureEnabled("modifiers") ? site.modifierGroups || [] : []}
+          siteId={id}
+          menuTemplate={(site as Record<string, unknown>).menuTemplate as string || "fresh_modern"}
+          featuredSlides={(site as Record<string, unknown>).menuFeaturedSlides as Array<{id:string;imageUrl:string;title:string|null;enabled:boolean;sortOrder:number}> || []}
+        />
+      ) : null,
+
+    gallery: () =>
+      isFeatureEnabled("gallery") ? (
+        <GallerySection
+          images={site.galleryImages || []}
+          accentColor={accentColor}
+          textColor={textColor}
+        />
+      ) : null,
+
+    services: () =>
+      isFeatureEnabled("services") ? (
+        <ServicesSection
+          services={site.services || []}
+          accentColor={accentColor}
+          textColor={textColor}
+          cardColor={cardColor}
+        />
+      ) : null,
+
+    testimonials: () =>
+      isFeatureEnabled("testimonials") ? (
+        <TestimonialsSection
+          testimonials={site.testimonials || []}
+          accentColor={accentColor}
+          textColor={textColor}
+          cardColor={cardColor}
+        />
+      ) : null,
+
+    location: () =>
+      isFeatureEnabled("locations") ? (
+        <LocationsSection
+          locations={site.locations || []}
+          accentColor={accentColor}
+          textColor={textColor}
+          cardColor={cardColor}
+        />
+      ) : null,
+
+    branches: () =>
+      isFeatureEnabled("branches") && site.branches && site.branches.filter(
+        (b: any) => b.isActive && b.isPublished
+      ).length >= 2 ? (
+        <BranchSelector
+          branches={site.branches}
+          siteSlug={slug}
+          accentColor={accentColor}
+          textColor={textColor}
+          cardColor={cardColor}
+        />
+      ) : null,
+
+    reservations: () =>
+      isFeatureEnabled("reservations") && site.reservationConfig?.isEnabled ? (
+        <ReservationSection
+          config={site.reservationConfig}
+          siteId={id}
+          siteSlug={slug}
+          accentColor={accentColor}
+          textColor={textColor}
+          cardColor={cardColor}
+          whatsappNumber={whatsappNumber}
+        />
+      ) : null,
+
+    loyalty: () =>
+      isFeatureEnabled("loyalty") && site.loyaltyConfig?.isEnabled ? (
+        <LoyaltySection
+          config={site.loyaltyConfig}
+          siteId={id}
+          accentColor={accentColor}
+          textColor={textColor}
+          cardColor={cardColor}
+        />
+      ) : null,
+
+    registration: () =>
+      isFeatureEnabled("registration") && site.registrationFields && site.registrationFields.filter(
+        (f: any) => f.isEnabled
+      ).length > 0 ? (
+        <RegistrationSection
+          siteId={id}
+          fields={site.registrationFields}
+          accentColor={accentColor}
+          textColor={textColor}
+          cardColor={cardColor}
+        />
+      ) : null,
+
+    links: () =>
+      isFeatureEnabled("customLinks") ? (
+        <CustomLinksSection
+          links={site.customLinks || []}
+          accentColor={accentColor}
+          textColor={textColor}
+          siteId={id}
+        />
+      ) : null,
+  }
+
+  // Default section order (used when no custom order is saved)
+  const defaultOrder = [
+    "slides",
+    "contact",
+    "social",
+    "menu",
+    "gallery",
+    "services",
+    "testimonials",
+    "location",
+    "branches",
+    "reservations",
+    "loyalty",
+    "registration",
+    "links",
+  ]
+
+  // Resolve final section order: custom order takes precedence, fallback to default
+  const resolvedOrder = React.useMemo(() => {
+    if (site.sectionOrder && site.sectionOrder.length > 0) {
+      const order = site.sectionOrder
+      const ordered: string[] = []
+      const seen = new Set<string>()
+
+      // First, follow the custom order (only include keys that have a renderer)
+      for (const key of order) {
+        if (sectionRenderers[key] && !seen.has(key)) {
+          ordered.push(key)
+          seen.add(key)
+        }
+      }
+
+      // Then append any remaining renderers not in the custom order
+      for (const key of defaultOrder) {
+        if (!seen.has(key)) {
+          ordered.push(key)
+          seen.add(key)
+        }
+      }
+
+      return ordered
+    }
+
+    return defaultOrder
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [site.sectionOrder])
+
   return (
     <div style={containerStyle} className="relative">
       {/* Background image overlay */}
@@ -111,152 +310,14 @@ function MiniSiteContent({ site }: MiniSitePageProps) {
           showDarkToggle={themeMode === "both"}
         />
 
-        {/* Slides */}
-        {isFeatureEnabled("slides") && (
-          <SlidesSection
-            slides={site.slides || []}
-            accentColor={accentColor}
-            textColor={textColor}
-          />
-        )}
+        {/* ─── Dynamic sections rendered in custom order ─── */}
+        {resolvedOrder.map((key) => {
+          const renderer = sectionRenderers[key]
+          if (!renderer) return null
+          return <React.Fragment key={key}>{renderer()}</React.Fragment>
+        })}
 
-        {/* Contact buttons */}
-        <ContactButtons
-          buttons={site.contactButtons || []}
-          accentColor={accentColor}
-          textColor={textColor}
-          cardColor={cardColor}
-          slug={slug}
-          whatsappNumber={whatsappNumber}
-          siteId={id}
-          buttonStyle={buttonStyle}
-        />
-
-        {/* Social links */}
-        {isFeatureEnabled("socialLinks") && (
-          <SocialLinks
-            links={site.socialLinks || []}
-            accentColor={accentColor}
-            textColor={textColor}
-            siteId={id}
-            buttonStyle={buttonStyle}
-          />
-        )}
-
-        {/* Menu */}
-        {isFeatureEnabled("menu") && (
-          <MenuSection
-            categories={site.menuCategories || []}
-            accentColor={accentColor}
-            textColor={textColor}
-            cardColor={cardColor}
-            modifierGroups={isFeatureEnabled("modifiers") ? site.modifierGroups || [] : []}
-            siteId={id}
-            menuTemplate={(site as Record<string, unknown>).menuTemplate as string || "fresh_modern"}
-            featuredSlides={(site as Record<string, unknown>).menuFeaturedSlides as Array<{id:string;imageUrl:string;title:string|null;enabled:boolean;sortOrder:number}> || []}
-          />
-        )}
-
-        {/* Gallery */}
-        {isFeatureEnabled("gallery") && (
-          <GallerySection
-            images={site.galleryImages || []}
-            accentColor={accentColor}
-            textColor={textColor}
-          />
-        )}
-
-        {/* Services */}
-        {isFeatureEnabled("services") && (
-          <ServicesSection
-            services={site.services || []}
-            accentColor={accentColor}
-            textColor={textColor}
-            cardColor={cardColor}
-          />
-        )}
-
-        {/* Testimonials */}
-        {isFeatureEnabled("testimonials") && (
-          <TestimonialsSection
-            testimonials={site.testimonials || []}
-            accentColor={accentColor}
-            textColor={textColor}
-            cardColor={cardColor}
-          />
-        )}
-
-        {/* Locations */}
-        {isFeatureEnabled("locations") && (
-          <LocationsSection
-            locations={site.locations || []}
-            accentColor={accentColor}
-            textColor={textColor}
-            cardColor={cardColor}
-          />
-        )}
-
-        {/* Branches — only if 2+ active+published and feature enabled */}
-        {isFeatureEnabled("branches") && site.branches && site.branches.filter(
-          (b: any) => b.isActive && b.isPublished
-        ).length >= 2 && (
-          <BranchSelector
-            branches={site.branches}
-            siteSlug={slug}
-            accentColor={accentColor}
-            textColor={textColor}
-            cardColor={cardColor}
-          />
-        )}
-
-        {/* Reservations */}
-        {isFeatureEnabled("reservations") && site.reservationConfig?.isEnabled && (
-          <ReservationSection
-            config={site.reservationConfig}
-            siteId={id}
-            siteSlug={slug}
-            accentColor={accentColor}
-            textColor={textColor}
-            cardColor={cardColor}
-            whatsappNumber={whatsappNumber}
-          />
-        )}
-
-        {/* Loyalty program */}
-        {isFeatureEnabled("loyalty") && site.loyaltyConfig?.isEnabled && (
-          <LoyaltySection
-            config={site.loyaltyConfig}
-            siteId={id}
-            accentColor={accentColor}
-            textColor={textColor}
-            cardColor={cardColor}
-          />
-        )}
-
-        {/* Customer registration */}
-        {isFeatureEnabled("registration") && site.registrationFields && site.registrationFields.filter(
-          (f: any) => f.isEnabled
-        ).length > 0 && (
-          <RegistrationSection
-            siteId={id}
-            fields={site.registrationFields}
-            accentColor={accentColor}
-            textColor={textColor}
-            cardColor={cardColor}
-          />
-        )}
-
-        {/* Custom links */}
-        {isFeatureEnabled("customLinks") && (
-          <CustomLinksSection
-            links={site.customLinks || []}
-            accentColor={accentColor}
-            textColor={textColor}
-            siteId={id}
-          />
-        )}
-
-        {/* QR section */}
+        {/* QR section — always in fixed position before footer */}
         <QrSection
           slug={slug}
           accentColor={accentColor}
