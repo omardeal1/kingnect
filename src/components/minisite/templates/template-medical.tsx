@@ -52,6 +52,7 @@ import { LanguageToggle } from "@/components/ui/language-toggle"
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 // ─── Color Palette ──────────────────────────────────────────────────────────────
+// These are defaults; site.accentColor overrides the accent colors when provided
 
 const COLORS = {
   white: "#FFFFFF",
@@ -65,6 +66,12 @@ const COLORS = {
   accentSoft: "#EBF3FC",
   borderLight: "#D1D9E6",
 }
+
+// Helper to get the effective accent color from site or fallback
+function getAccent(site: any): string {
+  return site.accentColor || COLORS.lightBlue
+}
+
 
 // ─── Service Icon Mapping ───────────────────────────────────────────────────────
 
@@ -268,9 +275,11 @@ function MedicalHeader({
 function MedicalSlider({
   slides,
   siteId,
+  accent,
 }: {
   slides: any[]
   siteId: string
+  accent: string
 }) {
   const { t } = useTranslations("minisite")
   const enabledSlides = slides.filter((s: any) => s.enabled && s.imageUrl)
@@ -370,7 +379,7 @@ function MedicalSlider({
                         )
                       }
                       className="inline-block mt-2 px-4 py-1.5 rounded-full text-xs font-semibold transition-transform hover:scale-105"
-                      style={{ backgroundColor: COLORS.lightBlue }}
+                      style={{ backgroundColor: accent }}
                     >
                       {slide.buttonLabel}
                     </a>
@@ -391,7 +400,7 @@ function MedicalSlider({
             className="w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm"
             style={{
               backgroundColor: canScrollPrev
-                ? COLORS.lightBlue
+                ? accent
                 : COLORS.mediumGray,
               color: "#fff",
             }}
@@ -412,7 +421,7 @@ function MedicalSlider({
                   height: "6px",
                   backgroundColor:
                     idx === selectedIndex
-                      ? COLORS.lightBlue
+                      ? accent
                       : COLORS.borderLight,
                 }}
                 aria-label={`Go to slide ${idx + 1}`}
@@ -691,11 +700,13 @@ function MedicalBottomBar({
   socialLinks,
   locations,
   siteId,
+  site,
 }: {
   contactButtons: any[]
   socialLinks: any[]
   locations: any[]
   siteId: string
+  site: any
 }) {
   const { t } = useTranslations("minisite")
 
@@ -812,12 +823,13 @@ function MedicalBottomBar({
   }
 
   if (barItems.length === 0) return null
+  const barColor = getAccent(site)
 
   return (
     <div
       className="fixed bottom-0 left-0 right-0 z-40"
       style={{
-        backgroundColor: COLORS.strongBlue,
+        backgroundColor: barColor,
         boxShadow: "0 -2px 10px rgba(0,0,0,0.15)",
       }}
     >
@@ -900,6 +912,7 @@ function MedicalContent({ site }: MedicalTemplateProps) {
         <MedicalSlider
           slides={slides || []}
           siteId={id}
+          accent={getAccent(site)}
         />
 
         {/* Services Grid */}
@@ -1020,6 +1033,7 @@ function MedicalContent({ site }: MedicalTemplateProps) {
         socialLinks={socialLinks || []}
         locations={locations || []}
         siteId={id}
+        site={site}
       />
     </div>
   )

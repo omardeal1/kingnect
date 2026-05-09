@@ -61,9 +61,14 @@ const COLORS = {
   textMuted: "rgba(255,255,255,0.6)",
 }
 
+// Helper to get the effective accent color from site or fallback
+function getAccent(site: any): string {
+  return site.accentColor || COLORS.gold
+}
+
 // ─── Cart Badge ─────────────────────────────────────────────────────────────────
 
-function CartBadge() {
+function CartBadge({ accent }: { accent: string }) {
   const { itemCount, setOpen } = useCart()
   if (itemCount === 0) return null
   return (
@@ -72,7 +77,7 @@ function CartBadge() {
       animate={{ scale: 1 }}
       onClick={() => setOpen(true)}
       className="fixed bottom-24 left-4 z-50 w-13 h-13 rounded-full text-white flex items-center justify-center shadow-lg"
-      style={{ backgroundColor: COLORS.gold }}
+      style={{ backgroundColor: accent }}
       aria-label="Ver carrito"
     >
       <ShoppingBag className="w-5 h-5" />
@@ -114,6 +119,7 @@ function FashionContent({ site }: FashionTemplateProps) {
     (b: any) => b.type === "whatsapp" && b.enabled
   )
   const whatsappNumber = whatsappButton?.value || client?.whatsapp
+  const accent = getAccent(site)
 
   // ─── Language Toggle ──────────────────────────────────────────────────────
 
@@ -819,9 +825,9 @@ function FashionContent({ site }: FashionTemplateProps) {
       )}
 
       {/* ─── CART ──────────────────────────────────────────────────────── */}
-      <CartBadge />
+      <CartBadge accent={accent} />
       <CartDrawer
-        accentColor={COLORS.gold}
+        accentColor={accent}
         textColor={COLORS.textLight}
         cardColor={COLORS.darkGray}
         whatsappNumber={whatsappNumber}

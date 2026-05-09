@@ -15,6 +15,21 @@ export interface TemplateInfo {
 
 export const SITE_TEMPLATES: TemplateInfo[] = [
   {
+    id: "classic",
+    name: "Clásico",
+    description: {
+      es: "Diseño completo y personalizable con todas las secciones, colores configurables, botones de estilo y orden de secciones libre. El más versátil para cualquier negocio.",
+      en: "Complete and customizable design with all sections, configurable colors, styled buttons and free section ordering. The most versatile for any business.",
+    },
+    previewColors: {
+      primary: "#D4A849",
+      secondary: "#F5F0E8",
+      accent: "#D4A849",
+      background: "#FFFFFF",
+    },
+    features: ["13 secciones", "Orden libre", "Colores editables", "Estilos de botón", "Tema oscuro/claro"],
+  },
+  {
     id: "medical",
     name: "Servicios Profesionales",
     description: {

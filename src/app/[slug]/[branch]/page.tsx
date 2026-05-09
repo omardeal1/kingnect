@@ -1,6 +1,7 @@
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 import { MiniSitePage } from "@/components/minisite/minisite-page"
+import { TemplateRenderer } from "@/components/minisite/template-renderer"
 import { BlockedScreen } from "@/components/minisite/blocked-screen"
 import { SectionPage } from "@/components/minisite/section-page"
 import {
@@ -351,5 +352,5 @@ export default async function BranchOrSectionPage({ params }: BranchPageProps) {
     // Silently fail analytics
   }
 
-  return <MiniSitePage site={serializedSite} />
+  return <TemplateRenderer site={serializedSite} />
 }

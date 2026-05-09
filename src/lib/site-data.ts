@@ -36,6 +36,8 @@ export function serializeSite(site: any) {
   if (!site) return null
   return {
     ...site,
+    // Parse sectionOrder from JSON string to array
+    sectionOrder: JSON.parse(site.sectionOrder || "[]"),
     createdAt: site.createdAt.toISOString(),
     updatedAt: site.updatedAt.toISOString(),
     menuCategories: (site.menuCategories || []).map((cat: any) => ({
