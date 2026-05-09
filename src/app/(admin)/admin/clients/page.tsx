@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Search, Eye, Ban, CheckCircle2, StickyNote, ExternalLink,
@@ -98,6 +98,8 @@ export default function AdminClientsPage() {
   const [clients, setClients] = useState<ClientData[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
+  const [searchInput, setSearchInput] = useState("")
+  const debounceRef = useRef<NodeJS.Timeout | null>(null)
   const [statusFilter, setStatusFilter] = useState("all")
   const [page, setPage] = useState(0)
   const pageSize = 20
@@ -150,6 +152,23 @@ export default function AdminClientsPage() {
     } catch { toast.error("Error al cargar clientes") }
     finally { setLoading(false) }
   }, [search, statusFilter])
+
+  /* Debounced search handler */
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchInput(value)
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      setSearch(value)
+      setPage(0)
+    }, 300)
+  }, [])
+
+  /* Clear debounce on unmount */
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [])
 
   const fetchPlans = useCallback(async () => {
     try {
@@ -314,8 +333,8 @@ export default function AdminClientsPage() {
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input placeholder="Buscar por nombre, negocio, teléfono, email..." value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(0) }} className="pl-9" />
+              <Input placeholder="Buscar por nombre, negocio, teléfono o correo..." value={searchInput}
+                onChange={(e) => handleSearchChange(e.target.value)} className="pl-9" />
             </div>
             <div className="flex gap-2 flex-wrap">
               {STATUS_FILTERS.map((f) => (

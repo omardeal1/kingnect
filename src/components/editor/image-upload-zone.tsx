@@ -9,6 +9,7 @@ interface ImageUploadZoneProps {
   folder?: string;
   variant?: string;
   currentImageUrl?: string | null;
+  recommendedSize?: string;
 }
 
 export function ImageUploadZone({
@@ -17,6 +18,7 @@ export function ImageUploadZone({
   folder,
   variant = "default",
   currentImageUrl,
+  recommendedSize,
 }: ImageUploadZoneProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = React.useState(false);
@@ -97,46 +99,58 @@ export function ImageUploadZone({
           onChange={handleFileSelect}
           className="hidden"
         />
+        {recommendedSize && (
+          <p className="text-xs text-muted-foreground text-center mt-1">
+            Tamaño recomendado: {recommendedSize}
+          </p>
+        )}
       </div>
     );
   }
 
   if (variant === "avatar") {
     return (
-      <div className="relative">
-        {preview ? (
-          <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-border">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={preview} alt="Photo" className="w-full h-full object-cover" />
+      <div className="inline-flex flex-col items-center">
+        <div className="relative">
+          {preview ? (
+            <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-border">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={preview} alt="Photo" className="w-full h-full object-cover" />
+              <button
+                type="button"
+                onClick={handleRemove}
+                className="absolute top-0 right-0 w-4 h-4 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition-colors"
+              >
+                <X className="w-2.5 h-2.5" />
+              </button>
+            </div>
+          ) : (
             <button
               type="button"
-              onClick={handleRemove}
-              className="absolute top-0 right-0 w-4 h-4 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition-colors"
+              onClick={() => inputRef.current?.click()}
+              disabled={isUploading}
+              className="w-14 h-14 rounded-full border-2 border-dashed border-border flex items-center justify-center hover:border-primary/50 transition-colors disabled:opacity-50"
             >
-              <X className="w-2.5 h-2.5" />
+              {isUploading ? (
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <ImageIcon className="w-5 h-5 text-muted-foreground" />
+              )}
             </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            disabled={isUploading}
-            className="w-14 h-14 rounded-full border-2 border-dashed border-border flex items-center justify-center hover:border-primary/50 transition-colors disabled:opacity-50"
-          >
-            {isUploading ? (
-              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <ImageIcon className="w-5 h-5 text-muted-foreground" />
-            )}
-          </button>
+          )}
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+        </div>
+        {recommendedSize && (
+          <p className="text-xs text-muted-foreground text-center mt-1">
+            Tamaño recomendado: {recommendedSize}
+          </p>
         )}
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
       </div>
     );
   }
@@ -164,6 +178,11 @@ export function ImageUploadZone({
           onChange={handleFileSelect}
           className="hidden"
         />
+        {recommendedSize && (
+          <p className="text-xs text-muted-foreground text-center mt-1.5">
+            Tamaño recomendado: {recommendedSize}
+          </p>
+        )}
       </div>
     );
   }
@@ -186,7 +205,9 @@ export function ImageUploadZone({
             Haz clic o arrastra una imagen
           </p>
           <p className="text-[10px] text-muted-foreground">
-            Recomendado: 800 x 600 px (máx. 10 MB)
+            {recommendedSize
+              ? `Tamaño recomendado: ${recommendedSize}`
+              : "Recomendado: 800 x 600 px (máx. 10 MB)"}
           </p>
         </>
       )}

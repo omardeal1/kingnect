@@ -209,7 +209,7 @@ export function EditorHeader({ onSaveDraft, onPublish, onPreview, onRefreshPrevi
       >
         <Save className="size-3.5" />
         <span className="hidden sm:inline">
-          {isSaving ? "Guardando..." : "Guardar borrador"}
+          {isSaving ? "Actualizando..." : "Actualizar"}
         </span>
       </Button>
 

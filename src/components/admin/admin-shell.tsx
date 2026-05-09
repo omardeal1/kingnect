@@ -60,6 +60,7 @@ const navItems = [
   { href: "/admin/reservations", key: "nav.reservations", icon: CalendarDays },
   { href: "/admin/customers", key: "nav.customers", icon: Users },
   { href: "/admin/employees", key: "nav.employees", icon: UserCog },
+  { href: "/admin/team", key: "nav.myTeam", icon: Users },
 ]
 
 interface AdminShellProps {
@@ -92,7 +93,7 @@ function SidebarContent({
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-border">
         <Link
-          href="/dashboard"
+          href={firstSiteId ? `/dashboard/sites/${firstSiteId}/edit` : "/dashboard"}
           className="flex items-center gap-3 flex-shrink-0"
           onClick={onNavigate}
         >
@@ -292,6 +293,12 @@ export function AdminShell({ user, firstSiteId, children }: AdminShellProps) {
               <Crown className="w-3 h-3 mr-1" />
               {t("title")}
             </Badge>
+            <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
+              <Link href="/api/auth/signout">
+                <LogOut className="size-4" />
+                <span className="sr-only">{t("nav.closeSession")}</span>
+              </Link>
+            </Button>
           </div>
         </header>
 

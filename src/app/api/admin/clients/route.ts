@@ -28,6 +28,8 @@ export async function GET(request: Request) {
         { contactName: { contains: search } },
         { email: { contains: search } },
         { phone: { contains: search } },
+        { whatsapp: { contains: search } },
+        { owner: { name: { contains: search } } },
       ]
     }
 

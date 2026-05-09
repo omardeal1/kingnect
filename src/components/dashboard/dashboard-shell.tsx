@@ -174,6 +174,8 @@ export function DashboardShell({
                     key={navItem.href}
                     href={navItem.href}
                     onClick={() => setSidebarOpen(false)}
+                    target={navItem.labelKey === "nav.myQaiross" ? "_blank" : undefined}
+                    rel={navItem.labelKey === "nav.myQaiross" ? "noopener noreferrer" : undefined}
                     className={cn(
                       "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                       isActive(navItem.href)
@@ -200,19 +202,38 @@ export function DashboardShell({
           </Sheet>
 
           {/* Logo / Business name */}
-          <div className="flex items-center gap-2">
-            <div className="hidden md:flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Crown className="size-4" />
+          {siteId ? (
+            <Link
+              href={`/dashboard/sites/${siteId}/edit`}
+              className="flex items-center gap-2"
+            >
+              <div className="hidden md:flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <Crown className="size-4" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-semibold text-sm leading-tight">
+                  {businessName}
+                </span>
+                <span className="text-[11px] text-muted-foreground leading-tight">
+                  {t("nav.plan")} {planName}
+                </span>
+              </div>
+            </Link>
+          ) : (
+            <div className="flex items-center gap-2">
+              <div className="hidden md:flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <Crown className="size-4" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-semibold text-sm leading-tight">
+                  {businessName}
+                </span>
+                <span className="text-[11px] text-muted-foreground leading-tight">
+                  {t("nav.plan")} {planName}
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col">
-              <span className="font-semibold text-sm leading-tight">
-                {businessName}
-              </span>
-              <span className="text-[11px] text-muted-foreground leading-tight">
-                {t("nav.plan")} {planName}
-              </span>
-            </div>
-          </div>
+          )}
 
           <div className="flex-1" />
 
@@ -272,6 +293,8 @@ export function DashboardShell({
               <Link
                 key={navItem.href}
                 href={navItem.href}
+                target={navItem.labelKey === "nav.myQaiross" ? "_blank" : undefined}
+                rel={navItem.labelKey === "nav.myQaiross" ? "noopener noreferrer" : undefined}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive(navItem.href)
@@ -311,6 +334,8 @@ export function DashboardShell({
             <Link
               key={navItem.href}
               href={navItem.href}
+              target={navItem.labelKey === "nav.myQaiross" ? "_blank" : undefined}
+              rel={navItem.labelKey === "nav.myQaiross" ? "noopener noreferrer" : undefined}
               className={cn(
                 "flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors",
                 isActive(navItem.href)

@@ -150,8 +150,8 @@ export function TabGaleria({ siteId }: TabGaleriaProps) {
         onUpload={handleImageUploaded}
         context="gallery"
         folder="gallery"
+        recommendedSize="800 × 800 px"
       />
-      <p className="text-xs text-muted-foreground -mt-2">Recomendado: 800×800px, máximo 3MB</p>
 
       {images.length === 0 ? (
         <Card>
