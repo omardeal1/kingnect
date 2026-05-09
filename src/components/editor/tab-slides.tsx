@@ -6,8 +6,7 @@ import {
   Image as ImageIcon,
   Plus,
   Trash2,
-  ArrowUp,
-  ArrowDown,
+  GripVertical,
   Loader2,
   Type,
   Subtitles,
@@ -15,6 +14,9 @@ import {
   ToggleLeft,
   Pencil,
 } from "lucide-react"
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core"
+import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -30,6 +32,27 @@ interface TabSlidesProps {
 
 const MAX_SLIDES = 5
 
+function SortableSlideCard({
+  id,
+  children,
+}: {
+  id: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  children: (dragProps: { attributes: any; listeners: any; setActivatorNodeRef: (node: HTMLElement | null) => void }) => React.ReactNode
+}) {
+  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id })
+  const style: React.CSSProperties = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.3 : 1, zIndex: isDragging ? 50 : "auto" }
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Card className="overflow-hidden group/slide">
+        <div className="p-4 space-y-3">
+          {children({ attributes, listeners, setActivatorNodeRef })}
+        </div>
+      </Card>
+    </div>
+  )
+}
+
 export function TabSlides({ siteId }: TabSlidesProps) {
   const site = useEditorStore((s) => s.site)
   const addSlide = useEditorStore((s) => s.addSlide)
@@ -39,6 +62,7 @@ export function TabSlides({ siteId }: TabSlidesProps) {
   const [saving, setSaving] = React.useState(false)
   const [imageEditorOpen, setImageEditorOpen] = React.useState(false)
   const [editingSlideId, setEditingSlideId] = React.useState<string | null>(null)
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
 
   if (!site) return null
 
@@ -139,41 +163,28 @@ export function TabSlides({ siteId }: TabSlidesProps) {
     toast.success("Imagen del slide actualizada")
   }
 
-  const handleMoveUp = (index: number) => {
-    if (index <= 0) return
-    const slide = slides[index]
-    const prevSlide = slides[index - 1]
-    updateSlide(slide.id, { sortOrder: prevSlide.sortOrder })
-    updateSlide(prevSlide.id, { sortOrder: slide.sortOrder })
-    // Persist both
-    fetch(`/api/sites/${siteId}/slides`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slideId: slide.id, sortOrder: prevSlide.sortOrder }),
-    })
-    fetch(`/api/sites/${siteId}/slides`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slideId: prevSlide.id, sortOrder: slide.sortOrder }),
-    })
-  }
-
-  const handleMoveDown = (index: number) => {
-    if (index >= slides.length - 1) return
-    const slide = slides[index]
-    const nextSlide = slides[index + 1]
-    updateSlide(slide.id, { sortOrder: nextSlide.sortOrder })
-    updateSlide(nextSlide.id, { sortOrder: slide.sortOrder })
-    fetch(`/api/sites/${siteId}/slides`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slideId: slide.id, sortOrder: nextSlide.sortOrder }),
-    })
-    fetch(`/api/sites/${siteId}/slides`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slideId: nextSlide.id, sortOrder: slide.sortOrder }),
-    })
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const oldIndex = slides.findIndex((s) => s.id === active.id)
+    const newIndex = slides.findIndex((s) => s.id === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+    const reordered = arrayMove(slides, oldIndex, newIndex)
+    // Update store optimistically
+    reordered.forEach((s, i) => updateSlide(s.id, { sortOrder: i }))
+    // Persist
+    try {
+      await Promise.all(
+        reordered.map((s) =>
+          fetch(`/api/sites/${siteId}/slides`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ slideId: s.id, sortOrder: reordered.indexOf(s) }),
+          })
+        )
+      )
+      toast.success("Orden actualizado")
+    } catch { toast.error("Error al reordenar") }
   }
 
   return (
@@ -197,11 +208,17 @@ export function TabSlides({ siteId }: TabSlidesProps) {
             </p>
           )}
 
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={slides.map((s) => s.id)} strategy={verticalListSortingStrategy}>
           {slides.map((slide, idx) => (
-            <Card key={slide.id} className="overflow-hidden">
-              <div className="p-4 space-y-3">
+            <SortableSlideCard key={slide.id} id={slide.id}>
+              {({ attributes, listeners, setActivatorNodeRef }) => (
+                <>
                 {/* Header: number + toggle + reorder + delete */}
                 <div className="flex items-center gap-2">
+                  <div ref={setActivatorNodeRef} {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing touch-none">
+                    <GripVertical className="size-4 text-muted-foreground/40 group-hover/slide:text-muted-foreground/70 transition-colors" />
+                  </div>
                   <span className="flex items-center justify-center size-6 rounded-full bg-[#D4A849] text-white text-xs font-bold">
                     {idx + 1}
                   </span>
@@ -218,24 +235,6 @@ export function TabSlides({ siteId }: TabSlidesProps) {
                         }
                       />
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-7"
-                      onClick={() => handleMoveUp(idx)}
-                      disabled={idx === 0}
-                    >
-                      <ArrowUp className="size-3.5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-7"
-                      onClick={() => handleMoveDown(idx)}
-                      disabled={idx === slides.length - 1}
-                    >
-                      <ArrowDown className="size-3.5" />
-                    </Button>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -339,9 +338,12 @@ export function TabSlides({ siteId }: TabSlidesProps) {
                     />
                   </div>
                 </div>
-              </div>
-            </Card>
+                </>
+              )}
+            </SortableSlideCard>
           ))}
+          </SortableContext>
+          </DndContext>
 
           {/* Add slide button */}
           <Button

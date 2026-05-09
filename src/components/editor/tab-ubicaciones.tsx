@@ -13,7 +13,23 @@ import {
   Globe,
   MapPinned,
   Loader2,
+  GripVertical,
 } from "lucide-react"
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -21,6 +37,43 @@ import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useEditorStore, type LocationData } from "@/lib/editor-store"
+
+function SortableLocationItem({
+  id,
+  children,
+}: {
+  id: string
+  children: React.ReactNode
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id })
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.3 : 1,
+    zIndex: isDragging ? 50 : "auto",
+  }
+  return (
+    <div ref={setNodeRef} style={style} className="flex items-start gap-2">
+      <div
+        ref={setActivatorNodeRef}
+        {...attributes}
+        {...listeners}
+        className="shrink-0 pt-3 cursor-grab active:cursor-grabbing touch-none"
+      >
+        <GripVertical className="size-4 text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors" />
+      </div>
+      <div className="flex-1 min-w-0">{children}</div>
+    </div>
+  )
+}
 
 interface TabUbicacionesProps {
   siteId: string
@@ -42,6 +95,10 @@ export function TabUbicaciones({ siteId }: TabUbicacionesProps) {
   const [formMapsUrl, setFormMapsUrl] = React.useState("")
   const [formHours, setFormHours] = React.useState("")
   const [formEnabled, setFormEnabled] = React.useState(true)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  )
 
   if (!site) return null
 
@@ -163,6 +220,35 @@ export function TabUbicaciones({ siteId }: TabUbicacionesProps) {
     }
   }
 
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const oldIndex = locations.findIndex((l) => l.id === active.id)
+    const newIndex = locations.findIndex((l) => l.id === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+    const reordered = arrayMove(locations, oldIndex, newIndex)
+    // Update store
+    reordered.forEach((loc, i) => updateLocation(loc.id, { sortOrder: i }))
+    // Persist
+    try {
+      await Promise.all(
+        reordered.map((loc) =>
+          fetch(`/api/sites/${siteId}/locations`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              locationId: loc.id,
+              sortOrder: reordered.indexOf(loc),
+            }),
+          })
+        )
+      )
+      toast.success("Orden actualizado")
+    } catch {
+      toast.error("Error al reordenar")
+    }
+  }
+
   const handleToggleEnabled = async (loc: LocationData) => {
     const newEnabled = !loc.enabled
     updateLocation(loc.id, { enabled: newEnabled })
@@ -194,8 +280,10 @@ export function TabUbicaciones({ siteId }: TabUbicacionesProps) {
           )}
 
           {/* Location cards */}
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={locations.map((l) => l.id)} strategy={verticalListSortingStrategy}>
           {locations.map((loc) => (
-            <div key={loc.id}>
+            <SortableLocationItem key={loc.id} id={loc.id}>
               {editingId === loc.id ? (
                 /* Edit form */
                 <div className="space-y-3 rounded-lg border p-4 bg-muted/20">
@@ -276,58 +364,62 @@ export function TabUbicaciones({ siteId }: TabUbicacionesProps) {
                 </div>
               ) : (
                 /* Display card */
-                <div className="flex items-start gap-3 rounded-lg border p-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <MapPin className="size-4 text-[#D4A849] shrink-0" />
-                      <span className="text-sm font-medium truncate">
-                        {loc.name}
-                      </span>
-                      {!loc.enabled && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
-                          Desactivada
+                <div className="rounded-lg border p-3">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <MapPin className="size-4 text-[#D4A849] shrink-0" />
+                        <span className="text-sm font-medium truncate">
+                          {loc.name}
                         </span>
+                        {!loc.enabled && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+                            Desactivada
+                          </span>
+                        )}
+                      </div>
+                      {loc.address && (
+                        <p className="text-xs text-muted-foreground ml-6">
+                          {loc.address}
+                        </p>
+                      )}
+                      {loc.hours && (
+                        <p className="text-xs text-muted-foreground ml-6 flex items-center gap-1">
+                          <Clock className="size-3" />
+                          {loc.hours}
+                        </p>
                       )}
                     </div>
-                    {loc.address && (
-                      <p className="text-xs text-muted-foreground ml-6">
-                        {loc.address}
-                      </p>
-                    )}
-                    {loc.hours && (
-                      <p className="text-xs text-muted-foreground ml-6 flex items-center gap-1">
-                        <Clock className="size-3" />
-                        {loc.hours}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <Switch
-                      checked={loc.enabled}
-                      onCheckedChange={() => handleToggleEnabled(loc)}
-                      className="scale-75"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-7"
-                      onClick={() => startEdit(loc)}
-                    >
-                      <Pencil className="size-3.5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-7 text-destructive"
-                      onClick={() => handleDelete(loc.id)}
-                    >
-                      <Trash2 className="size-3.5" />
-                    </Button>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Switch
+                        checked={loc.enabled}
+                        onCheckedChange={() => handleToggleEnabled(loc)}
+                        className="scale-75"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-7"
+                        onClick={() => startEdit(loc)}
+                      >
+                        <Pencil className="size-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-7 text-destructive"
+                        onClick={() => handleDelete(loc.id)}
+                      >
+                        <Trash2 className="size-3.5" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}
-            </div>
+            </SortableLocationItem>
           ))}
+            </SortableContext>
+          </DndContext>
 
           {/* Add new form */}
           {addingNew && (

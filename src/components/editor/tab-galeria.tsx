@@ -5,11 +5,25 @@ import { toast } from "sonner"
 import {
   Plus,
   Trash2,
-  ArrowUp,
-  ArrowDown,
+  GripVertical,
   Camera,
   Pencil,
 } from "lucide-react"
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -21,6 +35,40 @@ import { ImageUploadZone } from "@/components/editor/image-upload-zone"
 
 interface TabGaleriaProps {
   siteId: string
+}
+
+function SortableGalleryItem({ id, children }: { id: string; children: React.ReactNode }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id })
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.3 : 1,
+    zIndex: isDragging ? 50 : "auto",
+  }
+
+  return (
+    <div ref={setNodeRef} style={style} className="relative">
+      {children}
+      {/* Drag handle - shown on hover */}
+      <div
+        ref={setActivatorNodeRef}
+        {...attributes}
+        {...listeners}
+        className="absolute top-2 left-2 z-10 size-7 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing touch-none shadow-sm border"
+      >
+        <GripVertical className="size-3.5 text-muted-foreground" />
+      </div>
+    </div>
+  )
 }
 
 export function TabGaleria({ siteId }: TabGaleriaProps) {
@@ -90,29 +138,40 @@ export function TabGaleria({ siteId }: TabGaleriaProps) {
     }
   }
 
-  // ─── Reorder ────────────────────────────────────────────────────────
-  const handleReorder = async (index: number, direction: "up" | "down") => {
-    if (!site) return
-    const list = [...images]
-    const targetIndex = direction === "up" ? index - 1 : index + 1
-    if (targetIndex < 0 || targetIndex >= list.length) return
+  // ─── Drag & Drop Reorder ──────────────────────────────────────────
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    })
+  )
 
-    ;[list[index], list[targetIndex]] = [list[targetIndex], list[index]]
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id || !site) return
 
-    list.forEach((img, i) => {
+    const oldIndex = images.findIndex((img) => img.id === active.id)
+    const newIndex = images.findIndex((img) => img.id === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+
+    const reordered = arrayMove(images, oldIndex, newIndex)
+
+    // Update local state optimistically
+    reordered.forEach((img, i) => {
       updateGalleryImage(img.id, { sortOrder: i })
     })
 
+    // Persist to backend
     try {
       await Promise.all(
-        list.map((img) =>
+        reordered.map((img) =>
           fetch(`/api/sites/${siteId}/gallery`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ imageId: img.id, sortOrder: list.indexOf(img) }),
+            body: JSON.stringify({ imageId: img.id, sortOrder: reordered.indexOf(img) }),
           })
         )
       )
+      toast.success("Orden actualizado")
     } catch {
       toast.error("Error al reordenar")
     }
@@ -166,83 +225,71 @@ export function TabGaleria({ siteId }: TabGaleriaProps) {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {images.map((img, index) => (
-            <Card key={img.id} className="overflow-hidden group">
-              <div className="relative aspect-square">
-                <img
-                  src={img.imageUrl}
-                  alt={img.caption || "Imagen de galería"}
-                  className={`size-full object-cover ${!img.enabled ? "opacity-50" : ""}`}
-                />
-                {/* Overlay controls */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100">
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="size-7"
-                    disabled={index === 0}
-                    onClick={() => handleReorder(index, "up")}
-                  >
-                    <ArrowUp className="size-3.5" />
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="size-7"
-                    disabled={index === images.length - 1}
-                    onClick={() => handleReorder(index, "down")}
-                  >
-                    <ArrowDown className="size-3.5" />
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="size-7"
-                    onClick={() => handleOpenImageEditor(img.id)}
-                  >
-                    <Pencil className="size-3.5" />
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    className="size-7"
-                    onClick={() => handleDelete(img.id)}
-                  >
-                    <Trash2 className="size-3.5" />
-                  </Button>
-                </div>
-                {/* Enabled/disabled indicator */}
-                {!img.enabled && (
-                  <div className="absolute top-2 right-2">
-                    <span className="text-[10px] bg-background/80 text-muted-foreground px-1.5 py-0.5 rounded">
-                      Inactiva
-                    </span>
-                  </div>
-                )}
-              </div>
-              <CardContent className="p-2 space-y-2">
-                <Input
-                  value={img.caption ?? ""}
-                  onChange={(e) => handleUpdate(img.id, { caption: e.target.value || null })}
-                  className="h-7 text-xs"
-                  placeholder="Descripción..."
-                />
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id={`gallery-enabled-${img.id}`}
-                    checked={img.enabled}
-                    onCheckedChange={(v) => handleUpdate(img.id, { enabled: v })}
-                    className="scale-75"
-                  />
-                  <Label htmlFor={`gallery-enabled-${img.id}`} className="text-xs text-muted-foreground cursor-pointer">
-                    {img.enabled ? "Activa" : "Inactiva"}
-                  </Label>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={images.map(img => img.id)} strategy={verticalListSortingStrategy}>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {images.map((img) => (
+                <SortableGalleryItem key={img.id} id={img.id}>
+                  <Card className="overflow-hidden group">
+                    <div className="relative aspect-square">
+                      <img
+                        src={img.imageUrl}
+                        alt={img.caption || "Imagen de galería"}
+                        className={`size-full object-cover ${!img.enabled ? "opacity-50" : ""}`}
+                      />
+                      {/* Overlay controls */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100">
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          className="size-7"
+                          onClick={() => handleOpenImageEditor(img.id)}
+                        >
+                          <Pencil className="size-3.5" />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          className="size-7"
+                          onClick={() => handleDelete(img.id)}
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
+                      </div>
+                      {/* Enabled/disabled indicator */}
+                      {!img.enabled && (
+                        <div className="absolute top-2 right-2">
+                          <span className="text-[10px] bg-background/80 text-muted-foreground px-1.5 py-0.5 rounded">
+                            Inactiva
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <CardContent className="p-2 space-y-2">
+                      <Input
+                        value={img.caption ?? ""}
+                        onChange={(e) => handleUpdate(img.id, { caption: e.target.value || null })}
+                        className="h-7 text-xs"
+                        placeholder="Descripción..."
+                      />
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          id={`gallery-enabled-${img.id}`}
+                          checked={img.enabled}
+                          onCheckedChange={(v) => handleUpdate(img.id, { enabled: v })}
+                          className="scale-75"
+                        />
+                        <Label htmlFor={`gallery-enabled-${img.id}`} className="text-xs text-muted-foreground cursor-pointer">
+                          {img.enabled ? "Activa" : "Inactiva"}
+                        </Label>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </SortableGalleryItem>
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       )}
 
       {/* Image Editor Dialog */}

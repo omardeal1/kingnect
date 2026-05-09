@@ -5,10 +5,24 @@ import { toast } from "sonner"
 import {
   Plus,
   Trash2,
-  ArrowUp,
-  ArrowDown,
   Briefcase,
+  GripVertical,
 } from "lucide-react"
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -17,6 +31,48 @@ import { Button } from "@/components/ui/button"
 import { useEditorStore, type ServiceData } from "@/lib/editor-store"
 import { ImageUploadZone } from "@/components/editor/image-upload-zone"
 
+// ─── Sortable wrapper ──────────────────────────────────────────────
+function SortableServiceCard({ id, children }: { id: string; children: React.ReactNode }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id })
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.3 : 1,
+    zIndex: isDragging ? 50 : "auto",
+  }
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Card className="overflow-hidden group/svc">
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-start gap-3">
+            {/* Drag handle */}
+            <div
+              ref={setActivatorNodeRef}
+              {...attributes}
+              {...listeners}
+              className="shrink-0 pt-1 cursor-grab active:cursor-grabbing touch-none"
+            >
+              <GripVertical className="size-4 text-muted-foreground/40 group-hover/svc:text-muted-foreground/70 transition-colors" />
+            </div>
+            {children}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+// ─── Main component ────────────────────────────────────────────────
 interface TabServiciosProps {
   siteId: string
 }
@@ -30,6 +86,10 @@ export function TabServicios({ siteId }: TabServiciosProps) {
   } = useEditorStore()
 
   const services = site?.services ?? []
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  )
 
   // ─── Add ────────────────────────────────────────────────────────────
   const handleAdd = async () => {
@@ -89,28 +149,26 @@ export function TabServicios({ siteId }: TabServiciosProps) {
     }
   }
 
-  // ─── Reorder ────────────────────────────────────────────────────────
-  const handleReorder = async (index: number, direction: "up" | "down") => {
-    if (!site) return
-    const list = [...services]
-    const targetIndex = direction === "up" ? index - 1 : index + 1
-    if (targetIndex < 0 || targetIndex >= list.length) return
-
-    ;[list[index], list[targetIndex]] = [list[targetIndex], list[index]]
-    list.forEach((svc, i) => {
-      updateService(svc.id, { sortOrder: i })
-    })
-
+  // ─── Drag & Drop reorder ────────────────────────────────────────────
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id || !site) return
+    const oldIndex = services.findIndex((s) => s.id === active.id)
+    const newIndex = services.findIndex((s) => s.id === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+    const reordered = arrayMove(services, oldIndex, newIndex)
+    reordered.forEach((svc, i) => updateService(svc.id, { sortOrder: i }))
     try {
       await Promise.all(
-        list.map((svc) =>
+        reordered.map((svc) =>
           fetch(`/api/sites/${siteId}/services`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ serviceId: svc.id, sortOrder: list.indexOf(svc) }),
+            body: JSON.stringify({ serviceId: svc.id, sortOrder: reordered.indexOf(svc) }),
           })
         )
       )
+      toast.success("Orden actualizado")
     } catch {
       toast.error("Error al reordenar")
     }
@@ -151,11 +209,11 @@ export function TabServicios({ siteId }: TabServiciosProps) {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
-          {services.map((svc, index) => (
-            <Card key={svc.id} className="overflow-hidden">
-              <CardContent className="p-4 space-y-3">
-                <div className="flex items-start gap-3">
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={services.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-3">
+              {services.map((svc) => (
+                <SortableServiceCard key={svc.id} id={svc.id}>
                   {/* Image */}
                   <div className="shrink-0">
                     <p className="text-[10px] text-muted-foreground mb-1">Recomendado: 800×600px, máximo 3MB</p>
@@ -226,49 +284,30 @@ export function TabServicios({ siteId }: TabServiciosProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="size-7"
-                      disabled={index === 0}
-                      onClick={() => handleReorder(index, "up")}
-                    >
-                      <ArrowUp className="size-3.5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-7"
-                      disabled={index === services.length - 1}
-                      onClick={() => handleReorder(index, "down")}
-                    >
-                      <ArrowDown className="size-3.5" />
-                    </Button>
-                    <div className="w-px h-2" />
-                    <Button
-                      variant="ghost"
-                      size="icon"
                       className="size-7 text-destructive hover:text-destructive hover:bg-destructive/10"
                       onClick={() => handleDelete(svc.id)}
                     >
                       <Trash2 className="size-3.5" />
                     </Button>
                   </div>
-                </div>
 
-                {/* Enabled toggle */}
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id={`svc-enabled-${svc.id}`}
-                    checked={svc.enabled}
-                    onCheckedChange={(v) => handleUpdate(svc.id, { enabled: v })}
-                    className="scale-75"
-                  />
-                  <Label htmlFor={`svc-enabled-${svc.id}`} className="text-xs text-muted-foreground cursor-pointer">
-                    {svc.enabled ? "Activo" : "Inactivo"}
-                  </Label>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  {/* Enabled toggle */}
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id={`svc-enabled-${svc.id}`}
+                      checked={svc.enabled}
+                      onCheckedChange={(v) => handleUpdate(svc.id, { enabled: v })}
+                      className="scale-75"
+                    />
+                    <Label htmlFor={`svc-enabled-${svc.id}`} className="text-xs text-muted-foreground cursor-pointer">
+                      {svc.enabled ? "Activo" : "Inactivo"}
+                    </Label>
+                  </div>
+                </SortableServiceCard>
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       )}
     </div>
   )

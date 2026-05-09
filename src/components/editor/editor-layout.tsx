@@ -4,6 +4,21 @@ import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+import {
   FileText,
   Palette,
   Share2,
@@ -84,6 +99,54 @@ const ALL_TAB_ITEMS: { value: EditorTab; label: string; icon: React.ElementType 
   { value: "employees", label: "Empleados", icon: Users },
 ]
 
+function SortableTab({ value, children, className, isLocked = false }: {
+  value: EditorTab
+  children: React.ReactNode
+  className?: string
+  isLocked?: boolean
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: value, disabled: isLocked })
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.3 : 1,
+    zIndex: isDragging ? 50 : "auto",
+  }
+
+  return (
+    <div ref={setNodeRef} style={style} className={className}>
+      <TabsTrigger
+        value={value}
+        className={`
+          flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md
+          data-[state=active]:bg-background data-[state=active]:shadow-sm
+          transition-all duration-150
+          ${isDragging ? "shadow-lg ring-2 ring-primary/30 bg-primary/5 scale-105" : ""}
+        `}
+      >
+        <div
+          ref={setActivatorNodeRef}
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing touch-none"
+        >
+          <GripVertical className="size-3 text-muted-foreground/50 hover:text-muted-foreground/80 transition-colors" />
+        </div>
+        {children}
+      </TabsTrigger>
+    </div>
+  )
+}
+
 interface EditorLayoutProps {
   siteId: string
 }
@@ -106,9 +169,12 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
     setPlanFeatures,
   } = useEditorStore()
 
-  // Drag and drop state
-  const [draggedTab, setDraggedTab] = React.useState<EditorTab | null>(null)
-  const [dragOverTab, setDragOverTab] = React.useState<EditorTab | null>(null)
+  // dnd-kit sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    })
+  )
 
   // Compute which tabs are enabled by plan features
   const enabledTabs = React.useMemo(() => {
@@ -304,66 +370,24 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
     }
   }, [setActiveTab])
 
-  // Drag and drop handlers
-  const handleDragStart = React.useCallback((e: React.DragEvent, tabValue: EditorTab) => {
-    setDraggedTab(tabValue)
-    e.dataTransfer.effectAllowed = "move"
-    e.dataTransfer.setData("text/plain", tabValue)
-  }, [])
+  // dnd-kit drag end handler
+  const handleTabDragEnd = React.useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+      if (!over || active.id === over.id) return
 
-  const handleDragOver = React.useCallback((e: React.DragEvent, tabValue: EditorTab) => {
-    e.preventDefault()
-    e.dataTransfer.dropEffect = "move"
-    if (tabValue !== draggedTab) {
-      setDragOverTab(tabValue)
-    }
-  }, [draggedTab])
+      const currentOrder: string[] = tabItems.map((t) => t.value)
+      const oldIndex = currentOrder.indexOf(active.id as string)
+      const newIndex = currentOrder.indexOf(over.id as string)
+      if (oldIndex === -1 || newIndex === -1) return
 
-  const handleDragLeave = React.useCallback(() => {
-    setDragOverTab(null)
-  }, [])
-
-  const handleDrop = React.useCallback(
-    (e: React.DragEvent, targetTabValue: EditorTab) => {
-      e.preventDefault()
-      setDragOverTab(null)
-
-      if (!draggedTab || draggedTab === targetTabValue) {
-        setDraggedTab(null)
-        return
-      }
-
-      const currentOrder: EditorTab[] = tabItems.map((t) => t.value)
-      const safeDragged = draggedTab as EditorTab
-      const fromIndex = currentOrder.indexOf(safeDragged)
-      const toIndex = currentOrder.indexOf(targetTabValue)
-
-      if (fromIndex === -1 || toIndex === -1) {
-        setDraggedTab(null)
-        return
-      }
-
-      // Reorder
-      const newOrder: EditorTab[] = [...currentOrder]
-      newOrder.splice(fromIndex, 1)
-      newOrder.splice(toIndex, 0, safeDragged)
-
-      // Update store
-      setSectionOrder(newOrder)
-
-      // Save to database
+      const newOrder = arrayMove(currentOrder, oldIndex, newIndex)
+      setSectionOrder(newOrder as EditorTab[])
       saveSectionOrder(newOrder)
-
       toast.success("Orden de secciones actualizado")
-      setDraggedTab(null)
     },
-    [draggedTab, tabItems, setSectionOrder, saveSectionOrder]
+    [tabItems, setSectionOrder, saveSectionOrder]
   )
-
-  const handleDragEnd = React.useCallback(() => {
-    setDraggedTab(null)
-    setDragOverTab(null)
-  }, [])
 
   if (isLoading || !site) {
     return (
@@ -423,32 +447,15 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
         {/* Left: Tabs */}
         <div className="lg:col-span-3">
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as EditorTab)}>
-            <TabsList className="w-full flex flex-wrap h-auto gap-1 bg-muted/50 p-1 rounded-lg">
-              {tabItems.map((tab) => (
-                <TabsTrigger
-                  key={tab.value}
-                  value={tab.value}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, tab.value)}
-                  onDragOver={(e) => handleDragOver(e, tab.value)}
-                  onDragLeave={handleDragLeave}
-                  onDrop={(e) => handleDrop(e, tab.value)}
-                  onDragEnd={handleDragEnd}
-                  className={`
-                    flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md
-                    data-[state=active]:bg-background data-[state=active]:shadow-sm
-                    cursor-grab active:cursor-grabbing select-none
-                    transition-all duration-150
-                    ${draggedTab === tab.value ? "opacity-40 scale-95" : ""}
-                    ${dragOverTab === tab.value ? "ring-2 ring-primary/40 bg-primary/5" : ""}
-                    ${dragOverTab === tab.value && draggedTab && draggedTab !== tab.value ? "ml-1 mr-1" : ""}
-                  `}
-                >
-                  <GripVertical className="size-3 text-muted-foreground/50 shrink-0" />
-                  <tab.icon className="size-3.5" />
-                  <span className="hidden sm:inline">{tab.label}</span>
-                </TabsTrigger>
-              ))}
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleTabDragEnd}>
+              <SortableContext items={tabItems.map((t) => t.value)} strategy={verticalListSortingStrategy}>
+                <TabsList className="w-full flex flex-wrap h-auto gap-1 bg-muted/50 p-1 rounded-lg">
+                  {tabItems.map((tab) => (
+                    <SortableTab key={tab.value} value={tab.value}>
+                      <tab.icon className="size-3.5" />
+                      <span className="hidden sm:inline">{tab.label}</span>
+                    </SortableTab>
+                  ))}
               {/* Disabled tabs (locked by plan) */}
               {enabledTabs && ALL_TAB_ITEMS.filter((t) => !enabledTabs.has(t.value)).map((tab) => (
                 <TooltipProvider key={`locked-${tab.value}`} delayDuration={0}>
@@ -471,6 +478,8 @@ export function EditorLayout({ siteId }: EditorLayoutProps) {
                 </TooltipProvider>
               ))}
             </TabsList>
+              </SortableContext>
+            </DndContext>
 
             <div className="mt-4">
               <AnimatePresence mode="wait">

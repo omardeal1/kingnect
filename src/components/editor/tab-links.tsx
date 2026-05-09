@@ -5,16 +5,37 @@ import { toast } from "sonner"
 import {
   Plus,
   Trash2,
-  ArrowUp,
-  ArrowDown,
+  GripVertical,
   Link2,
 } from "lucide-react"
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core"
+import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { useEditorStore, type CustomLinkData } from "@/lib/editor-store"
+
+function SortableLinkCard({ id, children }: { id: string; children: React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id })
+  const style: React.CSSProperties = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.3 : 1, zIndex: isDragging ? 50 : "auto" }
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Card className="overflow-hidden">
+        <CardContent className="p-3">
+          <div className="flex items-center gap-3">
+            <div ref={setActivatorNodeRef} {...attributes} {...listeners} className="shrink-0 cursor-grab active:cursor-grabbing touch-none">
+              <GripVertical className="size-4 text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors" />
+            </div>
+            {children}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
 
 interface TabLinksProps {
   siteId: string
@@ -29,6 +50,8 @@ export function TabLinks({ siteId }: TabLinksProps) {
   } = useEditorStore()
 
   const links = site?.customLinks ?? []
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
 
   // ─── Add ────────────────────────────────────────────────────────────
   const handleAdd = async () => {
@@ -84,25 +107,27 @@ export function TabLinks({ siteId }: TabLinksProps) {
     }
   }
 
-  // ─── Reorder ────────────────────────────────────────────────────────
-  const handleReorder = async (index: number, direction: "up" | "down") => {
-    if (!site) return
-    const list = [...links]
-    const targetIndex = direction === "up" ? index - 1 : index + 1
-    if (targetIndex < 0 || targetIndex >= list.length) return
+  // ─── Drag End (reorder) ─────────────────────────────────────────────
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
 
-    ;[list[index], list[targetIndex]] = [list[targetIndex], list[index]]
-    list.forEach((l, i) => {
+    const oldIndex = links.findIndex((l) => l.id === active.id)
+    const newIndex = links.findIndex((l) => l.id === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+
+    const reordered = arrayMove(links, oldIndex, newIndex)
+    reordered.forEach((l, i) => {
       updateCustomLink(l.id, { sortOrder: i })
     })
 
     try {
       await Promise.all(
-        list.map((l) =>
+        reordered.map((l) =>
           fetch(`/api/sites/${siteId}/custom-links`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ linkId: l.id, sortOrder: list.indexOf(l) }),
+            body: JSON.stringify({ linkId: l.id, sortOrder: reordered.indexOf(l) }),
           })
         )
       )
@@ -141,33 +166,11 @@ export function TabLinks({ siteId }: TabLinksProps) {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-2">
-          {links.map((link, index) => (
-            <Card key={link.id} className="overflow-hidden">
-              <CardContent className="p-3">
-                <div className="flex items-center gap-3">
-                  {/* Reorder */}
-                  <div className="flex flex-col items-center gap-0.5 shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-6"
-                      disabled={index === 0}
-                      onClick={() => handleReorder(index, "up")}
-                    >
-                      <ArrowUp className="size-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-6"
-                      disabled={index === links.length - 1}
-                      onClick={() => handleReorder(index, "down")}
-                    >
-                      <ArrowDown className="size-3" />
-                    </Button>
-                  </div>
-
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={links.map((l) => l.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-2">
+              {links.map((link) => (
+                <SortableLinkCard key={link.id} id={link.id}>
                   {/* Fields */}
                   <div className="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div>
@@ -210,11 +213,11 @@ export function TabLinks({ siteId }: TabLinksProps) {
                       <Trash2 className="size-3.5" />
                     </Button>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </SortableLinkCard>
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       )}
     </div>
   )

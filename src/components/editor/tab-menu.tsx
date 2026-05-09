@@ -34,6 +34,21 @@ import { useEditorStore } from "@/lib/editor-store"
 import { ImageEditor } from "@/components/editor/image-editor"
 import { ImageUploadZone } from "@/components/editor/image-upload-zone"
 import AiMenuModal from "@/components/editor/ai-menu-modal"
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
@@ -47,6 +62,93 @@ interface GeneratedMenu {
 
 interface TabMenuProps {
   siteId: string
+}
+
+// ─── Sortable Components ─────────────────────────────────────────────────────
+
+function SortableCategoryItem({
+  id,
+  headerChildren,
+  contentChildren,
+}: {
+  id: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  headerChildren: (handleProps: { ref: (el: HTMLElement | null) => void; attributes: any; listeners: any }) => React.ReactNode
+  contentChildren: React.ReactNode
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id })
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.3 : 1,
+    zIndex: isDragging ? 50 : "auto",
+  }
+  return (
+    <AccordionItem
+      value={id}
+      className="border rounded-lg overflow-hidden"
+      ref={setNodeRef}
+      style={style}
+    >
+      <AccordionTrigger className="hover:no-underline px-4 py-3 bg-muted/30 group">
+        {headerChildren({ ref: setActivatorNodeRef, attributes, listeners })}
+      </AccordionTrigger>
+      <AccordionContent className="px-4 pb-4">
+        {contentChildren}
+      </AccordionContent>
+    </AccordionItem>
+  )
+}
+
+function SortableMenuItem({
+  id,
+  children,
+}: {
+  id: string
+  children: React.ReactNode
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id })
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.3 : 1,
+    zIndex: isDragging ? 40 : "auto",
+  }
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Card className="border-dashed">
+        <CardContent className="p-3 space-y-3">
+          <div className="flex items-start gap-3">
+            <div
+              ref={setActivatorNodeRef}
+              {...attributes}
+              {...listeners}
+              className="shrink-0 pt-2 cursor-grab active:cursor-grabbing touch-none"
+            >
+              <GripVertical className="size-3.5 text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors" />
+            </div>
+            {children}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────────
@@ -65,6 +167,10 @@ export function TabMenu({ siteId }: TabMenuProps) {
 
   const categories = site?.menuCategories ?? []
   const accentColor = site?.accentColor ?? "#D4A849"
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  )
 
   const [imageEditorOpen, setImageEditorOpen] = React.useState(false)
   const [editingItemId, setEditingItemId] = React.useState<string | null>(null)
@@ -415,6 +521,61 @@ export function TabMenu({ siteId }: TabMenuProps) {
     setSlideEditingId(null)
   }
 
+  // ─── Drag & Drop Handlers ────────────────────────────────────────
+  const handleCategoryDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const oldIndex = categories.findIndex((c) => c.id === active.id)
+    const newIndex = categories.findIndex((c) => c.id === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+    const reordered = arrayMove(categories, oldIndex, newIndex)
+    // Update store
+    reordered.forEach((cat, i) => updateMenuCategory(cat.id, { sortOrder: i }))
+    // Persist
+    try {
+      await Promise.all(
+        reordered.map((cat) =>
+          fetch(`/api/sites/${siteId}/menu`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type: "category", id: cat.id, sortOrder: reordered.indexOf(cat) }),
+          })
+        )
+      )
+      toast.success("Orden de categorías actualizado")
+    } catch {
+      toast.error("Error al reordenar categorías")
+    }
+  }
+
+  const handleItemDragEnd = async (categoryId: string, event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const category = categories.find((c) => c.id === categoryId)
+    if (!category) return
+    const oldIndex = category.menuItems.findIndex((i) => i.id === active.id)
+    const newIndex = category.menuItems.findIndex((i) => i.id === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+    const reordered = arrayMove(category.menuItems, oldIndex, newIndex)
+    // Update store
+    reordered.forEach((item, i) => updateMenuItem(item.id, { sortOrder: i }))
+    // Persist
+    try {
+      await Promise.all(
+        reordered.map((item) =>
+          fetch(`/api/sites/${siteId}/menu`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type: "item", id: item.id, sortOrder: reordered.indexOf(item) }),
+          })
+        )
+      )
+      toast.success("Orden de productos actualizado")
+    } catch {
+      toast.error("Error al reordenar productos")
+    }
+  }
+
   // ─── Badge options ──────────────────────────────────────────────────
   const badgeOptions = [
     { value: "", label: "Ninguno", color: "#9CA3AF" },
@@ -582,278 +743,285 @@ export function TabMenu({ siteId }: TabMenuProps) {
             </CardContent>
           </Card>
         ) : (
-          <Accordion type="multiple" defaultValue={categories.map((c) => c.id)} className="space-y-2">
-            {categories.map((category) => (
-              <AccordionItem
-                key={category.id}
-                value={category.id}
-                className="border rounded-lg overflow-hidden"
-              >
-                {/* Category header */}
-                <AccordionTrigger className="hover:no-underline px-4 py-3 bg-muted/30 group">
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                    <Input
-                      value={category.name}
-                      onChange={(e) => handleUpdateCategory(category.id, { name: e.target.value })}
-                      onClick={(e) => e.stopPropagation()}
-                      className="h-7 text-sm font-medium border-none bg-transparent shadow-none p-0 focus-visible:ring-0"
-                    />
-                    <div className="flex items-center gap-2 ml-auto shrink-0" onClick={(e) => e.stopPropagation()}>
-                      <Label htmlFor={`cat-enabled-${category.id}`} className="text-xs text-muted-foreground cursor-pointer">
-                        {category.enabled ? "Activo" : "Inactivo"}
-                      </Label>
-                      <Switch
-                        id={`cat-enabled-${category.id}`}
-                        checked={category.enabled}
-                        onCheckedChange={(v) => handleUpdateCategory(category.id, { enabled: v })}
-                        className="scale-75"
-                      />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="size-7 text-destructive hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => handleDeleteCategory(category.id)}
-                      >
-                        <Trash2 className="size-3.5" />
-                      </Button>
-                    </div>
-                  </div>
-                </AccordionTrigger>
-
-                {/* Category content: menu items */}
-                <AccordionContent className="px-4 pb-4">
-                  <div className="space-y-3">
-                    {category.menuItems.length === 0 && (
-                      <p className="text-xs text-muted-foreground text-center py-4">
-                        Sin productos en esta categoría
-                      </p>
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleCategoryDragEnd}>
+            <SortableContext items={categories.map((c) => c.id)} strategy={verticalListSortingStrategy}>
+              <Accordion type="multiple" defaultValue={categories.map((c) => c.id)} className="space-y-2">
+                {categories.map((category) => (
+                  <SortableCategoryItem
+                    key={category.id}
+                    id={category.id}
+                    headerChildren={({ ref, attributes, listeners }) => (
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <div
+                          ref={ref}
+                          {...attributes}
+                          {...listeners}
+                          className="shrink-0 cursor-grab active:cursor-grabbing touch-none"
+                        >
+                          <GripVertical className="size-4 text-muted-foreground/40 group-hover:text-muted-foreground/70 transition-colors" />
+                        </div>
+                        <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                        <Input
+                          value={category.name}
+                          onChange={(e) => handleUpdateCategory(category.id, { name: e.target.value })}
+                          onClick={(e) => e.stopPropagation()}
+                          className="h-7 text-sm font-medium border-none bg-transparent shadow-none p-0 focus-visible:ring-0"
+                        />
+                        <div className="flex items-center gap-2 ml-auto shrink-0" onClick={(e) => e.stopPropagation()}>
+                          <Label htmlFor={`cat-enabled-${category.id}`} className="text-xs text-muted-foreground cursor-pointer">
+                            {category.enabled ? "Activo" : "Inactivo"}
+                          </Label>
+                          <Switch
+                            id={`cat-enabled-${category.id}`}
+                            checked={category.enabled}
+                            onCheckedChange={(v) => handleUpdateCategory(category.id, { enabled: v })}
+                            className="scale-75"
+                          />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                            onClick={() => handleDeleteCategory(category.id)}
+                          >
+                            <Trash2 className="size-3.5" />
+                          </Button>
+                        </div>
+                      </div>
                     )}
-                    {category.menuItems.map((item) => (
-                      <Card key={item.id} className="border-dashed">
-                        <CardContent className="p-3 space-y-3">
-                          <div className="flex items-start gap-3">
-                            {/* Item image */}
-                            <div className="shrink-0 relative group/img">
-                              <ImageUploadZone
-                                onUpload={handleItemImageUploaded(item.id)}
-                                context="menuItem"
-                                folder="menu"
-                                variant="compact"
-                                currentImageUrl={item.imageUrl}
-                                recommendedSize="800 × 600 px"
-                              />
-                              {item.imageUrl && (
-                                <button
-                                  onClick={() => handleOpenImageEditor(item.id)}
-                                  className="absolute -top-1.5 -right-1.5 size-5 rounded-full text-white flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity"
-                                  style={{ backgroundColor: accentColor }}
-                                >
-                                  <Pencil className="size-3" />
-                                </button>
-                              )}
-                            </div>
-
-                            {/* Item fields */}
-                            <div className="flex-1 min-w-0 space-y-2">
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <div>
-                                  <Label className="text-xs">Nombre</Label>
-                                  <Input
-                                    value={item.name}
-                                    onChange={(e) => handleUpdateItem(item.id, { name: e.target.value })}
-                                    className="h-8 text-sm"
-                                    placeholder="Nombre del producto"
+                    contentChildren={(
+                      <div className="space-y-3">
+                        {category.menuItems.length === 0 && (
+                          <p className="text-xs text-muted-foreground text-center py-4">
+                            Sin productos en esta categoría
+                          </p>
+                        )}
+                        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleItemDragEnd(category.id, e)}>
+                          <SortableContext items={category.menuItems.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+                            {category.menuItems.map((item) => (
+                              <SortableMenuItem key={item.id} id={item.id}>
+                                {/* Item image */}
+                                <div className="shrink-0 relative group/img">
+                                  <ImageUploadZone
+                                    onUpload={handleItemImageUploaded(item.id)}
+                                    context="menuItem"
+                                    folder="menu"
+                                    variant="compact"
+                                    currentImageUrl={item.imageUrl}
+                                    recommendedSize="800 × 600 px"
                                   />
-                                </div>
-                                <div className="relative">
-                                  <Label className="text-xs flex items-center gap-1">
-                                    Precio
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <button
-                                          onClick={() => handleSuggestPrice(item.id, item.name)}
-                                          disabled={suggestingPrice === item.id}
-                                          className="inline-flex items-center text-[10px] px-1 py-0.5 rounded-full hover:bg-muted transition-colors"
-                                          style={{ color: accentColor }}
-                                        >
-                                          {suggestingPrice === item.id ? (
-                                            <span className="inline-block size-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                                          ) : (
-                                            <Lightbulb className="size-3" />
-                                          )}
-                                        </button>
-                                      </TooltipTrigger>
-                                      <TooltipContent side="top" className="max-w-[200px]">
-                                        {suggestingPrice === item.id
-                                          ? "Consultando IA..."
-                                          : "Sugerir precio con IA"}
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  </Label>
-                                  <Input
-                                    type="number"
-                                    value={item.price ?? ""}
-                                    onChange={(e) => handleUpdateItem(item.id, { price: e.target.value ? parseFloat(e.target.value) : null })}
-                                    className="h-8 text-sm"
-                                    placeholder="0.00"
-                                    step="0.01"
-                                  />
-                                  {/* Price suggestion tooltip */}
-                                  {priceTooltip && priceTooltip.itemId === item.id && (
-                                    <div className="absolute right-0 top-full mt-1 z-50 bg-popover border rounded-lg shadow-lg p-2.5 w-52 text-xs space-y-2">
-                                      <p className="font-bold" style={{ color: accentColor }}>
-                                        ${priceTooltip.price.toFixed(2)}
-                                      </p>
-                                      <p className="text-muted-foreground">{priceTooltip.reasoning}</p>
-                                      <div className="flex gap-1">
-                                        <button
-                                          onClick={() => acceptSuggestedPrice(item.id, priceTooltip.price)}
-                                          className="flex-1 py-1 rounded text-[10px] font-semibold text-white"
-                                          style={{ backgroundColor: accentColor }}
-                                        >
-                                          Aplicar
-                                        </button>
-                                        <button
-                                          onClick={() => setPriceTooltip(null)}
-                                          className="px-2 py-1 rounded text-[10px] bg-muted hover:bg-muted/80"
-                                        >
-                                          Cerrar
-                                        </button>
-                                      </div>
-                                    </div>
+                                  {item.imageUrl && (
+                                    <button
+                                      onClick={() => handleOpenImageEditor(item.id)}
+                                      className="absolute -top-1.5 -right-1.5 size-5 rounded-full text-white flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity"
+                                      style={{ backgroundColor: accentColor }}
+                                    >
+                                      <Pencil className="size-3" />
+                                    </button>
                                   )}
                                 </div>
-                              </div>
 
-                              {/* Description with AI button */}
-                              <div>
-                                <Label className="text-xs flex items-center gap-1">
-                                  Descripción
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <button
-                                        onClick={() => handleImproveDescription(item.id, item.name)}
-                                        disabled={improvingDesc === item.id}
-                                        className="inline-flex items-center text-[10px] px-1 py-0.5 rounded-full hover:bg-muted transition-colors"
-                                        style={{ color: accentColor }}
-                                      >
-                                        {improvingDesc === item.id ? (
-                                          <span className="inline-block size-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                                        ) : (
-                                          <Sparkles className="size-3" />
-                                        )}
-                                      </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent side="top">
-                                      {improvingDesc === item.id
-                                        ? "Mejorando descripción..."
-                                        : "Mejorar descripción con IA"}
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </Label>
-                                <Input
-                                  value={item.description ?? ""}
-                                  onChange={(e) => handleUpdateItem(item.id, { description: e.target.value || null })}
-                                  className="h-8 text-sm"
-                                  placeholder="Descripción breve del producto"
-                                />
-                              </div>
+                                {/* Item fields */}
+                                <div className="flex-1 min-w-0 space-y-2">
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    <div>
+                                      <Label className="text-xs">Nombre</Label>
+                                      <Input
+                                        value={item.name}
+                                        onChange={(e) => handleUpdateItem(item.id, { name: e.target.value })}
+                                        className="h-8 text-sm"
+                                        placeholder="Nombre del producto"
+                                      />
+                                    </div>
+                                    <div className="relative">
+                                      <Label className="text-xs flex items-center gap-1">
+                                        Precio
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <button
+                                              onClick={() => handleSuggestPrice(item.id, item.name)}
+                                              disabled={suggestingPrice === item.id}
+                                              className="inline-flex items-center text-[10px] px-1 py-0.5 rounded-full hover:bg-muted transition-colors"
+                                              style={{ color: accentColor }}
+                                            >
+                                              {suggestingPrice === item.id ? (
+                                                <span className="inline-block size-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                              ) : (
+                                                <Lightbulb className="size-3" />
+                                              )}
+                                            </button>
+                                          </TooltipTrigger>
+                                          <TooltipContent side="top" className="max-w-[200px]">
+                                            {suggestingPrice === item.id
+                                              ? "Consultando IA..."
+                                              : "Sugerir precio con IA"}
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      </Label>
+                                      <Input
+                                        type="number"
+                                        value={item.price ?? ""}
+                                        onChange={(e) => handleUpdateItem(item.id, { price: e.target.value ? parseFloat(e.target.value) : null })}
+                                        className="h-8 text-sm"
+                                        placeholder="0.00"
+                                        step="0.01"
+                                      />
+                                      {/* Price suggestion tooltip */}
+                                      {priceTooltip && priceTooltip.itemId === item.id && (
+                                        <div className="absolute right-0 top-full mt-1 z-50 bg-popover border rounded-lg shadow-lg p-2.5 w-52 text-xs space-y-2">
+                                          <p className="font-bold" style={{ color: accentColor }}>
+                                            ${priceTooltip.price.toFixed(2)}
+                                          </p>
+                                          <p className="text-muted-foreground">{priceTooltip.reasoning}</p>
+                                          <div className="flex gap-1">
+                                            <button
+                                              onClick={() => acceptSuggestedPrice(item.id, priceTooltip.price)}
+                                              className="flex-1 py-1 rounded text-[10px] font-semibold text-white"
+                                              style={{ backgroundColor: accentColor }}
+                                            >
+                                              Aplicar
+                                            </button>
+                                            <button
+                                              onClick={() => setPriceTooltip(null)}
+                                              className="px-2 py-1 rounded text-[10px] bg-muted hover:bg-muted/80"
+                                            >
+                                              Cerrar
+                                            </button>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
 
-                              {/* Badge selector */}
-                              <div>
-                                <Label className="text-xs flex items-center gap-1">
-                                  Badge
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <button
-                                        onClick={() => handleSuggestBadge(item.id, item.name)}
-                                        className="inline-flex items-center text-[10px] px-1 py-0.5 rounded-full hover:bg-muted transition-colors"
-                                        style={{ color: accentColor }}
-                                      >
-                                        <Sparkles className="size-2.5" />
-                                      </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent side="top">Sugerir badge con IA</TooltipContent>
-                                  </Tooltip>
-                                </Label>
-                                <div className="flex gap-1.5 mt-0.5">
-                                  {badgeOptions.map((opt) => (
-                                    <button
-                                      key={opt.value}
-                                      onClick={() => handleUpdateItem(item.id, { badge: opt.value || null })}
-                                      className={`text-[10px] px-2 py-0.5 rounded-full font-semibold transition-all ${
-                                        (item.badge || "") === opt.value
-                                          ? "ring-2 ring-offset-1 scale-105"
-                                          : "opacity-50 hover:opacity-80"
-                                      }`}
-                                      style={{
-                                        backgroundColor: `${opt.color}20`,
-                                        color: opt.color,
-                                        ...(item.badge === opt.value ? { ringColor: opt.color } : {}),
-                                      }}
-                                    >
-                                      {opt.label}
-                                    </button>
-                                  ))}
+                                  {/* Description with AI button */}
+                                  <div>
+                                    <Label className="text-xs flex items-center gap-1">
+                                      Descripción
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <button
+                                            onClick={() => handleImproveDescription(item.id, item.name)}
+                                            disabled={improvingDesc === item.id}
+                                            className="inline-flex items-center text-[10px] px-1 py-0.5 rounded-full hover:bg-muted transition-colors"
+                                            style={{ color: accentColor }}
+                                          >
+                                            {improvingDesc === item.id ? (
+                                              <span className="inline-block size-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                            ) : (
+                                              <Sparkles className="size-3" />
+                                            )}
+                                          </button>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="top">
+                                          {improvingDesc === item.id
+                                            ? "Mejorando descripción..."
+                                            : "Mejorar descripción con IA"}
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </Label>
+                                    <Input
+                                      value={item.description ?? ""}
+                                      onChange={(e) => handleUpdateItem(item.id, { description: e.target.value || null })}
+                                      className="h-8 text-sm"
+                                      placeholder="Descripción breve del producto"
+                                    />
+                                  </div>
+
+                                  {/* Badge selector */}
+                                  <div>
+                                    <Label className="text-xs flex items-center gap-1">
+                                      Badge
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <button
+                                            onClick={() => handleSuggestBadge(item.id, item.name)}
+                                            className="inline-flex items-center text-[10px] px-1 py-0.5 rounded-full hover:bg-muted transition-colors"
+                                            style={{ color: accentColor }}
+                                          >
+                                            <Sparkles className="size-2.5" />
+                                          </button>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="top">Sugerir badge con IA</TooltipContent>
+                                      </Tooltip>
+                                    </Label>
+                                    <div className="flex gap-1.5 mt-0.5">
+                                      {badgeOptions.map((opt) => (
+                                        <button
+                                          key={opt.value}
+                                          onClick={() => handleUpdateItem(item.id, { badge: opt.value || null })}
+                                          className={`text-[10px] px-2 py-0.5 rounded-full font-semibold transition-all ${
+                                            (item.badge || "") === opt.value
+                                              ? "ring-2 ring-offset-1 scale-105"
+                                              : "opacity-50 hover:opacity-80"
+                                          }`}
+                                          style={{
+                                            backgroundColor: `${opt.color}20`,
+                                            color: opt.color,
+                                            ...(item.badge === opt.value ? { ringColor: opt.color } : {}),
+                                          }}
+                                        >
+                                          {opt.label}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
 
-                            {/* Delete button */}
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="size-7 shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                              onClick={() => handleDeleteItem(item.id)}
-                            >
-                              <Trash2 className="size-3.5" />
-                            </Button>
-                          </div>
+                                {/* Delete button */}
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="size-7 shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                  onClick={() => handleDeleteItem(item.id)}
+                                >
+                                  <Trash2 className="size-3.5" />
+                                </Button>
 
-                          {/* Item toggles */}
-                          <div className="flex items-center gap-4 pl-[76px]">
-                            <div className="flex items-center gap-2">
-                              <Switch
-                                id={`orderable-${item.id}`}
-                                checked={item.isOrderable}
-                                onCheckedChange={(v) => handleUpdateItem(item.id, { isOrderable: v })}
-                                className="scale-75"
-                              />
-                              <Label htmlFor={`orderable-${item.id}`} className="text-xs text-muted-foreground cursor-pointer">
-                                Se puede pedir
-                              </Label>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Switch
-                                id={`item-enabled-${item.id}`}
-                                checked={item.enabled}
-                                onCheckedChange={(v) => handleUpdateItem(item.id, { enabled: v })}
-                                className="scale-75"
-                              />
-                              <Label htmlFor={`item-enabled-${item.id}`} className="text-xs text-muted-foreground cursor-pointer">
-                                {item.enabled ? "Activo" : "Inactivo"}
-                              </Label>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                                {/* Item toggles */}
+                                <div className="w-full flex items-center gap-4 pl-[56px]">
+                                  <div className="flex items-center gap-2">
+                                    <Switch
+                                      id={`orderable-${item.id}`}
+                                      checked={item.isOrderable}
+                                      onCheckedChange={(v) => handleUpdateItem(item.id, { isOrderable: v })}
+                                      className="scale-75"
+                                    />
+                                    <Label htmlFor={`orderable-${item.id}`} className="text-xs text-muted-foreground cursor-pointer">
+                                      Se puede pedir
+                                    </Label>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Switch
+                                      id={`item-enabled-${item.id}`}
+                                      checked={item.enabled}
+                                      onCheckedChange={(v) => handleUpdateItem(item.id, { enabled: v })}
+                                      className="scale-75"
+                                    />
+                                    <Label htmlFor={`item-enabled-${item.id}`} className="text-xs text-muted-foreground cursor-pointer">
+                                      {item.enabled ? "Activo" : "Inactivo"}
+                                    </Label>
+                                  </div>
+                                </div>
+                              </SortableMenuItem>
+                            ))}
+                          </SortableContext>
+                        </DndContext>
 
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleAddItem(category.id)}
-                      className="w-full gap-1.5 border-dashed"
-                    >
-                      <Plus className="size-3.5" />
-                      Agregar producto
-                    </Button>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleAddItem(category.id)}
+                          className="w-full gap-1.5 border-dashed"
+                        >
+                          <Plus className="size-3.5" />
+                          Agregar producto
+                        </Button>
+                      </div>
+                    )}
+                  />
+                ))}
+              </Accordion>
+            </SortableContext>
+          </DndContext>
         )}
 
         {/* ═══ Image Editor Dialog (for items) ═══ */}

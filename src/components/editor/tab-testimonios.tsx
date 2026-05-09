@@ -5,11 +5,13 @@ import { toast } from "sonner"
 import {
   Plus,
   Trash2,
-  ArrowUp,
-  ArrowDown,
+  GripVertical,
   Star,
   MessageSquareQuote,
 } from "lucide-react"
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core"
+import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -46,6 +48,25 @@ function StarRating({ value, onChange }: { value: number; onChange: (v: number) 
   )
 }
 
+function SortableTestimonialCard({ id, children }: { id: string; children: React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id })
+  const style: React.CSSProperties = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.3 : 1, zIndex: isDragging ? 50 : "auto" }
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Card className="overflow-hidden group/test">
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-start gap-3">
+            <div ref={setActivatorNodeRef} {...attributes} {...listeners} className="shrink-0 pt-1 cursor-grab active:cursor-grabbing touch-none">
+              <GripVertical className="size-4 text-muted-foreground/40 group-hover/test:text-muted-foreground/70 transition-colors" />
+            </div>
+            {children}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
 export function TabTestimonios({ siteId }: TabTestimoniosProps) {
   const {
     site,
@@ -55,6 +76,8 @@ export function TabTestimonios({ siteId }: TabTestimoniosProps) {
   } = useEditorStore()
 
   const testimonials = site?.testimonials ?? []
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
 
   // ─── Add ────────────────────────────────────────────────────────────
   const handleAdd = async () => {
@@ -112,25 +135,29 @@ export function TabTestimonios({ siteId }: TabTestimoniosProps) {
     }
   }
 
-  // ─── Reorder ────────────────────────────────────────────────────────
-  const handleReorder = async (index: number, direction: "up" | "down") => {
-    if (!site) return
-    const list = [...testimonials]
-    const targetIndex = direction === "up" ? index - 1 : index + 1
-    if (targetIndex < 0 || targetIndex >= list.length) return
+  // ─── Drag reorder ───────────────────────────────────────────────────
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
 
-    ;[list[index], list[targetIndex]] = [list[targetIndex], list[index]]
-    list.forEach((t, i) => {
+    const oldIndex = testimonials.findIndex((t) => t.id === active.id)
+    const newIndex = testimonials.findIndex((t) => t.id === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+
+    const reordered = arrayMove(testimonials, oldIndex, newIndex)
+
+    // Optimistic update
+    reordered.forEach((t, i) => {
       updateTestimonial(t.id, { sortOrder: i })
     })
 
     try {
       await Promise.all(
-        list.map((t) =>
+        reordered.map((t, i) =>
           fetch(`/api/sites/${siteId}/testimonials`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ testimonialId: t.id, sortOrder: list.indexOf(t) }),
+            body: JSON.stringify({ testimonialId: t.id, sortOrder: i }),
           })
         )
       )
@@ -174,11 +201,11 @@ export function TabTestimonios({ siteId }: TabTestimoniosProps) {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
-          {testimonials.map((t, index) => (
-            <Card key={t.id} className="overflow-hidden">
-              <CardContent className="p-4 space-y-3">
-                <div className="flex items-start gap-3">
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={testimonials.map((t) => t.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-3">
+              {testimonials.map((t) => (
+                <SortableTestimonialCard key={t.id} id={t.id}>
                   {/* Photo */}
                   <div className="shrink-0">
                     <p className="text-[10px] text-muted-foreground mb-1">Recomendado: 500×500px, máximo 2MB</p>
@@ -229,49 +256,17 @@ export function TabTestimonios({ siteId }: TabTestimoniosProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="size-7"
-                      disabled={index === 0}
-                      onClick={() => handleReorder(index, "up")}
-                    >
-                      <ArrowUp className="size-3.5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-7"
-                      disabled={index === testimonials.length - 1}
-                      onClick={() => handleReorder(index, "down")}
-                    >
-                      <ArrowDown className="size-3.5" />
-                    </Button>
-                    <div className="w-px h-2" />
-                    <Button
-                      variant="ghost"
-                      size="icon"
                       className="size-7 text-destructive hover:text-destructive hover:bg-destructive/10"
                       onClick={() => handleDelete(t.id)}
                     >
                       <Trash2 className="size-3.5" />
                     </Button>
                   </div>
-                </div>
-
-                {/* Enabled toggle */}
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id={`t-enabled-${t.id}`}
-                    checked={t.enabled}
-                    onCheckedChange={(v) => handleUpdate(t.id, { enabled: v })}
-                    className="scale-75"
-                  />
-                  <Label htmlFor={`t-enabled-${t.id}`} className="text-xs text-muted-foreground cursor-pointer">
-                    {t.enabled ? "Activo" : "Inactivo"}
-                  </Label>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </SortableTestimonialCard>
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       )}
     </div>
   )
