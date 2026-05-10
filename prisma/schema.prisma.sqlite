@@ -21,10 +21,12 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  client        Client?
-  accounts      Account[]
-  sessions      Session[]
-  activityLogs  ActivityLog[]
+  client               Client?
+  accounts             Account[]
+  sessions             Session[]
+  activityLogs         ActivityLog[]
+  employees            Employee[]
+  businessCustomers    BusinessCustomer[]
 }
 
 model Account {
@@ -74,6 +76,7 @@ model Client {
   pipelineStatus String   @default("lead") // lead | contacted | demo | active | churned
   accountStatus  String   @default("active") // active | blocked | cancelled
   notes          String?
+  canControlBranding Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -143,22 +146,40 @@ model MiniSite {
   showKingBrand      Boolean  @default(true)
   metaTitle          String?
   metaDescription    String?
+  buttonStyle         String   @default("cylinder_pill")
+  menuTemplate        String   @default("fresh_modern")
+  siteTemplate        String   @default("classic")
+  modifiersEnabled    Boolean  @default(false)
+  customTexts         String   @default("{}")
+  notificationPrefs   String   @default("{}")
+  sectionOrder        String   @default("[]")
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
-  client         Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  socialLinks    SocialLink[]
-  contactButtons ContactButton[]
-  locations      Location[]
-  slides         Slide[]
-  menuCategories MenuCategory[]
-  menuItems      MenuItem[]
-  galleryImages  GalleryImage[]
-  services       Service[]
-  testimonials   Testimonial[]
-  customLinks    CustomLink[]
-  orders         Order[]
-  analyticsEvents AnalyticsEvent[]
+  client                 Client                    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  socialLinks            SocialLink[]
+  contactButtons         ContactButton[]
+  locations              Location[]
+  slides                 Slide[]
+  menuCategories         MenuCategory[]
+  menuItems              MenuItem[]
+  galleryImages          GalleryImage[]
+  services               Service[]
+  testimonials           Testimonial[]
+  customLinks            CustomLink[]
+  orders                 Order[]
+  analyticsEvents        AnalyticsEvent[]
+  landingContents        LandingContent[]
+  reservationConfig      ReservationConfig?
+  modifierGroups         ModifierGroup[]
+  branches               Branch[]
+  loyaltyConfig          LoyaltyConfig?
+  registrationFieldConfigs RegistrationFieldConfig[]
+  menuFeaturedSlides     MenuFeaturedSlide[]
+  reservations           Reservation[]
+  businessCustomers      BusinessCustomer[]
+  aiUsageLogs            AiUsageLog[]
+  aiCustomLimit          AiCustomLimit?
 }
 
 model SocialLink {
@@ -244,11 +265,14 @@ model MenuItem {
   isOrderable Boolean  @default(false)
   enabled     Boolean  @default(true)
   sortOrder   Int      @default(0)
+  badge       String?
+  specialInstructionsEnabled Boolean @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  miniSite  MiniSite      @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
-  category  MenuCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  miniSite       MiniSite          @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
+  category       MenuCategory       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  modifierGroups ModifierGroup[]
 }
 
 model GalleryImage {
@@ -334,6 +358,7 @@ model OrderItem {
   total     Float   @default(0)
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItemModifiers OrderItemModifier[]
 }
 
 model PlatformSetting {
@@ -376,4 +401,361 @@ model ActivityLog {
   createdAt  DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Landing Content ────────────────────────────────────────────────────────────
+
+model LandingContent {
+  id          String   @id @default(cuid())
+  siteId      String?
+  sectionKey  String   @unique
+  sectionType String   @default("json") // json | image
+  title       String?
+  subtitle    String?
+  content     String   @default("{}") // JSON string
+  images      String   @default("[]") // JSON string
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  site MiniSite? @relation(fields: [siteId], references: [id], onDelete: Cascade)
+}
+
+// ─── Reservations ───────────────────────────────────────────────────────────────
+
+model ReservationConfig {
+  id                     String    @id @default(cuid())
+  siteId                 String   @unique
+  isEnabled              Boolean   @default(false)
+  reservationType        String    @default("appointment") // appointment | table | space | class | service | custom
+  customTypeLabel        String?
+  slotDurationMinutes    Int       @default(30)
+  maxCapacityPerSlot     Int       @default(1)
+  minAdvanceHours        Int       @default(1)
+  maxAdvanceDays         Int       @default(30)
+  autoApprove            Boolean   @default(true)
+  confirmationMessage    String    @default("Tu reservación ha sido confirmada")
+  googleCalendarConnected Boolean  @default(false)
+  googleCalendarId       String?
+  googleAccessToken      String?
+  googleRefreshToken     String?
+  googleTokenExpiry      DateTime?
+  availableDays          String    @default("[1,2,3,4,5]") // JSON string [0=Sun..6=Sat]
+  timeSlots              String    @default("[]") // JSON string [{start,end}]
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  site         MiniSite      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  reservations Reservation[]
+}
+
+model Reservation {
+  id                      String   @id @default(cuid())
+  configId                String
+  siteId                  String
+  customerName            String
+  customerEmail           String?
+  customerPhone           String?
+  customerWhatsapp        Boolean  @default(false)
+  reservationDate         DateTime
+  timeSlot                String
+  partySize               Int      @default(1)
+  status                  String   @default("pending") // pending | approved | cancelled | completed | no_show
+  notes                   String?
+  googleCalendarEventId   String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  config ReservationConfig @relation(fields: [configId], references: [siteId], onDelete: Cascade)
+  site   MiniSite           @relation(fields: [siteId], references: [id], onDelete: Cascade)
+}
+
+// ─── Product Modifiers ──────────────────────────────────────────────────────────
+
+model ModifierGroup {
+  id             String  @id @default(cuid())
+  siteId         String
+  productId      String? // null = global group
+  name           String
+  selectionType  String  @default("single") // single | multiple | quantity
+  isRequired     Boolean @default(false)
+  isActive       Boolean @default(true)
+  sortOrder      Int     @default(0)
+  isTemplate     Boolean @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  site        MiniSite          @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  product     MenuItem?         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  options     ModifierOption[]
+}
+
+model ModifierOption {
+  id          String  @id @default(cuid())
+  groupId     String
+  name        String
+  extraCost   Float   @default(0)
+  hasExtraCost Boolean @default(false)
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  group ModifierGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  orderItemModifiers OrderItemModifier[]
+}
+
+model OrderItemModifier {
+  id                String  @id @default(cuid())
+  orderItemId       String
+  modifierOptionId  String?
+  modifierGroupName String
+  optionName        String
+  extraCost         Float   @default(0)
+  quantity          Int     @default(1)
+  createdAt         DateTime @default(now())
+
+  orderItem       OrderItem       @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  modifierOption  ModifierOption? @relation(fields: [modifierOptionId], references: [id])
+}
+
+// ─── Branches / Sucursales ──────────────────────────────────────────────────────
+
+model Branch {
+  id                String   @id @default(cuid())
+  siteId            String
+  slug              String
+  name              String
+  description       String?
+  logoUrl           String?
+  coverUrl          String?
+  phone             String?
+  whatsapp          String?
+  email             String?
+  website           String?
+  state             String?
+  city              String?
+  address           String?
+  latitude          Float?
+  longitude         Float?
+  mapsUrl           String?
+  isActive          Boolean  @default(true)
+  isPublished       Boolean  @default(false)
+  showQairossBrand  Boolean  @default(true)
+  hours             String   @default("{}") // JSON string
+  socialLinks       String   @default("{}") // JSON string
+  themeOverrides    String   @default("{}") // JSON string
+  buttonStyle       String   @default("cylinder_pill")
+  modifiersEnabled  Boolean  @default(false)
+  metaTitle         String?
+  metaDescription   String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  site MiniSite @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@unique([siteId, slug])
+  @@index([slug])
+  @@index([state, city])
+  @@index([isActive])
+}
+
+// ─── Loyalty Program ────────────────────────────────────────────────────────────
+
+model LoyaltyConfig {
+  id                    String   @id @default(cuid())
+  siteId                String   @unique
+  isEnabled             Boolean  @default(false)
+  accumulationType      String   @default("visits") // visits | amount | both
+  targetValue           Int      @default(10)
+  rewardType            String   @default("discount") // discount | free_product | custom
+  rewardValue           Float    @default(0)
+  rewardLabel           String   @default("Recompensa")
+  welcomeGiftEnabled    Boolean  @default(false)
+  welcomeGiftDescription String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  site              MiniSite              @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  customers         BusinessCustomer[]
+  loyaltyTransactions LoyaltyTransaction[]
+}
+
+model BusinessCustomer {
+  id                 String   @id @default(cuid())
+  siteId             String
+  userId             String?
+  firstName          String?
+  lastName           String?
+  phone              String?
+  hasWhatsapp        Boolean  @default(false)
+  email              String?
+  birthday           DateTime?
+  gender             String?
+  city               String?
+  postalCode         String?
+  registrationMethod String   @default("manual") // manual | google | facebook
+  profileCompleted   Boolean  @default(false)
+  visitsCount        Int      @default(0)
+  totalPurchases     Float    @default(0)
+  currentProgress    Int      @default(0)
+  rewardsEarned      Int      @default(0)
+  rewardsRedeemed    Int      @default(0)
+  qrCheckinCode      String?  @unique
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  loyaltyConfigId String?
+  site           MiniSite           @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  user           User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  loyaltyConfig  LoyaltyConfig?     @relation(fields: [loyaltyConfigId], references: [siteId])
+  transactions   LoyaltyTransaction[]
+
+  @@index([siteId])
+  @@index([phone])
+  @@index([email])
+  @@index([qrCheckinCode])
+}
+
+model LoyaltyTransaction {
+  id          String   @id @default(cuid())
+  customerId  String
+  siteId      String
+  type        String   // visit | purchase | check_in | reward_earned | reward_redeemed | manual_adjustment
+  value       Float    @default(0)
+  description String?
+  createdBy   String?
+  createdAt   DateTime @default(now())
+
+  customer     BusinessCustomer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  loyaltyConfig LoyaltyConfig   @relation(fields: [siteId], references: [siteId], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([siteId])
+  @@index([type])
+}
+
+model RegistrationFieldConfig {
+  id         String  @id @default(cuid())
+  siteId     String
+  fieldName  String
+  isEnabled  Boolean @default(false)
+  label      String?
+  message    String?
+  sortOrder  Int     @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  site     MiniSite           @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  customers BusinessCustomer[]
+
+  @@unique([siteId, fieldName])
+  @@index([siteId])
+}
+
+// ─── AI Usage Limits ──────────────────────────────────────────────────────────
+
+model AiUsageLog {
+  id          String   @id @default(cuid())
+  siteId      String
+  action      String
+  tokensUsed  Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  site MiniSite @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId, createdAt])
+}
+
+model AiCustomLimit {
+  id            String   @id @default(cuid())
+  siteId        String   @unique
+  limitType     String   @default("plan") // plan | custom | unlimited
+  customLimit   Int?
+  internalNote  String?
+  changedBy     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  site MiniSite @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId])
+}
+
+// ─── Menu Featured Slides ────────────────────────────────────────────────────
+
+model MenuFeaturedSlide {
+  id         String   @id @default(cuid())
+  miniSiteId String
+  imageUrl   String
+  title      String?
+  sortOrder  Int      @default(0)
+  enabled    Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  miniSite MiniSite @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
+
+  @@index([miniSiteId])
+}
+
+// ─── Employees & Permissions ────────────────────────────────────────────────────
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isSystem    Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  permissions RolePermission[]
+  employees   Employee[]
+}
+
+model Permission {
+  id          String   @id @default(cuid())
+  module      String
+  action      String
+  description String?
+  createdAt   DateTime @default(now())
+
+  roles RolePermission[]
+
+  @@unique([module, action])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model Employee {
+  id               String    @id @default(cuid())
+  userId           String?
+  roleId           String
+  email            String    @unique
+  name             String
+  phone            String?
+  isActive         Boolean   @default(true)
+  invitedAt        DateTime  @default(now())
+  invitedBy        String?
+  accessExpiresAt  DateTime?
+  lastLoginAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  role Role @relation(fields: [roleId], references: [id])
+
+  @@index([email])
+  @@index([isActive])
 }

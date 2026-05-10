@@ -1,6 +1,25 @@
+import { db } from "@/lib/db"
+
 // ─── Role Types ──────────────────────────────────────────────────────────────────
 
 export type Role = "super_admin" | "client"
+
+// ─── RBAC Types ──────────────────────────────────────────────────────────────────
+
+export type UserRole = "super_admin" | "client" | "employee"
+
+export interface PermissionEntry {
+  module: string
+  action: string
+}
+
+export interface UserPermissions {
+  userId: string
+  role: string
+  employeeId?: string | null
+  roleId?: string | null
+  permissions: PermissionEntry[]
+}
 
 // ─── User & Site Types for Permission Checks ────────────────────────────────────
 
@@ -12,6 +31,158 @@ interface PermissionUser {
 
 interface PermissionSite {
   clientId: string
+}
+
+// ─── RBAC Functions ─────────────────────────────────────────────────────────────
+
+/**
+ * Get all permissions for a user (handles super_admin, client, employee)
+ * Super admins get ALL permissions
+ * Clients get basic site owner permissions
+ * Employees get permissions from their Role → RolePermission chain
+ */
+export async function getUserPermissions(userId: string): Promise<UserPermissions> {
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: { id: true, role: true },
+  })
+
+  if (!user) {
+    return { userId, role: "unknown", permissions: [] }
+  }
+
+  // Super admins have all permissions
+  if (user.role === "super_admin") {
+    const allPerms = await db.permission.findMany({
+      select: { module: true, action: true },
+      orderBy: [{ module: "asc" }, { action: "asc" }],
+    })
+    return {
+      userId: user.id,
+      role: user.role,
+      permissions: allPerms.map((p) => ({ module: p.module, action: p.action })),
+    }
+  }
+
+  // Check if user is linked to an Employee record
+  const employee = await db.employee.findFirst({
+    where: { userId: user.id, isActive: true },
+    include: {
+      role: {
+        include: {
+          permissions: { include: { permission: true } },
+        },
+      },
+    },
+  })
+
+  if (employee) {
+    return {
+      userId: user.id,
+      role: "employee",
+      employeeId: employee.id,
+      roleId: employee.roleId,
+      permissions: employee.role.permissions.map((rp) => ({
+        module: rp.permission.module,
+        action: rp.permission.action,
+      })),
+    }
+  }
+
+  // Client: basic site owner permissions
+  return {
+    userId: user.id,
+    role: "client",
+    permissions: [],
+  }
+}
+
+/**
+ * Check if a user has a specific permission
+ * Returns true for super_admin always
+ * For employees, checks their role's permissions
+ */
+export async function hasPermission(
+  userId: string,
+  module: string,
+  action: string
+): Promise<boolean> {
+  const userPerms = await getUserPermissions(userId)
+
+  // Super admins always have all permissions
+  if (userPerms.role === "super_admin") return true
+
+  // Clients don't have granular permissions (they own their sites)
+  if (userPerms.role === "client") return true
+
+  return userPerms.permissions.some(
+    (p) => p.module === module && p.action === action
+  )
+}
+
+/**
+ * Check if a user has ANY of the listed permissions
+ */
+export async function hasAnyPermission(
+  userId: string,
+  perms: Array<{ module: string; action: string }>
+): Promise<boolean> {
+  const userPerms = await getUserPermissions(userId)
+
+  if (userPerms.role === "super_admin") return true
+  if (userPerms.role === "client") return true
+
+  return perms.some((perm) =>
+    userPerms.permissions.some(
+      (p) => p.module === perm.module && p.action === perm.action
+    )
+  )
+}
+
+/**
+ * Check if user has ALL of the listed permissions
+ */
+export async function hasAllPermissions(
+  userId: string,
+  perms: Array<{ module: string; action: string }>
+): Promise<boolean> {
+  const userPerms = await getUserPermissions(userId)
+
+  if (userPerms.role === "super_admin") return true
+  if (userPerms.role === "client") {
+    // Clients don't have granular RBAC — return true only if perms is empty
+    return perms.length === 0
+  }
+
+  return perms.every((perm) =>
+    userPerms.permissions.some(
+      (p) => p.module === perm.module && p.action === perm.action
+    )
+  )
+}
+
+/**
+ * Server-side helper: get user with permissions for use in layouts/API routes
+ */
+export async function getServerUserWithPermissions(session: {
+  user: { id: string; role: string; email?: string }
+}): Promise<UserPermissions | null> {
+  if (!session?.user?.id) return null
+  return getUserPermissions(session.user.id)
+}
+
+/**
+ * Create a permissions map from array for fast lookup
+ * Key format: "module:action"
+ */
+export function createPermissionMap(
+  perms: PermissionEntry[]
+): Map<string, boolean> {
+  const map = new Map<string, boolean>()
+  for (const p of perms) {
+    map.set(`${p.module}:${p.action}`, true)
+  }
+  return map
 }
 
 // ─── Access Control Functions ────────────────────────────────────────────────────
@@ -27,9 +198,12 @@ export function canAccessAdmin(role: string): boolean {
 /**
  * Check if a user can access the dashboard
  * Both client and super_admin can access the dashboard
+ * Employees need at least one permission
  */
-export function canAccessDashboard(role: string): boolean {
-  return role === "super_admin" || role === "client"
+export function canAccessDashboard(role: string, permissionsCount?: number): boolean {
+  if (role === "super_admin" || role === "client") return true
+  if (role === "employee") return (permissionsCount ?? 0) > 0
+  return false
 }
 
 /**

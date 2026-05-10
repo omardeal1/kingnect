@@ -35,10 +35,7 @@ export async function getPlanLimits(siteId: string): Promise<PlanLimits> {
             select: {
               plan: {
                 select: {
-                  maxProducts: true,
-                  maxMenuItems: true,
-                  maxBranches: true,
-                  aiDailyLimit: true,
+                  limits: true,
                 },
               },
               customLimits: true,
@@ -49,15 +46,32 @@ export async function getPlanLimits(siteId: string): Promise<PlanLimits> {
     },
   })
 
+  const defaultLimits: PlanLimits = { maxProducts: -1, maxMenuItems: -1, maxBranches: -1, aiDailyLimit: -1 }
+
   if (!site?.client?.subscription?.plan) {
-    return { maxProducts: -1, maxMenuItems: -1, maxBranches: -1, aiDailyLimit: -1 }
+    return defaultLimits
   }
 
-  const planLimits = {
-    maxProducts: site.client.subscription.plan.maxProducts ?? -1,
-    maxMenuItems: site.client.subscription.plan.maxMenuItems ?? -1,
-    maxBranches: site.client.subscription.plan.maxBranches ?? -1,
-    aiDailyLimit: site.client.subscription.plan.aiDailyLimit ?? -1,
+  // Parse plan limits from JSON string
+  let parsedPlanLimits: Partial<PlanLimits> = {}
+  try {
+    const raw = site.client.subscription.plan.limits
+    if (typeof raw === 'string') {
+      parsedPlanLimits = JSON.parse(raw)
+    } else if (raw) {
+      parsedPlanLimits = raw as Partial<PlanLimits>
+    }
+  } catch { /* ignore */ }
+
+  const planLimits: PlanLimits = {
+    maxProducts: (parsedPlanLimits as Record<string, unknown>).maxMenuCategories != null
+      ? ((parsedPlanLimits as Record<string, unknown>).maxMenuCategories as number)
+      : (parsedPlanLimits.maxProducts ?? -1),
+    maxMenuItems: parsedPlanLimits.maxMenuItems ?? -1,
+    maxBranches: (parsedPlanLimits as Record<string, unknown>).maxLocations != null
+      ? ((parsedPlanLimits as Record<string, unknown>).maxLocations as number)
+      : (parsedPlanLimits.maxBranches ?? -1),
+    aiDailyLimit: parsedPlanLimits.aiDailyLimit ?? -1,
   }
 
   // Apply per-client custom limits overrides (if set)

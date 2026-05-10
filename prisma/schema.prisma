@@ -5,9 +5,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -16,18 +15,18 @@ model User {
   email         String   @unique
   emailVerified DateTime?
   passwordHash  String?
-  image              String?
-  role               String   @default("client") // "super_admin" | "client"
-  mustChangePassword Boolean  @default(false)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  image         String?
+  role          String   @default("client") // "super_admin" | "client"
+  mustChangePassword  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  client             Client?
-  accounts           Account[]
-  sessions           Session[]
-  activityLogs       ActivityLog[]
-  employees          Employee[]
-  businessCustomers  BusinessCustomer[]
+  client               Client?
+  accounts             Account[]
+  sessions             Session[]
+  activityLogs         ActivityLog[]
+  employees            Employee[]
+  businessCustomers    BusinessCustomer[]
 }
 
 model Account {
@@ -98,16 +97,11 @@ model Subscription {
   trialEnd             DateTime?
   currentPeriodStart   DateTime?
   currentPeriodEnd     DateTime?
-  blockedAt               DateTime?
-  annualPlanActivatedAt    DateTime?
-  annualPlanExpiresAt      DateTime?
-  annualPaymentMethod      String?
-  annualPaymentRef         String?
-  annualPlanNote           String?
-  extraFeatures            String   @default("[]") // JSON array of extra feature keys added per-client
-  customLimits             String   @default("{}") // JSON string of per-client limit overrides {maxProducts, maxMenuItems, maxBranches, aiDailyLimit}
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
+  blockedAt            DateTime?
+  extraFeatures         String   @default("[]")
+  customLimits         String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
   plan   Plan   @relation(fields: [planId], references: [id])
@@ -125,10 +119,6 @@ model Plan {
   sortOrder       Int      @default(0)
   features        String   @default("{}") // JSON string of features
   limits          String   @default("{}") // JSON string of limits
-  maxProducts     Int      @default(-1) // -1 = unlimited
-  maxBranches     Int      @default(-1) // -1 = unlimited
-  maxMenuItems    Int      @default(-1) // -1 = unlimited
-  aiDailyLimit    Int      @default(3) // -1 = unlimited, daily AI usage limit
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -157,13 +147,13 @@ model MiniSite {
   showKingBrand      Boolean  @default(true)
   metaTitle          String?
   metaDescription    String?
-  buttonStyle         String   @default("cylinder_pill") // cylinder_pill | square_soft | icon_only | glassmorphism | outline_elegant
-  menuTemplate        String   @default("fresh_modern") // dark_elegant | fresh_modern | warm_casual
-  siteTemplate        String   @default("classic") // classic | medical | premium | fashion
+  buttonStyle         String   @default("cylinder_pill")
+  menuTemplate        String   @default("fresh_modern")
+  siteTemplate        String   @default("classic")
   modifiersEnabled    Boolean  @default(false)
-  customTexts         String   @default("{}") // JSON string for editable business texts
-  notificationPrefs   String   @default("{}") // JSON string for notification preferences
-  sectionOrder        String   @default("[]") // JSON string of section keys in custom order
+  customTexts         String   @default("{}")
+  notificationPrefs   String   @default("{}")
+  sectionOrder        String   @default("[]")
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
@@ -276,7 +266,7 @@ model MenuItem {
   isOrderable Boolean  @default(false)
   enabled     Boolean  @default(true)
   sortOrder   Int      @default(0)
-  badge       String? // new | popular | sold_out | null
+  badge       String?
   specialInstructionsEnabled Boolean @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -284,21 +274,6 @@ model MenuItem {
   miniSite       MiniSite          @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
   category       MenuCategory       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   modifierGroups ModifierGroup[]
-}
-
-model MenuFeaturedSlide {
-  id         String   @id @default(cuid())
-  miniSiteId String
-  imageUrl   String
-  title      String?
-  sortOrder  Int      @default(0)
-  enabled    Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  miniSite MiniSite @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
-
-  @@index([miniSiteId])
 }
 
 model GalleryImage {
@@ -383,8 +358,8 @@ model OrderItem {
   unitPrice Float   @default(0)
   total     Float   @default(0)
 
-  order     Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  modifiers OrderItemModifier[]
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItemModifiers OrderItemModifier[]
 }
 
 model PlatformSetting {
@@ -587,65 +562,6 @@ model Branch {
   @@index([isActive])
 }
 
-// ─── Employees & Permissions ────────────────────────────────────────────────────
-
-model Role {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  description String?
-  isSystem    Boolean  @default(false)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  permissions RolePermission[]
-  employees   Employee[]
-}
-
-model Permission {
-  id          String   @id @default(cuid())
-  module      String
-  action      String
-  description String?
-  createdAt   DateTime @default(now())
-
-  roles RolePermission[]
-
-  @@unique([module, action])
-}
-
-model RolePermission {
-  roleId       String
-  permissionId String
-
-  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  @@id([roleId, permissionId])
-}
-
-model Employee {
-  id               String    @id @default(cuid())
-  userId           String?
-  roleId           String
-  email            String    @unique
-  name             String
-  phone            String?
-  isActive         Boolean   @default(true)
-  invitedAt        DateTime  @default(now())
-  invitedBy        String?
-  accessExpiresAt  DateTime?
-  lastLoginAt      DateTime?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
-  role Role @relation(fields: [roleId], references: [id])
-
-  @@index([email])
-  @@index([isActive])
-}
-
 // ─── Loyalty Program ────────────────────────────────────────────────────────────
 
 model LoyaltyConfig {
@@ -693,11 +609,11 @@ model BusinessCustomer {
   updatedAt          DateTime @updatedAt
 
   loyaltyConfigId String?
-  site           MiniSite          @relation(fields: [siteId], references: [id], onDelete: Cascade)
-  user           User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
-  loyaltyConfig  LoyaltyConfig?    @relation(fields: [loyaltyConfigId], references: [siteId])
-  transactions   LoyaltyTransaction[]
-  registrationFields RegistrationFieldConfig[]
+  site           MiniSite           @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  user           User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  loyaltyConfig      LoyaltyConfig?           @relation(fields: [loyaltyConfigId], references: [siteId])
+  registrationConfigs RegistrationFieldConfig[]
+  transactions       LoyaltyTransaction[]
 
   @@index([siteId])
   @@index([phone])
@@ -770,15 +686,78 @@ model AiCustomLimit {
   @@index([siteId])
 }
 
-model AiLimitHistory {
-  id             String   @id @default(cuid())
-  siteId         String
-  previousLimit  Int?
-  newLimit       Int?
-  limitType      String?
-  changedBy      String?
-  note           String?
-  createdAt      DateTime @default(now())
+// ─── Menu Featured Slides ────────────────────────────────────────────────────
 
-  @@index([siteId])
+model MenuFeaturedSlide {
+  id         String   @id @default(cuid())
+  miniSiteId String
+  imageUrl   String
+  title      String?
+  sortOrder  Int      @default(0)
+  enabled    Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  miniSite MiniSite @relation(fields: [miniSiteId], references: [id], onDelete: Cascade)
+
+  @@index([miniSiteId])
+}
+
+// ─── Employees & Permissions ────────────────────────────────────────────────────
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isSystem    Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  permissions RolePermission[]
+  employees   Employee[]
+}
+
+model Permission {
+  id          String   @id @default(cuid())
+  module      String
+  action      String
+  description String?
+  createdAt   DateTime @default(now())
+
+  roles RolePermission[]
+
+  @@unique([module, action])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model Employee {
+  id               String    @id @default(cuid())
+  userId           String?
+  roleId           String
+  email            String    @unique
+  name             String
+  phone            String?
+  isActive         Boolean   @default(true)
+  invitedAt        DateTime  @default(now())
+  invitedBy        String?
+  accessExpiresAt  DateTime?
+  lastLoginAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  role Role @relation(fields: [roleId], references: [id])
+
+  @@index([email])
+  @@index([isActive])
 }

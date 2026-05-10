@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
+import type { PermissionEntry } from "@/lib/permissions"
 
 
 export const authOptions: NextAuthOptions = {
@@ -52,6 +53,26 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as { role?: string }).role ?? "client"
         token.id = user.id
         token.mustChangePassword = (user as { mustChangePassword?: boolean }).mustChangePassword ?? false
+
+        // Check if user is linked to an Employee record and enrich token with permissions
+        const employee = await db.employee.findFirst({
+          where: { userId: user.id, isActive: true },
+          include: {
+            role: {
+              include: {
+                permissions: { include: { permission: true } },
+              },
+            },
+          },
+        })
+        if (employee) {
+          token.employeeId = employee.id
+          token.roleId = employee.roleId
+          token.permissions = employee.role.permissions.map((rp) => ({
+            module: rp.permission.module,
+            action: rp.permission.action,
+          }))
+        }
       }
       return token
     },
@@ -60,6 +81,8 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string
         session.user.role = token.role as string
         session.user.mustChangePassword = token.mustChangePassword as boolean
+        session.user.employeeId = (token.employeeId as string) ?? null
+        session.user.permissions = (token.permissions as PermissionEntry[] | undefined) ?? null
       }
       return session
     },
@@ -117,6 +140,8 @@ declare module "next-auth" {
       image?: string | null
       role: string
       mustChangePassword: boolean
+      employeeId: string | null
+      permissions: PermissionEntry[] | null
     }
   }
 
@@ -131,5 +156,8 @@ declare module "next-auth/jwt" {
     id: string
     role: string
     mustChangePassword: boolean
+    employeeId?: string
+    roleId?: string
+    permissions?: PermissionEntry[]
   }
 }

@@ -521,6 +521,186 @@ async function main() {
   }
 
   console.log("Platform settings and sections seeded")
+
+  // ─── RBAC: Seed Permissions & System Roles ─────────────────────────────────────
+
+  const MODULES = [
+    "clients",
+    "sites",
+    "orders",
+    "plans",
+    "employees",
+    "branches",
+    "reservations",
+    "loyalty",
+    "analytics",
+    "platform",
+    "branding",
+    "landing",
+  ] as const
+
+  const ACTIONS = ["ver", "crear", "editar", "eliminar", "gestionar"] as const
+
+  // Create all 60 permissions (12 modules × 5 actions)
+  const allPermissions: { module: string; action: string; description: string }[] = []
+  for (const mod of MODULES) {
+    for (const act of ACTIONS) {
+      const descriptions: Record<string, Record<string, string>> = {
+        ver: {
+          clients: "Ver lista de clientes",
+          sites: "Ver sitios",
+          orders: "Ver pedidos",
+          plans: "Ver planes",
+          employees: "Ver empleados",
+          branches: "Ver sucursales",
+          reservations: "Ver reservaciones",
+          loyalty: "Ver programa de lealtad",
+          analytics: "Ver analíticas",
+          platform: "Ver configuración de plataforma",
+          branding: "Ver control de marca",
+          landing: "Ver contenido de landing",
+        },
+        crear: {
+          clients: "Crear clientes",
+          sites: "Crear sitios",
+          orders: "Crear pedidos",
+          plans: "Crear planes",
+          employees: "Crear empleados",
+          branches: "Crear sucursales",
+          reservations: "Crear reservaciones",
+          loyalty: "Crear programa de lealtad",
+          analytics: "Crear reportes de analíticas",
+          platform: "Crear configuración de plataforma",
+          branding: "Crear control de marca",
+          landing: "Crear contenido de landing",
+        },
+        editar: {
+          clients: "Editar clientes",
+          sites: "Editar sitios",
+          orders: "Editar pedidos",
+          plans: "Editar planes",
+          employees: "Editar empleados",
+          branches: "Editar sucursales",
+          reservations: "Editar reservaciones",
+          loyalty: "Editar programa de lealtad",
+          analytics: "Editar analíticas",
+          platform: "Editar configuración de plataforma",
+          branding: "Editar control de marca",
+          landing: "Editar contenido de landing",
+        },
+        eliminar: {
+          clients: "Eliminar clientes",
+          sites: "Eliminar sitios",
+          orders: "Eliminar pedidos",
+          plans: "Eliminar planes",
+          employees: "Eliminar empleados",
+          branches: "Eliminar sucursales",
+          reservations: "Eliminar reservaciones",
+          loyalty: "Eliminar programa de lealtad",
+          analytics: "Eliminar analíticas",
+          platform: "Eliminar configuración de plataforma",
+          branding: "Eliminar control de marca",
+          landing: "Eliminar contenido de landing",
+        },
+        gestionar: {
+          clients: "Gestionar clientes",
+          sites: "Gestionar sitios",
+          orders: "Gestionar pedidos",
+          plans: "Gestionar planes",
+          employees: "Gestionar empleados",
+          branches: "Gestionar sucursales",
+          reservations: "Gestionar reservaciones",
+          loyalty: "Gestionar programa de lealtad",
+          analytics: "Gestionar analíticas",
+          platform: "Gestionar plataforma",
+          branding: "Gestionar marca",
+          landing: "Gestionar landing",
+        },
+      }
+      allPermissions.push({
+        module: mod,
+        action: act,
+        description: descriptions[act]?.[mod] ?? `${act} ${mod}`,
+      })
+    }
+  }
+
+  // Upsert all permissions
+  const permissionRecords: Record<string, { id: string; module: string; action: string }> = {}
+  for (const perm of allPermissions) {
+    const record = await prisma.permission.upsert({
+      where: { module_action: { module: perm.module, action: perm.action } },
+      update: { description: perm.description },
+      create: perm,
+    })
+    permissionRecords[`${perm.module}:${perm.action}`] = record
+  }
+
+  console.log(`${allPermissions.length} permissions seeded`)
+
+  // Helper: create role with permissions
+  async function seedRole(
+    name: string,
+    description: string,
+    permissionKeys: string[],
+    isSystem: boolean
+  ) {
+    const role = await prisma.role.upsert({
+      where: { name },
+      update: { description, isSystem },
+      create: { name, description, isSystem },
+    })
+
+    // Delete existing role-permission links and re-create
+    await prisma.rolePermission.deleteMany({ where: { roleId: role.id } })
+
+    const links = permissionKeys
+      .map((key) => permissionRecords[key])
+      .filter(Boolean)
+
+    if (links.length > 0) {
+      await prisma.rolePermission.createMany({
+        data: links.map((p) => ({ roleId: role.id, permissionId: p.id })),
+      })
+    }
+
+    console.log(`Role "${name}" seeded with ${links.length} permissions`)
+    return role
+  }
+
+  // ── Super Admin: ALL 60 permissions
+  const allPermKeys = allPermissions.map((p) => `${p.module}:${p.action}`)
+  await seedRole("super_admin", "Acceso total a todos los módulos", allPermKeys, true)
+
+  // ── Administrador: All except platform, landing, plans, clients
+  const adminExcludedModules = ["platform", "landing", "plans", "clients"]
+  const adminPermKeys = allPermKeys.filter((key) => {
+    const mod = key.split(":")[0]
+    return !adminExcludedModules.includes(mod)
+  })
+  await seedRole("admin", "Administrador con acceso a la mayoría de módulos", adminPermKeys, true)
+
+  // ── Editor: limited set
+  const editorPermKeys = [
+    "sites:ver", "sites:editar",
+    "orders:ver",
+    "menu:ver",
+    "gallery:ver",
+    "services:ver",
+    "testimonials:ver",
+    "analytics:ver",
+    "branches:ver",
+    "reservations:ver",
+    "loyalty:ver",
+  ].filter((key) => permissionRecords[key])
+  await seedRole("editor", "Editor con acceso de lectura y edición limitada", editorPermKeys, true)
+
+  // ── Visualizador: only ver (view)
+  const viewerModules = ["sites", "orders", "analytics", "branches", "reservations", "loyalty"]
+  const viewerPermKeys = viewerModules.map((mod) => `${mod}:ver`).filter((key) => permissionRecords[key])
+  await seedRole("viewer", "Solo lectura", viewerPermKeys, true)
+
+  console.log("RBAC roles and permissions seeded")
   console.log("Seeding complete!")
 }
 

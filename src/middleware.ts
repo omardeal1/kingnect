@@ -60,6 +60,24 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(changePasswordUrl)
   }
 
+  // Role-based route protection for /admin
+  if (pathname.startsWith("/admin")) {
+    if (token.role !== "super_admin") {
+      return NextResponse.redirect(new URL("/dashboard", request.url))
+    }
+  }
+
+  // Dashboard access: super_admin and client always have access
+  // Employees need at least one permission
+  if (pathname.startsWith("/dashboard")) {
+    if (token.role !== "super_admin" && token.role !== "client") {
+      const perms = Array.isArray(token.permissions) ? token.permissions : []
+      if (perms.length === 0) {
+        return NextResponse.redirect(new URL("/login", request.url))
+      }
+    }
+  }
+
   return NextResponse.next()
 }
 

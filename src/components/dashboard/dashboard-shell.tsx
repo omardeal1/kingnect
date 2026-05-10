@@ -37,6 +37,7 @@ import {
 import { useDashboardStore, type DashboardData } from "@/lib/dashboard-store"
 import { useTranslations } from "@/i18n/provider"
 import { LanguageToggle } from "@/components/ui/language-toggle"
+import { usePermissions } from "@/hooks/use-permissions"
 
 interface DashboardShellProps {
   user: {
@@ -53,26 +54,36 @@ const navItemKeys = [
     labelKey: "nav.dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
+    // Everyone with dashboard access can see the dashboard overview
+    permission: null as [string, string] | null,
   },
   {
     labelKey: "nav.myQaiross",
     href: "/dashboard/sites/_/edit",
     icon: Globe,
+    // Need sites:ver to see editor
+    permission: ["sites", "ver"] as [string, string],
   },
   {
     labelKey: "nav.orders",
     href: "/dashboard/orders",
     icon: ShoppingCart,
+    // Need orders:ver to see orders
+    permission: ["orders", "ver"] as [string, string],
   },
   {
     labelKey: "nav.billing",
     href: "/dashboard/billing",
     icon: CreditCard,
+    // Billing is always available for the account owner
+    permission: null as [string, string] | null,
   },
   {
     labelKey: "nav.customers",
     href: "/dashboard/customers",
     icon: Users,
+    // Need employees:ver to see customers/team
+    permission: ["employees", "ver"] as [string, string],
   },
 ]
 
@@ -84,6 +95,7 @@ export function DashboardShell({
   const { t } = useTranslations("dashboard")
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
+  const { has, status: permsStatus } = usePermissions()
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
   const [mounted, setMounted] = React.useState(false)
   const setData = useDashboardStore((s) => s.setData)
@@ -108,13 +120,22 @@ export function DashboardShell({
 
   const { businessName, planName, siteId, isBlocked } = dashboardData
 
-  // Build nav items with translated labels and dynamic site ID
-  const navItems = navItemKeys.map((item) => {
-    const href = item.labelKey === "nav.myQaiross" && siteId
-      ? `/dashboard/sites/${siteId}/edit`
-      : item.href
-    return { ...item, label: t(item.labelKey), href }
-  })
+  // Build nav items with translated labels, dynamic site ID, and permission filtering
+  const navItems = navItemKeys
+    .filter((item) => {
+      // If loading permissions, show all items (avoids flash)
+      if (permsStatus === "loading") return true
+      // No permission required = always show
+      if (!item.permission) return true
+      return has(item.permission[0], item.permission[1])
+    })
+    .map((item) => {
+      const href =
+        item.labelKey === "nav.myQaiross" && siteId
+          ? `/dashboard/sites/${siteId}/edit`
+          : item.href
+      return { ...item, label: t(item.labelKey), href }
+    })
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard"
@@ -134,9 +155,7 @@ export function DashboardShell({
           >
             <div className="flex items-center justify-center gap-3 px-4 py-3 text-sm font-medium">
               <AlertTriangle className="size-4 shrink-0" />
-              <span>
-                {t("nav.accountPaused")}
-              </span>
+              <span>{t("nav.accountPaused")}</span>
               <Link
                 href="/dashboard/billing"
                 className="inline-flex items-center gap-1 rounded-md bg-white px-3 py-1 text-xs font-semibold text-destructive hover:bg-white/90 transition-colors"
@@ -174,8 +193,16 @@ export function DashboardShell({
                     key={navItem.href}
                     href={navItem.href}
                     onClick={() => setSidebarOpen(false)}
-                    target={navItem.labelKey === "nav.myQaiross" ? "_blank" : undefined}
-                    rel={navItem.labelKey === "nav.myQaiross" ? "noopener noreferrer" : undefined}
+                    target={
+                      navItem.labelKey === "nav.myQaiross"
+                        ? "_blank"
+                        : undefined
+                    }
+                    rel={
+                      navItem.labelKey === "nav.myQaiross"
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
                     className={cn(
                       "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                       isActive(navItem.href)
@@ -267,7 +294,9 @@ export function DashboardShell({
           {/* User avatar + logout */}
           <div className="flex items-center gap-2">
             <Avatar className="size-8">
-              {user.image && <AvatarImage src={user.image} alt={user.name} />}
+              {user.image && (
+                <AvatarImage src={user.image} alt={user.name} />
+              )}
               <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
                 {getInitials(user.name || user.email)}
               </AvatarFallback>
@@ -293,8 +322,16 @@ export function DashboardShell({
               <Link
                 key={navItem.href}
                 href={navItem.href}
-                target={navItem.labelKey === "nav.myQaiross" ? "_blank" : undefined}
-                rel={navItem.labelKey === "nav.myQaiross" ? "noopener noreferrer" : undefined}
+                target={
+                  navItem.labelKey === "nav.myQaiross"
+                    ? "_blank"
+                    : undefined
+                }
+                rel={
+                  navItem.labelKey === "nav.myQaiross"
+                    ? "noopener noreferrer"
+                    : undefined
+                }
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive(navItem.href)
@@ -334,8 +371,16 @@ export function DashboardShell({
             <Link
               key={navItem.href}
               href={navItem.href}
-              target={navItem.labelKey === "nav.myQaiross" ? "_blank" : undefined}
-              rel={navItem.labelKey === "nav.myQaiross" ? "noopener noreferrer" : undefined}
+              target={
+                navItem.labelKey === "nav.myQaiross"
+                  ? "_blank"
+                  : undefined
+              }
+              rel={
+                navItem.labelKey === "nav.myQaiross"
+                  ? "noopener noreferrer"
+                  : undefined
+              }
               className={cn(
                 "flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors",
                 isActive(navItem.href)
